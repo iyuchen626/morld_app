@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#2B2828"
+    tools:context=".camera.VideoRecordingActivity">
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/PreView_Editor"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/control"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <com.example.morldapp_demo01.GraphicOverlay
+        android:id="@+id/GraphicOverlay_Record"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/PreView_Editor"
+        app:layout_constraintLeft_toLeftOf="@id/PreView_Editor"
+        app:layout_constraintRight_toRightOf="@id/PreView_Editor"
+        app:layout_constraintTop_toTopOf="@id/PreView_Editor" />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@id/control"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="#000"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+<!--        <ImageView-->
+<!--            android:id="@+id/ImageView_PKTime"-->
+<!--            android:layout_width="60dp"-->
+<!--            android:layout_height="60dp"-->
+<!--            android:layout_marginLeft="8dp"-->
+<!--            android:layout_marginTop="20dp"-->
+<!--            android:layout_marginBottom="20dp"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintLeft_toLeftOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:srcCompat="@drawable/circle"/>-->
+
+
+<!--        <TextView-->
+<!--            android:id="@+id/TextView_PKTime"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="0"-->
+<!--            android:textColor="@color/purple_200"-->
+<!--            app:layout_constraintBottom_toBottomOf="@+id/ImageView_PKTime"-->
+<!--            app:layout_constraintLeft_toLeftOf="@+id/ImageView_PKTime"-->
+<!--            app:layout_constraintRight_toRightOf="@+id/ImageView_PKTime"-->
+<!--            app:layout_constraintTop_toTopOf="@+id/ImageView_PKTime" />-->
+
+        <ProgressBar
+            android:id="@+id/Layout_ProgressBarCameraRecording"
+            style="@style/CircularDeterminateProgressBar"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:progress="60"/>
+
+        <ImageButton
+            android:id="@+id/Layout_ImgBtnCameraRecording"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+
+            android:contentDescription="@string/app_name"
+            app:layout_constraintBottom_toBottomOf="@id/Layout_ProgressBarCameraRecording"
+            app:layout_constraintLeft_toLeftOf="@id/Layout_ProgressBarCameraRecording"
+            app:layout_constraintRight_toRightOf="@id/Layout_ProgressBarCameraRecording"
+            app:layout_constraintTop_toTopOf="@id/Layout_ProgressBarCameraRecording"
+            app:srcCompat="@android:drawable/ic_media_play" />
+
+        <ToggleButton
+            android:id="@+id/Layout_TogBtnCameraFacing"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@android:drawable/ic_menu_camera"
+            android:checked="false"
+            android:textOff=""
+            android:textOn=""
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

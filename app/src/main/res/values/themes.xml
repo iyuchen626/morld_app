@@ -1,0 +1,20 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.MorldApp_Demo01" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+
+
+        <item name="colorPrimary">@android:color/holo_orange_light</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/black</item>`
+
+        <!-- Customize your theme here. -->
+    </style>
+    <style name="Theme.MorldApp_Demo01.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <style name="Theme.MorldApp_Demo01.AppBarOverlay"
+        parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.MorldApp_Demo01.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+</resources>

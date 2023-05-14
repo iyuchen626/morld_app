@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/BtnNavView_Main_BtnHome"
+        android:icon="@drawable/icon_home"
+        android:title="" />
+    <item android:id="@+id/BtnNavView_Main_BtnSocial"
+        android:icon="@drawable/icon_socialnetwork"
+        android:title="" />
+    <item android:id="@+id/BtnNavView_Main_BtnEditor"
+        android:icon="@drawable/icon_editor"
+        android:title="" />
+    <item android:id="@+id/BtnNavView_Main_BtnLive"
+        android:icon="@drawable/icon_live"
+        android:title="" />
+    <item android:id="@+id/BtnNavView_Main_BtnMarket"
+        android:icon="@drawable/icon_buy"
+        android:title="" />
+
+</menu>
