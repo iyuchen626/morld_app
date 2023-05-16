@@ -184,7 +184,8 @@ public class EditorPoseGraphic extends EditGraphicOverlay.EditGraphic {
 
            String filename = "pose_detect_0514_9.txt";
            // 存放檔案位置在 內部空間/Download/
-           File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+           File path = getApplicationContext().getExternalFilesDir("txt");
+//           File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 
            File file = new File(path, filename);
 

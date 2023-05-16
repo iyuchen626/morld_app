@@ -76,7 +76,7 @@ public class DetectPoseGraphic extends EditGraphicOverlay.EditGraphic {
   public void draw(Canvas canvas) {
 
       String filename = "pose_detect_0514_9.txt";
-      File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+      File path = getApplicationContext().getExternalFilesDir("txt");
       File file = new File(path, filename);
       String[][] str2 = new String[12][3];
       int idx=0,testidx=0;
