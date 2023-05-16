@@ -182,12 +182,12 @@ public class EditorPoseGraphic extends EditGraphicOverlay.EditGraphic {
            drawPoint(canvas, leftWrist, whitePaint);
 
 
-           String filename = "pose_detect_0514_9.txt";
+           String filename = "AAApose_detect_0516.txt";
            // 存放檔案位置在 內部空間/Download/
            File path = getApplicationContext().getExternalFilesDir("txt");
-//           File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 
            File file = new File(path, filename);
+          // File file = new File(path+filename);
 
            String string;
            try {
@@ -238,6 +238,7 @@ public class EditorPoseGraphic extends EditGraphicOverlay.EditGraphic {
                Output.write(string.getBytes());
 
                Output.close();
+
 
 
            } catch (IOException e) {

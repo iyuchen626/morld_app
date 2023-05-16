@@ -40,6 +40,8 @@ public class DetectPoseGraphic extends EditGraphicOverlay.EditGraphic {
   private static final float IN_FRAME_LIKELIHOOD_TEXT_SIZE = 30.0f;
   private static final float STROKE_WIDTH = 7.0f;
   private static final float POSE_CLASSIFICATION_TEXT_SIZE = 60.0f;
+    public  static final String[][][] str2 = new String[100][12][3];
+
 
   //private final Pose pose;
 
@@ -52,13 +54,18 @@ public class DetectPoseGraphic extends EditGraphicOverlay.EditGraphic {
   private final Paint classificationTextPaint;
   private final Paint whitePaint;
   private int detectcount;
+  private Boolean ReadDATA;
+
 
    public DetectPoseGraphic(
            EditGraphicOverlay overlay,
-           int detect_count
+           int detect_count,
+           Boolean Read_DATA
+
            ) {
     super(overlay);
     this.detectcount = detect_count;
+    this.ReadDATA = Read_DATA;
 
     classificationTextPaint = new Paint();
     classificationTextPaint.setColor(Color.WHITE);
@@ -74,45 +81,48 @@ public class DetectPoseGraphic extends EditGraphicOverlay.EditGraphic {
 
   @Override
   public void draw(Canvas canvas) {
+       if((ReadDATA==true)) {
+           String filename = "AAApose_detect_0516.txt";
+           File path = getApplicationContext().getExternalFilesDir("txt");
+           File file = new File(path, filename);
+           int idx = 0, testidx = 0,count=0;
+           try {
+               //建立FileReader物件，並設定讀取的檔案為CheckFlie.txt
+               FileReader fr = new FileReader(file);
+               //將BufferedReader與FileReader做連結
+               BufferedReader bufFile = new BufferedReader(fr);
 
-      String filename = "pose_detect_0514_9.txt";
-      File path = getApplicationContext().getExternalFilesDir("txt");
-      File file = new File(path, filename);
-      String[][] str2 = new String[12][3];
-      int idx=0,testidx=0;
-      try{
-          //建立FileReader物件，並設定讀取的檔案為CheckFlie.txt
-          FileReader fr = new FileReader(file);
-          //將BufferedReader與FileReader做連結
-          BufferedReader bufFile = new BufferedReader(fr);
+               String readData = "";
+               String temp = bufFile.readLine(); //readLine()讀取一整行
+               //detectcount
+//               while ((temp != null) && (testidx < 12 * detectcount)) {
+////              readData+=temp +
+////              "/n";
+////              str2[idx]=temp.split("Data");
+////              idx=idx+1;
+//                   testidx = testidx + 1;
+//                   temp = bufFile.readLine();
+//               }
 
-          String readData = "";
-          String temp = bufFile.readLine(); //readLine()讀取一整行
-          //detectcount
-          while ((temp!=null)&&(testidx<12*detectcount)){
-//              readData+=temp +
-//              "/n";
-//              str2[idx]=temp.split("Data");
-//              idx=idx+1;
-              testidx=testidx+1;
-              temp=bufFile.readLine();
-          }
+               while ((temp != null)) {
+                   for(idx=0;idx<12;idx++)
+                   {
+                       readData += temp + "/n";
+                       str2[count][idx] = temp.split("Data");
+                       temp = bufFile.readLine();
+                   }
+                   count=count+1;
+               }
+               bufFile.close();
+               fr.close();
+           } catch (Exception e) {
+               e.printStackTrace();
+           }
+       }
+       else {
 
-          while ((temp!=null)&&(idx<12)){
-              readData+=temp +  "/n";
-              str2[idx]=temp.split("Data");
-              idx=idx+1;
-              temp=bufFile.readLine();
-          }
-          bufFile.close();
-          fr.close();
-      }catch(Exception e){
-          e.printStackTrace();
-      }
 
-      try
-      {
-          //
+//
 //// Face
 //      //drawLine(canvas, nose, lefyEyeInner, whitePaint);
 //      //drawLine(canvas, lefyEyeInner, lefyEye, whitePaint);
@@ -124,19 +134,19 @@ public class DetectPoseGraphic extends EditGraphicOverlay.EditGraphic {
 //      //drawLine(canvas, rightEyeOuter, rightEar, whitePaint);
 //      //drawLine(canvas, leftMouth, rightMouth, whitePaint);
 //
-          drawLine(canvas, Float.valueOf(str2[6][1]),Float.valueOf(str2[6][2]), Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]), whitePaint);
-          drawLine(canvas, Float.valueOf(str2[8][1]),Float.valueOf(str2[8][2]), Float.valueOf(str2[2][1]),Float.valueOf(str2[2][2]), whitePaint);
+           drawLine(canvas, Float.valueOf(str2[detectcount][6][1]), Float.valueOf(str2[detectcount][6][2]), Float.valueOf(str2[detectcount][0][1]), Float.valueOf(str2[detectcount][0][2]), whitePaint);
+           drawLine(canvas, Float.valueOf(str2[detectcount][8][1]), Float.valueOf(str2[detectcount][8][2]), Float.valueOf(str2[detectcount][2][1]), Float.valueOf(str2[detectcount][2][2]), whitePaint);
 //
 //      // Left body
-          drawLine(canvas, Float.valueOf(str2[6][1]),Float.valueOf(str2[6][2]), Float.valueOf(str2[7][1]),Float.valueOf(str2[7][2]), whitePaint);
-          drawLine(canvas, Float.valueOf(str2[7][1]),Float.valueOf(str2[7][2]), Float.valueOf(str2[11][1]),Float.valueOf(str2[11][2]), whitePaint);
-          //drawLine(canvas, leftShoulder, leftHip, whitePaint);
+           drawLine(canvas, Float.valueOf(str2[detectcount][6][1]), Float.valueOf(str2[detectcount][6][2]), Float.valueOf(str2[detectcount][7][1]), Float.valueOf(str2[detectcount][7][2]), whitePaint);
+           drawLine(canvas, Float.valueOf(str2[detectcount][7][1]), Float.valueOf(str2[detectcount][7][2]), Float.valueOf(str2[detectcount][11][1]), Float.valueOf(str2[detectcount][11][2]), whitePaint);
+           //drawLine(canvas, leftShoulder, leftHip, whitePaint);
 //      //2
-          drawLine(canvas, Float.valueOf(str2[6][1]),Float.valueOf(str2[6][2]), Float.valueOf(str2[8][1]),Float.valueOf(str2[8][2]), whitePaint);
-          //3
-          drawLine(canvas, Float.valueOf(str2[8][1]),Float.valueOf(str2[8][2]), Float.valueOf(str2[6][1]),Float.valueOf(str2[6][2]), whitePaint);
-          drawLine(canvas, Float.valueOf(str2[8][1]),Float.valueOf(str2[8][2]), Float.valueOf(str2[9][1]),Float.valueOf(str2[9][2]), whitePaint);
-          drawLine(canvas, Float.valueOf(str2[9][1]),Float.valueOf(str2[9][2]), Float.valueOf(str2[10][1]),Float.valueOf(str2[10][2]), whitePaint);
+           drawLine(canvas, Float.valueOf(str2[detectcount][6][1]), Float.valueOf(str2[detectcount][6][2]), Float.valueOf(str2[detectcount][8][1]), Float.valueOf(str2[detectcount][8][2]), whitePaint);
+           //3
+           drawLine(canvas, Float.valueOf(str2[detectcount][8][1]), Float.valueOf(str2[detectcount][8][2]), Float.valueOf(str2[detectcount][6][1]), Float.valueOf(str2[detectcount][6][2]), whitePaint);
+           drawLine(canvas, Float.valueOf(str2[detectcount][8][1]), Float.valueOf(str2[detectcount][8][2]), Float.valueOf(str2[detectcount][9][1]), Float.valueOf(str2[detectcount][9][2]), whitePaint);
+           drawLine(canvas, Float.valueOf(str2[detectcount][9][1]), Float.valueOf(str2[detectcount][9][2]), Float.valueOf(str2[detectcount][10][1]), Float.valueOf(str2[detectcount][10][2]), whitePaint);
 //      //drawLine(canvas, leftWrist, leftThumb, whitePaint);
 //      //drawLine(canvas, leftWrist, leftPinky, whitePaint);
 //      //drawLine(canvas, leftWrist, leftIndex, whitePaint);
@@ -145,15 +155,15 @@ public class DetectPoseGraphic extends EditGraphicOverlay.EditGraphic {
 //      //drawLine(canvas, leftHeel, leftFootIndex, whitePaint);
 //
 //      // Right body
-          drawLine(canvas, Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]), Float.valueOf(str2[1][1]),Float.valueOf(str2[1][2]), whitePaint);
-          drawLine(canvas, Float.valueOf(str2[1][1]),Float.valueOf(str2[1][2]), Float.valueOf(str2[5][1]),Float.valueOf(str2[5][2]), whitePaint);
+           drawLine(canvas, Float.valueOf(str2[detectcount][0][1]), Float.valueOf(str2[detectcount][0][2]), Float.valueOf(str2[detectcount][1][1]), Float.valueOf(str2[detectcount][1][2]), whitePaint);
+           drawLine(canvas, Float.valueOf(str2[detectcount][1][1]), Float.valueOf(str2[detectcount][1][2]), Float.valueOf(str2[detectcount][5][1]), Float.valueOf(str2[detectcount][5][2]), whitePaint);
 //      //drawLine(canvas, rightShoulder, rightHip, whitePaint);
 ////2
-          drawLine(canvas, Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]), Float.valueOf(str2[2][1]),Float.valueOf(str2[2][2]), whitePaint);
+           drawLine(canvas, Float.valueOf(str2[detectcount][0][1]), Float.valueOf(str2[detectcount][0][2]), Float.valueOf(str2[detectcount][2][1]), Float.valueOf(str2[detectcount][2][2]), whitePaint);
 //   //3
-          drawLine(canvas, Float.valueOf(str2[2][1]),Float.valueOf(str2[2][2]), Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]), whitePaint);
-          drawLine(canvas, Float.valueOf(str2[2][1]),Float.valueOf(str2[2][2]), Float.valueOf(str2[3][1]),Float.valueOf(str2[3][2]), whitePaint);
-          drawLine(canvas, Float.valueOf(str2[3][1]),Float.valueOf(str2[3][2]), Float.valueOf(str2[4][1]),Float.valueOf(str2[4][2]), whitePaint);
+           drawLine(canvas, Float.valueOf(str2[detectcount][2][1]), Float.valueOf(str2[detectcount][2][2]), Float.valueOf(str2[detectcount][0][1]), Float.valueOf(str2[detectcount][0][2]), whitePaint);
+           drawLine(canvas, Float.valueOf(str2[detectcount][2][1]), Float.valueOf(str2[detectcount][2][2]), Float.valueOf(str2[detectcount][3][1]), Float.valueOf(str2[detectcount][3][2]), whitePaint);
+           drawLine(canvas, Float.valueOf(str2[detectcount][3][1]), Float.valueOf(str2[detectcount][3][2]), Float.valueOf(str2[detectcount][4][1]), Float.valueOf(str2[detectcount][4][2]), whitePaint);
 //      //drawLine(canvas, rightWrist, rightThumb, whitePaint);
 //      //drawLine(canvas, rightWrist, rightPinky, whitePaint);
 //      //drawLine(canvas, rightWrist, rightIndex, whitePaint);
@@ -177,31 +187,24 @@ public class DetectPoseGraphic extends EditGraphicOverlay.EditGraphic {
 ////      drawPoint(canvas, leftAnkle, whitePaint);10
 ////      drawPoint(canvas, leftWrist, whitePaint);1
 
-          //drawLine(canvas, Float.valueOf(str2[6][1]),Float.valueOf(str2[6][2]), Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]), whitePaint);
-          // drawLine(canvas, Float.valueOf(str2[8][1]),Float.valueOf(str2[8][2]), Float.valueOf(str2[2][1]),Float.valueOf(str2[2][2]), whitePaint);
+           //drawLine(canvas, Float.valueOf(str2[6][1]),Float.valueOf(str2[6][2]), Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]), whitePaint);
+           // drawLine(canvas, Float.valueOf(str2[8][1]),Float.valueOf(str2[8][2]), Float.valueOf(str2[2][1]),Float.valueOf(str2[2][2]), whitePaint);
 
-          drawPoint(canvas,Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]),whitePaint);
-          drawPoint(canvas,Float.valueOf(str2[1][1]),Float.valueOf(str2[1][2]),whitePaint);
-          drawPoint(canvas,Float.valueOf(str2[2][1]),Float.valueOf(str2[2][2]),whitePaint);
-          drawPoint(canvas,Float.valueOf(str2[3][1]),Float.valueOf(str2[3][2]),whitePaint);
-          drawPoint(canvas,Float.valueOf(str2[4][1]),Float.valueOf(str2[4][2]),whitePaint);
-          drawPoint(canvas,Float.valueOf(str2[5][1]),Float.valueOf(str2[5][2]),whitePaint);
-          drawPoint(canvas,Float.valueOf(str2[6][1]),Float.valueOf(str2[6][2]),whitePaint);
-          drawPoint(canvas,Float.valueOf(str2[7][1]),Float.valueOf(str2[7][2]),whitePaint);
-          drawPoint(canvas,Float.valueOf(str2[8][1]),Float.valueOf(str2[8][2]),whitePaint);
-          drawPoint(canvas,Float.valueOf(str2[9][1]),Float.valueOf(str2[9][2]),whitePaint);
-          drawPoint(canvas,Float.valueOf(str2[10][1]),Float.valueOf(str2[10][2]),whitePaint);
-          drawPoint(canvas,Float.valueOf(str2[11][1]),Float.valueOf(str2[11][2]),whitePaint);
+           drawPoint(canvas, Float.valueOf(str2[detectcount][0][1]), Float.valueOf(str2[detectcount][0][2]), whitePaint);
+           drawPoint(canvas, Float.valueOf(str2[detectcount][1][1]), Float.valueOf(str2[detectcount][1][2]), whitePaint);
+           drawPoint(canvas, Float.valueOf(str2[detectcount][2][1]), Float.valueOf(str2[detectcount][2][2]), whitePaint);
+           drawPoint(canvas, Float.valueOf(str2[detectcount][3][1]), Float.valueOf(str2[detectcount][3][2]), whitePaint);
+           drawPoint(canvas, Float.valueOf(str2[detectcount][4][1]), Float.valueOf(str2[detectcount][4][2]), whitePaint);
+           drawPoint(canvas, Float.valueOf(str2[detectcount][5][1]), Float.valueOf(str2[detectcount][5][2]), whitePaint);
+           drawPoint(canvas, Float.valueOf(str2[detectcount][6][1]), Float.valueOf(str2[detectcount][6][2]), whitePaint);
+           drawPoint(canvas, Float.valueOf(str2[detectcount][7][1]), Float.valueOf(str2[detectcount][7][2]), whitePaint);
+           drawPoint(canvas, Float.valueOf(str2[detectcount][8][1]), Float.valueOf(str2[detectcount][8][2]), whitePaint);
+           drawPoint(canvas, Float.valueOf(str2[detectcount][9][1]), Float.valueOf(str2[detectcount][9][2]), whitePaint);
+           drawPoint(canvas, Float.valueOf(str2[detectcount][10][1]), Float.valueOf(str2[detectcount][10][2]), whitePaint);
+           drawPoint(canvas, Float.valueOf(str2[detectcount][11][1]), Float.valueOf(str2[detectcount][11][2]), whitePaint);
 
 
-          //drawPoint(Canvas canvas,Float.valueOf(str2[0]),str ,Y, ,whi)tePaint);
-
-      }
-      catch (Exception e)
-      {
-
-      }
-
+           //drawPoint(Canvas canvas,Float.valueOf(str2[0]),str ,Y, ,whi)tePaint);
 
 
 //    List<PoseLandmark> landmarks = pose.getAllPoseLandmarks();
@@ -212,7 +215,7 @@ public class DetectPoseGraphic extends EditGraphicOverlay.EditGraphic {
 //    {
 //    }
 
-    // Draw pose classification text.
+           // Draw pose classification text.
 //    float classificationX = POSE_CLASSIFICATION_TEXT_SIZE * 0.5f;
 //    for (int i = 0; i < poseClassification.size(); i++) {
 //      float classificationY =
@@ -222,7 +225,7 @@ public class DetectPoseGraphic extends EditGraphicOverlay.EditGraphic {
 //              poseClassification.get(i), classificationX, classificationY, classificationTextPaint);
 //    }
 
-    // Draw all the points
+           // Draw all the points
 
 
 //    PoseLandmark nose = pose.getPoseLandmark(PoseLandmark.NOSE);
@@ -261,7 +264,7 @@ public class DetectPoseGraphic extends EditGraphicOverlay.EditGraphic {
 //    PoseLandmark leftFootIndex = pose.getPoseLandmark(PoseLandmark.LEFT_FOOT_INDEX);
 //    PoseLandmark rightFootIndex = pose.getPoseLandmark(PoseLandmark.RIGHT_FOOT_INDEX);
 
-    // Face
+           // Face
 //    drawLine(canvas, nose, lefyEyeInner, whitePaint);
 //    drawLine(canvas, lefyEyeInner, lefyEye, whitePaint);
 //    drawLine(canvas, lefyEye, leftEyeOuter, whitePaint);
@@ -299,7 +302,7 @@ public class DetectPoseGraphic extends EditGraphicOverlay.EditGraphic {
 //    drawLine(canvas, rightWrist, rightIndex, whitePaint);
 //    drawLine(canvas, rightIndex, rightPinky, whitePaint);
 //    drawLine(canvas, rightAnkle, rightHeel, whitePaint);
-  //  drawLine(canvas, whitePaint);
+           //  drawLine(canvas, whitePaint);
 
 //    drawPoint(canvas, rightShoulder, whitePaint);
 //    drawPoint(canvas, rightElbow, whitePaint);
@@ -311,7 +314,8 @@ public class DetectPoseGraphic extends EditGraphicOverlay.EditGraphic {
 //    drawPoint(canvas, leftElbow, whitePaint);
 //    drawPoint(canvas, leftHip, whitePaint);
 //    drawPoint(canvas, leftHeel, whitePaint);
-   // drawPoint(canvas, whitePaint);
+           // drawPoint(canvas, whitePaint);
+       }
 
   }
 

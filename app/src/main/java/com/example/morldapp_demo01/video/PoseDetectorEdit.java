@@ -6,7 +6,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import wseemann.media.FFmpegMediaMetadataRetriever;
 
 import android.app.Activity;
 import android.content.Context;
@@ -21,7 +20,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -31,7 +29,6 @@ import android.widget.VideoView;
 
 import com.example.morldapp_demo01.MainActivity;
 import com.example.morldapp_demo01.R;
-import com.example.morldapp_demo01.Tools;
 import com.example.morldapp_demo01.camera.VideoPoseDetectActivity;
 import com.example.morldapp_demo01.classification.posedetector.DetectPoseGraphic;
 import com.example.morldapp_demo01.classification.posedetector.EditorPoseGraphic;
@@ -47,6 +44,7 @@ import com.google.mlkit.vision.pose.accurate.AccuratePoseDetectorOptions;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -62,7 +60,7 @@ public class PoseDetectorEdit extends AppCompatActivity {
     long timestamp_A ;
     long countmax ;
     long timestamp_B ;
-    FFmpegMediaMetadataRetriever retriever;
+    MediaMetadataRetriever retriever;
     VideoView Act_VideoView_Pose;
     Bitmap Act_Bitmap_PoseEditor;
     ImageView Act_ImgView_Pose;
@@ -91,7 +89,7 @@ public class PoseDetectorEdit extends AppCompatActivity {
 //      Bundle objgetbundle = this.getIntent().getExtras();
 //      timestamp = objgetbundle.getLong("video_name");
 
-        retriever=new FFmpegMediaMetadataRetriever();
+        retriever=new MediaMetadataRetriever();
         input_video_path= Environment.getExternalStorageDirectory().getPath();
         input_video_path=input_video_path+"/Movies/"+timestamp+".mp4";
         input_video_path= "https://storage.googleapis.com/download/storage/v1/b/db-morld-photo/o/3.mp4?generation=1673540748956486&alt=media";
@@ -118,9 +116,11 @@ public class PoseDetectorEdit extends AppCompatActivity {
         });
 
         btGreen.setOnClickListener(v -> {
+//            handler.removeCallbacks(myrunnable);
             analyze = false;
             analyze_flag=false;
             draw_flag=true;
+//            handler.post(myrunnable);
 
 
 
@@ -134,6 +134,7 @@ public class PoseDetectorEdit extends AppCompatActivity {
 
 
         btBlue.setOnClickListener(v -> {
+//            handler.removeCallbacks(myrunnable);
             long duriztions=Act_VideoView_Pose.getDuration();                                  
             countmax=duriztions/1000;
             draw_flag=false;//analyze_flag=true;
@@ -162,20 +163,29 @@ public class PoseDetectorEdit extends AppCompatActivity {
                     if (count ==0)
                     {
                         //Act_VideoView_Pose.start();
-                        String filename = "pose_detect_0514_9.txt";
+                        String filename = "AAApose_detect_0516.txt";
                         // 存放檔案位置在 內部空間/Download/
-                        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                        File path = getApplicationContext().getExternalFilesDir("txt");
                         File file = new File(path, filename);
-                        if(file.isFile())
+                        if(file.exists())
                         {
                             file.delete();
+                        }
+
+
+                        if(!file.exists())
+                        {
+                            try {
+                                file.createNewFile();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
 
                     }
 
                     //countmax
                     if (count <=countmax) {
-                        Log.i(Tools.TAG, String.format("count=%d", count));
                         Act_Bitmap_PoseEditor = null;
                         //timestamp_A=Act_VideoView_Pose.getCurrentPosition() * 1000+800000;
                         //timestamp_A = (Act_VideoView_Pose.getCurrentPosition() * 1000);
@@ -200,12 +210,19 @@ public class PoseDetectorEdit extends AppCompatActivity {
                                 analyze = false;
                                 analyze_flag=false;
                                 count = 0;
-                                draw_flag=true;
+                                EditGraphicOverlay.clear();
+                                EditGraphicOverlay.add(
+                                        new DetectPoseGraphic(                        //Act_VideoView_Pose.start();
+                                                EditGraphicOverlay, 0,true                 //draw_flag=true;
+                                        ));
+
 //                                 EditGraphicOverlay.clear();
 //                                 EditGraphicOverlay.add(
 //                                         new DetectPoseGraphic(                        //Act_VideoView_Pose.start();
 //                                                 EditGraphicOverlay, 0                 //draw_flag=true;
 //                                         ));                                           //Act_VideoView_Pose.start();
+
+
                                 show=1000000;
                             }
 
@@ -239,8 +256,8 @@ public class PoseDetectorEdit extends AppCompatActivity {
                                EditGraphicOverlay.clear();
                                 EditGraphicOverlay.add(
                                         new DetectPoseGraphic(                        //Act_VideoView_Pose.start();
-                                                EditGraphicOverlay, show                 //draw_flag=true;
-                                        ));
+                                                EditGraphicOverlay, (show+1),false                 //draw_flag=true;
+                                       ));
                                 //Toast.makeText(PoseDetectorEdit.this, "TTTTIME : " + show, Toast.LENGTH_LONG).show();
                           //  }
                             //Act_VideoView_Pose.start();
@@ -356,7 +373,6 @@ public class PoseDetectorEdit extends AppCompatActivity {
         float sx=0,sy=0,Adjustscale=0,test=0;
         //InputImage inputImage = InputImage.fromFilePath(this, imageUri);
         //Act_ImgView_Pose.setImageURI(imageUri);
-        if(bitmap==null) return;
         InputImage inputImage = InputImage.fromBitmap(bitmap, 0);
         //Act_ImgView_Pose.setImageBitmap(bitmap);
 
