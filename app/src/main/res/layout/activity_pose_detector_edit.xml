@@ -11,19 +11,30 @@
         android:id="@+id/ImageView_Editor"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:scaleType="matrix"
+        android:scaleType="fitStart"
         app:layout_constraintBottom_toTopOf="@+id/control"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <VideoView
+        android:id="@+id/DETEDCTOR_VideView_Trimvideo"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="fitStart"
+        app:layout_constraintBottom_toBottomOf="@id/ImageView_Editor"
+        app:layout_constraintLeft_toLeftOf="@id/ImageView_Editor"
+        app:layout_constraintRight_toRightOf="@id/ImageView_Editor"
+        app:layout_constraintTop_toTopOf="@id/ImageView_Editor" />
 
     <com.example.morldapp_demo01.EditGraphicOverlay
         android:id="@+id/GraphicOverlay_Edit"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:scaleType="fitStart"
         app:layout_constraintBottom_toBottomOf="@id/ImageView_Editor"
         app:layout_constraintLeft_toLeftOf="@id/ImageView_Editor"
         app:layout_constraintRight_toRightOf="@id/ImageView_Editor"
         app:layout_constraintTop_toTopOf="@id/ImageView_Editor" />
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@id/control"

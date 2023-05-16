@@ -118,6 +118,8 @@ public class EditorPoseGraphic extends EditGraphicOverlay.EditGraphic {
            PoseLandmark leftFootIndex = pose.getPoseLandmark(PoseLandmark.LEFT_FOOT_INDEX);
            PoseLandmark rightFootIndex = pose.getPoseLandmark(PoseLandmark.RIGHT_FOOT_INDEX);
 
+
+
            // Face
            //drawLine(canvas, nose, lefyEyeInner, whitePaint);
            //drawLine(canvas, lefyEyeInner, lefyEye, whitePaint);
@@ -180,7 +182,7 @@ public class EditorPoseGraphic extends EditGraphicOverlay.EditGraphic {
            drawPoint(canvas, leftWrist, whitePaint);
 
 
-           String filename = "pose_detect.txt";
+           String filename = "pose_detect_0514_9.txt";
            // 存放檔案位置在 內部空間/Download/
            File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 
@@ -191,7 +193,7 @@ public class EditorPoseGraphic extends EditGraphicOverlay.EditGraphic {
                // 第二個參數為是否 append
                // 若為 true，則新加入的文字會接續寫在文字檔的最後
                FileOutputStream Output;
-               if (count == 0) {
+               if (count == -1) {
                    Output = new FileOutputStream(file, false);
                } else {
                    Output = new FileOutputStream(file, true);
@@ -235,6 +237,7 @@ public class EditorPoseGraphic extends EditGraphicOverlay.EditGraphic {
                Output.write(string.getBytes());
 
                Output.close();
+
 
            } catch (IOException e) {
                e.printStackTrace();

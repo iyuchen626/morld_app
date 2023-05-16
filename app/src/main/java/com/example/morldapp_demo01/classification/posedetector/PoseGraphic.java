@@ -212,7 +212,7 @@ public class PoseGraphic extends Graphic {
     drawPoint2(canvas, rightShoulder, rightHip, whitePaint);
 
 
-    if(getDetectResult())
+    /*if(getDetectResult())
     {
       double scroce=100;
       String filename = "pose_detect.txt";
@@ -252,7 +252,7 @@ public class PoseGraphic extends Graphic {
       if(scroce<1)
         scroce=0;
       new PoseDetectResult(scroce);
-    }
+    }*/
 
 
 

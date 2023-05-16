@@ -54,7 +54,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class Tools
 {
-	static final String TAG = "工具";
+	public static final String TAG = "Morld";
 	static boolean progressDone = false;
 	private static Gson gson;
 

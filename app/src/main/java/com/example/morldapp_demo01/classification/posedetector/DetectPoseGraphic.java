@@ -75,7 +75,7 @@ public class DetectPoseGraphic extends EditGraphicOverlay.EditGraphic {
   @Override
   public void draw(Canvas canvas) {
 
-      String filename = "pose_detect.txt";
+      String filename = "pose_detect_0514_9.txt";
       File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
       File file = new File(path, filename);
       String[][] str2 = new String[12][3];
@@ -90,7 +90,8 @@ public class DetectPoseGraphic extends EditGraphicOverlay.EditGraphic {
           String temp = bufFile.readLine(); //readLine()讀取一整行
           //detectcount
           while ((temp!=null)&&(testidx<12*detectcount)){
-//              readData+=temp +  "/n";
+//              readData+=temp +
+//              "/n";
 //              str2[idx]=temp.split("Data");
 //              idx=idx+1;
               testidx=testidx+1;
@@ -104,12 +105,14 @@ public class DetectPoseGraphic extends EditGraphicOverlay.EditGraphic {
               temp=bufFile.readLine();
           }
           bufFile.close();
+          fr.close();
       }catch(Exception e){
           e.printStackTrace();
       }
 
-
-//
+      try
+      {
+          //
 //// Face
 //      //drawLine(canvas, nose, lefyEyeInner, whitePaint);
 //      //drawLine(canvas, lefyEyeInner, lefyEye, whitePaint);
@@ -121,19 +124,19 @@ public class DetectPoseGraphic extends EditGraphicOverlay.EditGraphic {
 //      //drawLine(canvas, rightEyeOuter, rightEar, whitePaint);
 //      //drawLine(canvas, leftMouth, rightMouth, whitePaint);
 //
-      drawLine(canvas, Float.valueOf(str2[6][1]),Float.valueOf(str2[6][2]), Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]), whitePaint);
-      drawLine(canvas, Float.valueOf(str2[8][1]),Float.valueOf(str2[8][2]), Float.valueOf(str2[2][1]),Float.valueOf(str2[2][2]), whitePaint);
+          drawLine(canvas, Float.valueOf(str2[6][1]),Float.valueOf(str2[6][2]), Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]), whitePaint);
+          drawLine(canvas, Float.valueOf(str2[8][1]),Float.valueOf(str2[8][2]), Float.valueOf(str2[2][1]),Float.valueOf(str2[2][2]), whitePaint);
 //
 //      // Left body
-      drawLine(canvas, Float.valueOf(str2[6][1]),Float.valueOf(str2[6][2]), Float.valueOf(str2[7][1]),Float.valueOf(str2[7][2]), whitePaint);
-      drawLine(canvas, Float.valueOf(str2[7][1]),Float.valueOf(str2[7][2]), Float.valueOf(str2[11][1]),Float.valueOf(str2[11][2]), whitePaint);
-      //drawLine(canvas, leftShoulder, leftHip, whitePaint);
+          drawLine(canvas, Float.valueOf(str2[6][1]),Float.valueOf(str2[6][2]), Float.valueOf(str2[7][1]),Float.valueOf(str2[7][2]), whitePaint);
+          drawLine(canvas, Float.valueOf(str2[7][1]),Float.valueOf(str2[7][2]), Float.valueOf(str2[11][1]),Float.valueOf(str2[11][2]), whitePaint);
+          //drawLine(canvas, leftShoulder, leftHip, whitePaint);
 //      //2
-      drawLine(canvas, Float.valueOf(str2[6][1]),Float.valueOf(str2[6][2]), Float.valueOf(str2[8][1]),Float.valueOf(str2[8][2]), whitePaint);
-      //3
-      drawLine(canvas, Float.valueOf(str2[8][1]),Float.valueOf(str2[8][2]), Float.valueOf(str2[6][1]),Float.valueOf(str2[6][2]), whitePaint);
-      drawLine(canvas, Float.valueOf(str2[8][1]),Float.valueOf(str2[8][2]), Float.valueOf(str2[9][1]),Float.valueOf(str2[9][2]), whitePaint);
-      drawLine(canvas, Float.valueOf(str2[9][1]),Float.valueOf(str2[9][2]), Float.valueOf(str2[10][1]),Float.valueOf(str2[10][2]), whitePaint);
+          drawLine(canvas, Float.valueOf(str2[6][1]),Float.valueOf(str2[6][2]), Float.valueOf(str2[8][1]),Float.valueOf(str2[8][2]), whitePaint);
+          //3
+          drawLine(canvas, Float.valueOf(str2[8][1]),Float.valueOf(str2[8][2]), Float.valueOf(str2[6][1]),Float.valueOf(str2[6][2]), whitePaint);
+          drawLine(canvas, Float.valueOf(str2[8][1]),Float.valueOf(str2[8][2]), Float.valueOf(str2[9][1]),Float.valueOf(str2[9][2]), whitePaint);
+          drawLine(canvas, Float.valueOf(str2[9][1]),Float.valueOf(str2[9][2]), Float.valueOf(str2[10][1]),Float.valueOf(str2[10][2]), whitePaint);
 //      //drawLine(canvas, leftWrist, leftThumb, whitePaint);
 //      //drawLine(canvas, leftWrist, leftPinky, whitePaint);
 //      //drawLine(canvas, leftWrist, leftIndex, whitePaint);
@@ -142,15 +145,15 @@ public class DetectPoseGraphic extends EditGraphicOverlay.EditGraphic {
 //      //drawLine(canvas, leftHeel, leftFootIndex, whitePaint);
 //
 //      // Right body
-      drawLine(canvas, Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]), Float.valueOf(str2[1][1]),Float.valueOf(str2[1][2]), whitePaint);
-      drawLine(canvas, Float.valueOf(str2[1][1]),Float.valueOf(str2[1][2]), Float.valueOf(str2[5][1]),Float.valueOf(str2[5][2]), whitePaint);
+          drawLine(canvas, Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]), Float.valueOf(str2[1][1]),Float.valueOf(str2[1][2]), whitePaint);
+          drawLine(canvas, Float.valueOf(str2[1][1]),Float.valueOf(str2[1][2]), Float.valueOf(str2[5][1]),Float.valueOf(str2[5][2]), whitePaint);
 //      //drawLine(canvas, rightShoulder, rightHip, whitePaint);
 ////2
-     drawLine(canvas, Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]), Float.valueOf(str2[2][1]),Float.valueOf(str2[2][2]), whitePaint);
+          drawLine(canvas, Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]), Float.valueOf(str2[2][1]),Float.valueOf(str2[2][2]), whitePaint);
 //   //3
-     drawLine(canvas, Float.valueOf(str2[2][1]),Float.valueOf(str2[2][2]), Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]), whitePaint);
-      drawLine(canvas, Float.valueOf(str2[2][1]),Float.valueOf(str2[2][2]), Float.valueOf(str2[3][1]),Float.valueOf(str2[3][2]), whitePaint);
-      drawLine(canvas, Float.valueOf(str2[3][1]),Float.valueOf(str2[3][2]), Float.valueOf(str2[4][1]),Float.valueOf(str2[4][2]), whitePaint);
+          drawLine(canvas, Float.valueOf(str2[2][1]),Float.valueOf(str2[2][2]), Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]), whitePaint);
+          drawLine(canvas, Float.valueOf(str2[2][1]),Float.valueOf(str2[2][2]), Float.valueOf(str2[3][1]),Float.valueOf(str2[3][2]), whitePaint);
+          drawLine(canvas, Float.valueOf(str2[3][1]),Float.valueOf(str2[3][2]), Float.valueOf(str2[4][1]),Float.valueOf(str2[4][2]), whitePaint);
 //      //drawLine(canvas, rightWrist, rightThumb, whitePaint);
 //      //drawLine(canvas, rightWrist, rightPinky, whitePaint);
 //      //drawLine(canvas, rightWrist, rightIndex, whitePaint);
@@ -174,24 +177,30 @@ public class DetectPoseGraphic extends EditGraphicOverlay.EditGraphic {
 ////      drawPoint(canvas, leftAnkle, whitePaint);10
 ////      drawPoint(canvas, leftWrist, whitePaint);1
 
-      //drawLine(canvas, Float.valueOf(str2[6][1]),Float.valueOf(str2[6][2]), Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]), whitePaint);
-     // drawLine(canvas, Float.valueOf(str2[8][1]),Float.valueOf(str2[8][2]), Float.valueOf(str2[2][1]),Float.valueOf(str2[2][2]), whitePaint);
+          //drawLine(canvas, Float.valueOf(str2[6][1]),Float.valueOf(str2[6][2]), Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]), whitePaint);
+          // drawLine(canvas, Float.valueOf(str2[8][1]),Float.valueOf(str2[8][2]), Float.valueOf(str2[2][1]),Float.valueOf(str2[2][2]), whitePaint);
 
-      drawPoint(canvas,Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]),whitePaint);
-      drawPoint(canvas,Float.valueOf(str2[1][1]),Float.valueOf(str2[1][2]),whitePaint);
-      drawPoint(canvas,Float.valueOf(str2[2][1]),Float.valueOf(str2[2][2]),whitePaint);
-      drawPoint(canvas,Float.valueOf(str2[3][1]),Float.valueOf(str2[3][2]),whitePaint);
-      drawPoint(canvas,Float.valueOf(str2[4][1]),Float.valueOf(str2[4][2]),whitePaint);
-      drawPoint(canvas,Float.valueOf(str2[5][1]),Float.valueOf(str2[5][2]),whitePaint);
-      drawPoint(canvas,Float.valueOf(str2[6][1]),Float.valueOf(str2[6][2]),whitePaint);
-      drawPoint(canvas,Float.valueOf(str2[7][1]),Float.valueOf(str2[7][2]),whitePaint);
-      drawPoint(canvas,Float.valueOf(str2[8][1]),Float.valueOf(str2[8][2]),whitePaint);
-      drawPoint(canvas,Float.valueOf(str2[9][1]),Float.valueOf(str2[9][2]),whitePaint);
-      drawPoint(canvas,Float.valueOf(str2[10][1]),Float.valueOf(str2[10][2]),whitePaint);
-      drawPoint(canvas,Float.valueOf(str2[11][1]),Float.valueOf(str2[11][2]),whitePaint);
+          drawPoint(canvas,Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]),whitePaint);
+          drawPoint(canvas,Float.valueOf(str2[1][1]),Float.valueOf(str2[1][2]),whitePaint);
+          drawPoint(canvas,Float.valueOf(str2[2][1]),Float.valueOf(str2[2][2]),whitePaint);
+          drawPoint(canvas,Float.valueOf(str2[3][1]),Float.valueOf(str2[3][2]),whitePaint);
+          drawPoint(canvas,Float.valueOf(str2[4][1]),Float.valueOf(str2[4][2]),whitePaint);
+          drawPoint(canvas,Float.valueOf(str2[5][1]),Float.valueOf(str2[5][2]),whitePaint);
+          drawPoint(canvas,Float.valueOf(str2[6][1]),Float.valueOf(str2[6][2]),whitePaint);
+          drawPoint(canvas,Float.valueOf(str2[7][1]),Float.valueOf(str2[7][2]),whitePaint);
+          drawPoint(canvas,Float.valueOf(str2[8][1]),Float.valueOf(str2[8][2]),whitePaint);
+          drawPoint(canvas,Float.valueOf(str2[9][1]),Float.valueOf(str2[9][2]),whitePaint);
+          drawPoint(canvas,Float.valueOf(str2[10][1]),Float.valueOf(str2[10][2]),whitePaint);
+          drawPoint(canvas,Float.valueOf(str2[11][1]),Float.valueOf(str2[11][2]),whitePaint);
 
 
-      //drawPoint(Canvas canvas,Float.valueOf(str2[0]),str ,Y, ,whi)tePaint);
+          //drawPoint(Canvas canvas,Float.valueOf(str2[0]),str ,Y, ,whi)tePaint);
+
+      }
+      catch (Exception e)
+      {
+
+      }
 
 
 

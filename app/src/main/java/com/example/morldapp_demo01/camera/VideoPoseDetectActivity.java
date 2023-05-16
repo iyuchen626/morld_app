@@ -228,10 +228,10 @@ public class VideoPoseDetectActivity extends AppCompatActivity implements Compou
                             TextView_Result.setText(String.valueOf(RESULT));
                             if((RESULT>60)&&(detectcount==0))
                             {
-                                detectcount=1;
+                                detectcount=detectcount++;
                                 RESULT=0;
                             }
-                            else if((RESULT>60)&&(detectcount==1))
+                            else if((RESULT>60)&&(detectcount==9))
                             {
                                 detectcount=0;
                                 RESULT=0;
