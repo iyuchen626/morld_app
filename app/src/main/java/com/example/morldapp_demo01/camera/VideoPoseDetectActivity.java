@@ -200,7 +200,7 @@ public class VideoPoseDetectActivity extends AppCompatActivity implements Compou
                     EditGraphicOverlay.clear();
                     EditGraphicOverlay.add(
                             new DetectPoseGraphic(
-                                    EditGraphicOverlay,detectcount
+                                    EditGraphicOverlay,detectcount,false
                             ));
 
                     new Deteectitem(true);
