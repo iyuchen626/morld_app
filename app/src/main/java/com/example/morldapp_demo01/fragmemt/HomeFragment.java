@@ -7,22 +7,30 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.morldapp_demo01.R;
+import com.example.morldapp_demo01.databinding.FragmentHomeBinding;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-
-import com.example.morldapp_demo01.MainActivity;
-import com.example.morldapp_demo01.R;
 
 public class HomeFragment extends Fragment{
     private View mview;
+    FragmentHomeBinding binding;
     ImageButton Activity_ImgBtnShortVideo1,Activity_ImgBtnShortVideo2,Activity_ImgBtnShortVideo3,Activity_ImgBtnShortVideo4,Activity_ImgBtnShortVideo5,Activity_ImgBtnShortVideo6;
     ImageButton Activity_ImgBtnTop1,Activity_ImgBtnTop2,Activity_ImgBtnTop3,Activity_ImgBtnTop4,Activity_ImgBtnTop5,Activity_ImgBtnTop6,Activity_ImgBtnTop7,Activity_ImgBtnTop8,Activity_ImgBtnTop9,Activity_ImgBtnTop10;
     TextView Activity_TxtViewShortVideo1;
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mview=inflater.inflate(R.layout.fragment_home,container,false);
+        binding = FragmentHomeBinding.inflate(inflater,container,false);
+        binding.LayoutLinearLayoutAD.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                getParentFragmentManager().beginTransaction().add(R.id.FrameLayout_Main, new Login()).addToBackStack(null).commit();
+            }
+        });
+        mview=binding.getRoot();
         Activity_ImgBtnShortVideo1 = (ImageButton)(mview.findViewById(R.id.ImgBtn_Morldment_1));
         //Activity_ImgBtnShortVideo1.setImageDrawable(getResources().getDrawable(R.drawable.shortvideo));
         Activity_ImgBtnShortVideo2 = (ImageButton)(mview.findViewById(R.id.ImgBtn_Morldment_2));
