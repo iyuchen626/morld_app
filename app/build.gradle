@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -30,6 +31,14 @@ android {
     }
     buildFeatures {
         viewBinding true
+    }
+    signingConfigs {
+        debug {
+            keyAlias 'morld'
+            keyPassword 'morldmorld'
+            storeFile file('morld.jks')
+            storePassword 'morldmorld'
+        }
     }
 }
 
@@ -99,4 +108,7 @@ dependencies {
 
     implementation 'com.github.wseemann:FFmpegMediaMetadataRetriever-core:1.0.19'
     implementation 'com.github.wseemann:FFmpegMediaMetadataRetriever-native:1.0.19'
+    implementation platform('com.google.firebase:firebase-bom:32.0.0')
+    implementation "com.kongzue.dialogx:DialogX:0.0.48"
+    implementation "com.kongzue.dialogx.style:DialogXMIUIStyle:0.0.48"
 }

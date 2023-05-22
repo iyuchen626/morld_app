@@ -1,5 +1,6 @@
 package com.example.morldapp_demo01.fragmemt;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +28,7 @@ public class HomeFragment extends Fragment{
             @Override
             public void onClick(View view)
             {
-                getParentFragmentManager().beginTransaction().add(R.id.FrameLayout_Main, new Login()).addToBackStack(null).commit();
+                startActivity(new Intent(getActivity(), Login.class));
             }
         });
         mview=binding.getRoot();

@@ -2,6 +2,7 @@ package com.example.morldapp_demo01.retrofit2;
 
 
 import com.example.morldapp_demo01.pojo.LoginRequest;
+import com.example.morldapp_demo01.pojo.LoginResponse;
 import com.example.morldapp_demo01.pojo.RegisterRequest;
 import com.example.morldapp_demo01.pojo.RegisterResponse;
 
@@ -15,5 +16,5 @@ public interface ApiService
 	Observable<RegisterResponse> mm註冊(@Body RegisterRequest description);
 
 	@POST("verifyLogin")
-	Observable<RegisterResponse> mmd登入(@Body LoginRequest description);
+	Observable<LoginResponse> mmd登入(@Body LoginRequest description);
 }

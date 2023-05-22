@@ -30,7 +30,7 @@
             android:paddingRight="8dp"
             android:textColor="#fff"
             android:textSize="17sp"
-            tools:textColorHint="#fff" />
+            android:textColorHint="#fff" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -52,7 +52,7 @@
                 android:paddingRight="8dp"
                 android:textColor="#fff"
                 android:textSize="17sp"
-                tools:textColorHint="#fff" />
+                android:textColorHint="#fff" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_send"

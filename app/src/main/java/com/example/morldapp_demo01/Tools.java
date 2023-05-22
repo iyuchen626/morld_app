@@ -30,6 +30,10 @@ import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+import com.kongzue.dialogx.DialogX;
+import com.kongzue.dialogx.dialogs.PopNotification;
+import com.kongzue.dialogx.dialogs.TipDialog;
+import com.kongzue.dialogx.dialogs.WaitDialog;
 import com.scottyab.aescrypt.AESCrypt;
 
 import java.io.IOException;
@@ -58,6 +62,21 @@ public class Tools
 	static boolean progressDone = false;
 	private static Gson gson;
 
+	public static void showProgress(AppCompatActivity a, String msg)
+	{
+		if (a == null || a.isFinishing()) return;
+		WaitDialog.show(msg);
+	}
+
+	public static void hideProgress()
+	{
+		WaitDialog.dismiss();
+	}
+	public static void showError(AppCompatActivity a, String title)
+	{
+		if (a == null || a.isFinishing()) return;
+		TipDialog.show(title, WaitDialog.TYPE.ERROR);
+	}
 	public static void showInfo(AppCompatActivity a, String title, String s)
 	{
 		if (a == null || a.isFinishing()) return;
@@ -76,7 +95,12 @@ public class Tools
 
 	public static void toast(Context context, String msg)
 	{
-		Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+		PopNotification.show(msg).autoDismiss(3000);
+	}
+
+	public static void toastSuccess(Context context, String msg)
+	{
+		PopNotification.show(R.drawable.icon_success, msg).autoDismiss(3000);
 	}
 
 	public static float getDensity(Context context)
