@@ -2,7 +2,6 @@ package com.example.morldapp_demo01.fragmemt;
 
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,9 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.morldapp_demo01.MainActivity;
 import com.example.morldapp_demo01.R;
-import com.example.morldapp_demo01.camera.VideoRecordingActivity;
 
 public class SocialFragment extends Fragment{
     private View mview;

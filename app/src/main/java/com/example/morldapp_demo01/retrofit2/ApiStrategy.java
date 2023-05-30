@@ -111,86 +111,27 @@ public class ApiStrategy
 		logInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 		//缓存
 		File cacheFile = new File(MyApplication.getInstance().getCacheDir(), "cache");
-		Cache cache = new Cache(cacheFile, 1024 * 1024 * 100); //100Mb
-		//文字檔案修改回應字串編碼
-		Interceptor encodeInterceptor = new Interceptor()
-		{
-			@Override
-			public Response intercept(Chain chain) throws IOException
-			{
-				Response mainResponse = chain.proceed(chain.request());
-				String ContentType = mainResponse.header("Content-Type");
-				if (ContentType.equals("text/plain"))
-				{
-					ResponseBody responseBody = ResponseBody.create(MediaType.parse("text/plain; charset=utf-8"), URLDecoder.decode(mainResponse.body().string(), "UTF-8"));
-					Response r = mainResponse.newBuilder().body(responseBody).build();
-					return r;
-				}
-				return mainResponse;
-			}
-		};
+		Cache cache = new Cache(cacheFile, 1024 * 1024 * 10);
+
 		//增加头部信息
 		Interceptor headerInterceptor = new Interceptor()
 		{
 			@Override
 			public Response intercept(Chain chain) throws IOException
 			{
-				Response mainResponse = chain.proceed(chain.request());
-//				try
-//				{
-//					IssuePOJO issuePOJO = gson.fromJson(mainResponse.body().string(), IssuePOJO.class);
-//					ArrayList<String> paths = new ArrayList<String>() {{ add("evaluation");add("for");add("Geeks"); }};
-//					boolean check = paths.contains(chain.request().url().toString());
-//					if (issuePOJO.issue == -2 && !check)
-//					{
-//						Log.i(Config.TAG , "Token失效");
-//						EventBus.getDefault().post(new ReloadData(ReloadData.mm個人資料));
-//					}
-//				}
-//				catch (Exception e)
-//				{
-//				}
-				Log.i(Config.TAG, "請求:" + chain.request().url().encodedPath());
-				String token = "";
-				Request build = chain.request().newBuilder()
-						.addHeader("Authorization", "Bearer " + token)//设置允许请求json数据
+				Request request = chain.request();
+				Response originalResponse = chain.proceed(request);
+				return originalResponse.newBuilder().addHeader("Authorization", "Bearer 123")
 						.build();
-				return chain.proceed(build);
+//				Response mainRes ponse = chain.proceed(chain.request());
+//
+//				Log.i(Config.TAG, "請求:" + chain.request().url().encodedPath());
+//				String token = "000";
+//				Request build = chain.request().newBuilder()
+//						.addHeader("Authorization", "Bearer " + token)//设置允许请求json数据
+//						.build();
+//				return chain.proceed(build);
 			}
-		};
-
-		SSLContext sslContext = null;
-		try
-		{
-			sslContext = SSLContext.getInstance("TLS");
-			sslContext.init(null, new TrustManager[]{new TrustAllTrustManager()}, null);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-
-		final TrustManager[] trustAllCerts = new TrustManager[]{
-				new X509TrustManager()
-				{
-					@Override
-					public void checkClientTrusted(X509Certificate[] chain,
-					                               String authType) throws CertificateException
-					{
-					}
-
-					@Override
-					public void checkServerTrusted(X509Certificate[] chain,
-					                               String authType) throws CertificateException
-					{
-					}
-
-					@Override
-					public X509Certificate[] getAcceptedIssuers()
-					{
-						return new X509Certificate[0];
-					}
-				}
 		};
 
 		//创建一个OkHttpClient并设置超时时间
@@ -200,11 +141,7 @@ public class ApiStrategy
 				.addInterceptor(mRewriteCacheControlInterceptor)
 				.addNetworkInterceptor(mRewriteCacheControlInterceptor)
 				.addInterceptor(headerInterceptor)
-//				.addInterceptor(logInterceptor)
-//				.addInterceptor(encodeInterceptor)
-//				.addInterceptor(reLoginInterceptor)
 				.cache(cache)
-//				.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0])
 				.hostnameVerifier(new HostnameVerifier()
 				{
 					@Override
@@ -213,16 +150,13 @@ public class ApiStrategy
 						return true;
 					}
 				})
-//				.sslSocketFactory(sslSocketFactory)
-//		        .sslSocketFactory(sslSocketFactory, x509TrustManager)
 				.build();
 		if (base_url == null) base_url = Config.api_host;
 		Retrofit retrofit = new Retrofit.Builder()
 				.client(client)
 				.baseUrl(base_url)
 				.addConverterFactory(ScalarsConverterFactory.create())
-				.addConverterFactory(GsonConverterFactory.create(gson))//请求的结果转为实体类
-				//适配RxJava2.0,RxJava1.x则为RxJavaCallAdapterFactory.create()
+				.addConverterFactory(GsonConverterFactory.create(gson))
 				.addCallAdapterFactory(RxJava2CallAdapterFactory.create())
 				.build();
 		apiService = retrofit.create(ApiService.class);
@@ -247,83 +181,12 @@ public class ApiStrategy
 		{
 			synchronized (Api.class)
 			{
-				if (apiService == null || !lastUrl.equals( Config.api_host))
+				if (apiService == null || !lastUrl.equals(Config.api_host))
 				{
 					new ApiStrategy(null);
 				}
 			}
 		}
 		return apiService;
-	}
-
-	public static void setCertificates(InputStream... certificates)
-	{
-		try
-		{
-			CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-			KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-			keyStore.load(null);
-			int index = 0;
-			for (InputStream certificate : certificates)
-			{
-				String certificateAlias = Integer.toString(index++);
-				keyStore.setCertificateEntry(certificateAlias, certificateFactory.generateCertificate(certificate));
-
-				try
-				{
-					if (certificate != null)
-					{ certificate.close(); }
-				}
-				catch (IOException e)
-				{
-				}
-			}
-
-			SSLContext sslContext = SSLContext.getInstance("TLS");
-
-			TrustManagerFactory trustManagerFactory =
-					TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-
-			trustManagerFactory.init(keyStore);
-			sslContext.init
-					(
-							null,
-							trustManagerFactory.getTrustManagers(),
-							new SecureRandom()
-					);
-			sslSocketFactory = sslContext.getSocketFactory();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-
-	public static void ssl(Context context)
-	{
-//        try
-//        {
-//            // 服務器端需要驗證的客戶端證書，其實就是客戶端的keystore
-//            KeyStore keyStore = KeyStore.getInstance(KEYSTORE_TYPE); // 客戶端信任的服務器端證書
-//            KeyStore trustStore = KeyStore.getInstance(KEYSTORE_TYPE); //讀取證書
-//            InputStream ksIn = context.getAssets().open(CLIENT_PRI_KEY);
-//            InputStream tsIn = context.getAssets().open(TRUSTSTORE_PUB_KEY); //加載證書
-//            keyStore.load(ksIn, CLIENT_BKS_PASSWORD.toCharArray());
-//            trustStore.load(tsIn, TRUSTSTORE_BKS_PASSWORD.toCharArray()); ksIn.close();
-//            tsIn.close(); //初始化SSLContext
-//            SSLContext sslContext = SSLContext.getInstance(PROTOCOL_TYPE);
-//            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(CERTIFICATE_STANDARD);
-//            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(CERTIFICATE_STANDARD);
-//            trustManagerFactory.init(trustStore);
-//            keyManagerFactory.init(keyStore, CLIENT_BKS_PASSWORD.toCharArray());
-//            sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
-//            sslSocketFactory = sslContext.getSocketFactory();
-//            TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
-//            x509TrustManager = (X509TrustManager) trustManagers[0];
-//        }
-//        catch (Exception e)
-//        {
-//            e.printStackTrace();
-//        }
 	}
 }

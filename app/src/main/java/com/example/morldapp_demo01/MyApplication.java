@@ -2,9 +2,6 @@ package com.example.morldapp_demo01;
 
 import android.util.Log;
 
-import com.kongzue.dialogx.DialogX;
-import com.kongzue.dialogx.style.MIUIStyle;
-
 
 public class MyApplication extends android.app.Application
 {
@@ -21,7 +18,6 @@ public class MyApplication extends android.app.Application
 	{
 		instance = this;
 		super.onCreate();
-		DialogX.globalStyle = new MIUIStyle();
 		Log.v(Config.TAG,"1");
 		Log.v(Config.TAG,"2");
 	}

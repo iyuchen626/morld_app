@@ -1,29 +1,13 @@
 package com.example.morldapp_demo01.camera;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.camera.core.CameraInfoUnavailableException;
-import androidx.camera.core.CameraSelector;
-import androidx.camera.core.ImageAnalysis;
-import androidx.camera.core.Preview;
-import androidx.camera.core.VideoCapture;
-import androidx.camera.lifecycle.ProcessCameraProvider;
-import androidx.camera.view.PreviewView;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -36,18 +20,36 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.example.morldapp_demo01.CameraXViewModel;
+import com.example.morldapp_demo01.Edit.ShowStructureActivity;
+import com.example.morldapp_demo01.Edit.ShowVideoStructureActivity;
 import com.example.morldapp_demo01.PreferenceUtils;
 import com.example.morldapp_demo01.R;
 import com.example.morldapp_demo01.VisionImageProcessor;
+import com.example.morldapp_demo01.activity.Base;
 import com.example.morldapp_demo01.classification.posedetector.PoseDetectorProcessor;
-import com.example.morldapp_demo01.classification.posedetector.PosePKResult;
-import com.example.morldapp_demo01.video.video_editor_time;
 import com.google.mlkit.common.MlKitException;
 import com.google.mlkit.vision.pose.PoseDetectorOptionsBase;
 
 import java.util.concurrent.Executor;
 
-public class VideoRecordingActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.camera.core.CameraInfoUnavailableException;
+import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ImageAnalysis;
+import androidx.camera.core.Preview;
+import androidx.camera.core.VideoCapture;
+import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.view.PreviewView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
+
+public class VideoRecordingActivity extends Base implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
 
     private PreviewView PreView;
     private com.example.morldapp_demo01.GraphicOverlay GraphicOverlay;
@@ -77,12 +79,10 @@ public class VideoRecordingActivity extends AppCompatActivity implements Compoun
 
     private ToggleButton Act_TogBtnCameraFacing;
     private ImageButton Act_ImgBtnCameraRecording;
+    private ImageButton Act_ImgBtnAlbumChoose;
     private ProgressBar Act_ProgressBarCameraRecording;
 
-    private float intPKTime = 0;
-    private float PKTime = 0;
    // private TextView TextViewPKTime;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +100,9 @@ public class VideoRecordingActivity extends AppCompatActivity implements Compoun
 
         Act_ImgBtnCameraRecording = findViewById(R.id.Layout_ImgBtnCameraRecording);
         Act_ImgBtnCameraRecording.setOnClickListener(this);
+
+        Act_ImgBtnAlbumChoose = findViewById(R.id.Layout_ImgBtnAlbumChoose);
+        Act_ImgBtnAlbumChoose.setOnClickListener(this);
 
         Act_ProgressBarCameraRecording = findViewById(R.id.Layout_ProgressBarCameraRecording);
         Act_ProgressBarCameraRecording.setVisibility(View.INVISIBLE);
@@ -183,17 +186,6 @@ public class VideoRecordingActivity extends AppCompatActivity implements Compoun
                     try {
                         imageProcessor.processImageProxy(imageProxy, GraphicOverlay);
                         if(RecordingVideo==true) {
-                            A = PosePKResult.getPKTimeResult();
-                            if (A.toString().equals("true")) {
-                                intPKTime++;
-                                if (intPKTime == 30) {
-                                    intPKTime = 0;
-                                    PKTime++;
-                                }
-                            } else {
-                                intPKTime = 0;
-                            }
-                          //  TextViewPKTime.setText(String.valueOf(PKTime));
                         }
                     } catch (MlKitException e) {
                         e.printStackTrace();
@@ -255,104 +247,25 @@ public class VideoRecordingActivity extends AppCompatActivity implements Compoun
                 RecordingVideo = true;
                 Act_ProgressBarCameraRecording.setVisibility(View.VISIBLE);
                 RecordVideo();
-                intPKTime = 0;
-                PKTime = 0;
+                //ADD LOCK
             } else {
                 RecordingVideo = false;
                 Act_ProgressBarCameraRecording.setVisibility(View.INVISIBLE);
                 videoCaptureUseCase.stopRecording();
-                //cameraProvider.unbindAll();
-
-
-
-//                AlertDialog.Builder builder = new AlertDialog.Builder(VideoRecordingActivity.this);
-//                builder.setCancelable(false);
-//                //這邊是設定使用者可否點擊空白處返回
-//                //builder.setIcon();
-//                //setIcon可以在Title旁邊放一個小插圖
-//                builder.setTitle("結果");
-//                builder.setMessage("本次獲得"+PKTime+" 幣");
-//                builder.setIcon(R.drawable.morldstart);
-//                intPKTime = 0;
-//                PKTime = 0;
-//                //TextViewPKTime.setText(String.valueOf(PKTime));
-//                builder.setPositiveButton("還要挑戰", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        Intent intent = new Intent();
-//                        intent.setClass(VideoRecordingActivity.this, video_pose_detector_editor.class);
-//                        startActivity(intent);
-//                        //finish();
-//                    }
-//                });
-//                builder.setNegativeButton("結束 App", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        finish();
-//                    }
-//                });
-//
-//                builder.show();
-
-
             }
         }
-//            if (Act_ImgBtnCameraRecording.getText().equals("start")) {
-//                Act_ImgBtnCameraRecording.setText("stop");
-//                RecordVideo();
-//            } else {
-//                Act_ImgBtnCameraRecording.setText("start");
-//                videoCaptureUseCase.stopRecording();
-//                //needRecordVideo=false;
-//                //Intent intent = new Intent();
-//                //intent.setClass(VideoRecordingActivity.this, VideoTrimActivity.class);
-//                //startActivity(intent);
-//                //finish();
-//            }
-//        }
-//        else if ((view.getId())==(R.id.ImgBtn_Phone_Video_Choose))
-//        {
-//            pickvideogallery();
-//        }
+        else if((view.getId())==(R.id.Layout_ImgBtnAlbumChoose))
+        {
+            //pickimagegallery();
+            pickvideogallery();
+        }
         else
         {
 
         }
     }
 
-//    private void pickvideogallery()
-//    {
-//        Intent intent =new Intent(Intent.ACTION_PICK);
-//        intent.setType("video/*");
-//        galleryActivityResultLauncher.launch(intent);
-//
-//    }
 
-    private ActivityResultLauncher<Intent> galleryActivityResultLauncher =registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if(result.getResultCode()== Activity.RESULT_OK)
-                    {
-//                        Intent data=result.getData();
-//                        videoUri = data.getData();
-//                        Intent intent2 = new Intent();
-//                        intent2= new Intent(VideoRecordingActivity.this,VideoTrimActivity.class);
-//                        Bundle objbundle = new Bundle();
-//                        objbundle.putString("pVideoUri",videoUri.toString());
-//                        intent2.putExtras(objbundle);
-//                        startActivity(intent2);
-                        //finish();
-                        //finishsignalActivity(VideoRecordingActivity.this);
-                    }
-                    else
-                    {
-
-                    }
-                }
-            }
-    );
 
 
 
@@ -387,14 +300,14 @@ public class VideoRecordingActivity extends AppCompatActivity implements Compoun
                         new VideoCapture.OnVideoSavedCallback() {
                             @Override
                             public void onVideoSaved(@NonNull VideoCapture.OutputFileResults outputFileResults) {
-                                Toast.makeText(getApplicationContext(), "Video has been saved successfully.", Toast.LENGTH_SHORT).show();
-                                Intent intent2 = new Intent();
-                                intent2= new Intent(VideoRecordingActivity.this, video_editor_time.class);
-
-                                Bundle objbundle = new Bundle();
-                                objbundle.putLong("video_name",timestamp);
-                                intent2.putExtras(objbundle);
-                                startActivity(intent2);
+//                                Toast.makeText(getApplicationContext(), "Video has been saved successfully.", Toast.LENGTH_SHORT).show();
+//                                Intent intent2 = new Intent();
+//                                intent2= new Intent(VideoRecordingActivity.this, video_editor_time.class);
+//
+//                                Bundle objbundle = new Bundle();
+//                                objbundle.putLong("video_name",timestamp);
+//                                intent2.putExtras(objbundle);
+//                                startActivity(intent2);
                             }
 
                             @Override
@@ -464,6 +377,96 @@ public class VideoRecordingActivity extends AppCompatActivity implements Compoun
         super.onDestroy();
         if (imageProcessor != null) {
             imageProcessor.stop();
+        }
+    }
+
+    private void pickimagegallery()
+    {
+         Intent intent =new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        galleryActivityResultLauncher.launch(intent);
+    }
+
+    private void pickvideogallery()
+    {
+        Intent intent =new Intent(Intent.ACTION_PICK);
+        intent.setType("video/*");
+        videoActivityResultLauncher.launch(intent);
+    }
+
+    private ActivityResultLauncher<Intent> galleryActivityResultLauncher =registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if(result.getResultCode()== Activity.RESULT_OK)
+                    {
+                        Uri imageUri =null;
+                        Intent data=result.getData();
+                        imageUri=data.getData();
+                        String imageuristr=null;
+                        imageuristr=imageUri.toString();
+                        Intent intent = new Intent();
+                        intent= new Intent(VideoRecordingActivity.this, ShowStructureActivity.class);
+
+                        Bundle objbundle = new Bundle();
+                        objbundle.putString("uristr",imageuristr);
+                        intent.putExtras(objbundle);
+
+                        startActivity(intent);
+                        finish();
+                    }
+                    else
+                    {
+
+                    }
+                }
+            }
+    );
+
+    private ActivityResultLauncher<Intent> videoActivityResultLauncher =registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if(result.getResultCode()== Activity.RESULT_OK)
+                    {
+                        Uri viseoUri =null;
+                        Intent data=result.getData();
+                        viseoUri=data.getData();
+
+                        String VID_input_video_path = getRealPathFromURI(VideoRecordingActivity.this, viseoUri);
+
+                        Intent intent = new Intent();
+                        intent= new Intent(VideoRecordingActivity.this, ShowVideoStructureActivity.class);
+
+                        Bundle objbundle = new Bundle();
+                        objbundle.putString("urivideostr",VID_input_video_path);
+                        intent.putExtras(objbundle);
+
+                        startActivity(intent);
+                        finish();
+                    }
+                    else
+                    {
+
+                    }
+                }
+            }
+    );
+
+    public static String getRealPathFromURI(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = { MediaStore.Images.Media.DATA };
+            cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
     }
 }

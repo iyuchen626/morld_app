@@ -1,72 +1,119 @@
 package com.example.morldapp_demo01.fragmemt;
 
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.TextView;
 
+import com.denzcoskun.imageslider.constants.ScaleTypes;
+import com.denzcoskun.imageslider.models.SlideModel;
+import com.example.morldapp_demo01.Config;
 import com.example.morldapp_demo01.R;
+import com.example.morldapp_demo01.Tools;
+import com.example.morldapp_demo01.adapter.Home1Adapter;
+import com.example.morldapp_demo01.adapter.Home2Adapter;
 import com.example.morldapp_demo01.databinding.FragmentHomeBinding;
+import com.example.morldapp_demo01.pojo.FilmListResponse;
+import com.example.morldapp_demo01.pojo.FilmPOJO;
+import com.example.morldapp_demo01.retrofit2.ApiStrategy;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class HomeFragment extends Fragment{
-    private View mview;
     FragmentHomeBinding binding;
-    ImageButton Activity_ImgBtnShortVideo1,Activity_ImgBtnShortVideo2,Activity_ImgBtnShortVideo3,Activity_ImgBtnShortVideo4,Activity_ImgBtnShortVideo5,Activity_ImgBtnShortVideo6;
-    ImageButton Activity_ImgBtnTop1,Activity_ImgBtnTop2,Activity_ImgBtnTop3,Activity_ImgBtnTop4,Activity_ImgBtnTop5,Activity_ImgBtnTop6,Activity_ImgBtnTop7,Activity_ImgBtnTop8,Activity_ImgBtnTop9,Activity_ImgBtnTop10;
-    TextView Activity_TxtViewShortVideo1;
+    private Home1Adapter adapter1;
+    private Home2Adapter adapter2;
+
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater,container,false);
-        binding.LayoutLinearLayoutAD.setOnClickListener(new View.OnClickListener() {
+
+        List<SlideModel> res = new ArrayList<>();
+        res.add(new SlideModel("https://picsum.photos/id/237/1000/1000", ScaleTypes.CENTER_CROP));
+        res.add(new SlideModel("https://picsum.photos/id/137/1000/1000",ScaleTypes.CENTER_CROP));
+        res.add(new SlideModel("https://picsum.photos/id/239/1000/1000",ScaleTypes.CENTER_CROP));
+        binding.imageSlider.setImageList(res);
+
+        RecyclerView recyclerView = binding.recyclerView1;
+        DividerItemDecoration itemDecorator = new DividerItemDecoration(getContext(), DividerItemDecoration.HORIZONTAL);
+        itemDecorator.setDrawable( ContextCompat.getDrawable(getActivity(),R.drawable.divider1));
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.addItemDecoration(itemDecorator);
+        List<FilmPOJO> fake = new ArrayList<>();
+        adapter1 = new Home1Adapter((AppCompatActivity) getActivity(),fake);
+        recyclerView.setAdapter(adapter1);
+
+
+        recyclerView = binding.recyclerView2;
+        itemDecorator = new DividerItemDecoration(getContext(), DividerItemDecoration.HORIZONTAL);
+        itemDecorator.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.divider1));
+        mLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.addItemDecoration(itemDecorator);
+        fake = new ArrayList<>();
+//        for(int i =1; i<= 100; i++) fake.add(new Home1POJO());
+        adapter2 = new Home2Adapter(fake);
+        recyclerView.setAdapter(adapter2);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context)
+    {
+        super.onAttach(context);
+        reload();
+    }
+
+    void reload()
+    {
+        Tools.showProgress((AppCompatActivity) getActivity(), "請稍後...");
+        Disposable disposable = ApiStrategy.getApiService().mm影片清單().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<FilmListResponse>()
+        {
             @Override
-            public void onClick(View view)
+            public void accept(FilmListResponse res) throws Exception
             {
-                startActivity(new Intent(getActivity(), Login.class));
+                Tools.hideProgress();
+                Log.i(Config.TAG, res.error);
+                if (res.error.equals(""))
+                {
+                    adapter1.mDataset.clear();
+                    adapter1.mDataset.addAll(res.data);
+                    adapter1.notifyDataSetChanged();
+                    adapter2.mDataset.clear();
+                    adapter2.mDataset.addAll(res.data);
+                    adapter2.notifyDataSetChanged();
+                }
+                else
+                {
+                    Tools.showError((AppCompatActivity) getActivity(), res.error);
+                }
+            }
+        }, new Consumer<Throwable>()
+        {
+            @Override
+            public void accept(Throwable throwable) throws Exception
+            {
+                Tools.hideProgress();
+                Tools.showError((AppCompatActivity) getActivity(), throwable.getMessage());
             }
         });
-        mview=binding.getRoot();
-        Activity_ImgBtnShortVideo1 = (ImageButton)(mview.findViewById(R.id.ImgBtn_Morldment_1));
-        //Activity_ImgBtnShortVideo1.setImageDrawable(getResources().getDrawable(R.drawable.shortvideo));
-        Activity_ImgBtnShortVideo2 = (ImageButton)(mview.findViewById(R.id.ImgBtn_Morldment_2));
-        //Activity_ImgBtnShortVideo2.setImageDrawable(getResources().getDrawable(R.drawable.shortvideo));
-        Activity_ImgBtnShortVideo3 = (ImageButton)(mview.findViewById(R.id.ImgBtn_Morldment_3));
-        //Activity_ImgBtnShortVideo3.setImageDrawable(getResources().getDrawable(R.drawable.shortvideo));
-        Activity_ImgBtnShortVideo4 = (ImageButton)(mview.findViewById(R.id.ImgBtn_Morldment_4));
-        //Activity_ImgBtnShortVideo4.setImageDrawable(getResources().getDrawable(R.drawable.shortvideo));
-        Activity_ImgBtnShortVideo5 = (ImageButton)(mview.findViewById(R.id.ImgBtn_Morldment_5));
-        //Activity_ImgBtnShortVideo5.setImageDrawable(getResources().getDrawable(R.drawable.shortvideo));
-        Activity_ImgBtnShortVideo6 = (ImageButton)(mview.findViewById(R.id.ImgBtn_Morldment_6));
-        //Activity_ImgBtnShortVideo6.setImageDrawable(getResources().getDrawable(R.drawable.shortvideo));
-
-
-        Activity_ImgBtnTop1 = (ImageButton)(mview.findViewById(R.id.ImgBtn_Top_1));
-        Activity_ImgBtnTop1.setImageDrawable(getResources().getDrawable(R.drawable.fregmenthome_ad));
-        Activity_ImgBtnTop2 = (ImageButton)(mview.findViewById(R.id.ImgBtn_Top_2));
-        Activity_ImgBtnTop2.setImageDrawable(getResources().getDrawable(R.drawable.fregmenthome_ad));
-        Activity_ImgBtnTop3 = (ImageButton)(mview.findViewById(R.id.ImgBtn_Top_3));
-        Activity_ImgBtnTop3.setImageDrawable(getResources().getDrawable(R.drawable.fregmenthome_ad));
-        Activity_ImgBtnTop4 = (ImageButton)(mview.findViewById(R.id.ImgBtn_Top_4));
-        Activity_ImgBtnTop4.setImageDrawable(getResources().getDrawable(R.drawable.fregmenthome_ad));
-        Activity_ImgBtnTop5 = (ImageButton)(mview.findViewById(R.id.ImgBtn_Top_5));
-        Activity_ImgBtnTop5.setImageDrawable(getResources().getDrawable(R.drawable.fregmenthome_ad));
-        Activity_ImgBtnTop6 = (ImageButton)(mview.findViewById(R.id.ImgBtn_Top_6));
-        Activity_ImgBtnTop6.setImageDrawable(getResources().getDrawable(R.drawable.fregmenthome_ad));
-        Activity_ImgBtnTop7 = (ImageButton)(mview.findViewById(R.id.ImgBtn_Top_7));
-        Activity_ImgBtnTop7.setImageDrawable(getResources().getDrawable(R.drawable.fregmenthome_ad));
-        Activity_ImgBtnTop8 = (ImageButton)(mview.findViewById(R.id.ImgBtn_Top_8));
-        Activity_ImgBtnTop8.setImageDrawable(getResources().getDrawable(R.drawable.fregmenthome_ad));
-        Activity_ImgBtnTop9 = (ImageButton)(mview.findViewById(R.id.ImgBtn_Top_9));
-        Activity_ImgBtnTop9.setImageDrawable(getResources().getDrawable(R.drawable.fregmenthome_ad));
-        Activity_ImgBtnTop10 = (ImageButton)(mview.findViewById(R.id.ImgBtn_Top_10));
-        Activity_ImgBtnTop10.setImageDrawable(getResources().getDrawable(R.drawable.fregmenthome_ad));
-        return mview;
     }
 }
 

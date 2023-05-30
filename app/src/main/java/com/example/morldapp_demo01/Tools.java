@@ -18,8 +18,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.morldapp_demo01.dialog.Normal;
 import com.google.gson.Gson;
@@ -30,11 +30,11 @@ import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
-import com.kongzue.dialogx.DialogX;
 import com.kongzue.dialogx.dialogs.PopNotification;
 import com.kongzue.dialogx.dialogs.TipDialog;
 import com.kongzue.dialogx.dialogs.WaitDialog;
 import com.scottyab.aescrypt.AESCrypt;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,7 +65,8 @@ public class Tools
 	public static void showProgress(AppCompatActivity a, String msg)
 	{
 		if (a == null || a.isFinishing()) return;
-		WaitDialog.show(msg);
+		WaitDialog.init(a);
+		WaitDialog.show(a, msg);
 	}
 
 	public static void hideProgress()
@@ -369,6 +370,11 @@ public class Tools
 		SharedPreferences.Editor editor = sharedPref.edit();
 		editor.putInt("ddd", mm讀點(a) + point);
 		editor.commit();
+	}
+
+	public static void loadImg(ImageView a, String point)
+	{
+		Picasso.get().load(point).into(a);
 	}
 
 	public static String mm轉成時間(Date date)

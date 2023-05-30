@@ -1,21 +1,13 @@
 package com.example.morldapp_demo01.video;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.Manifest;
-import android.content.Intent;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
-//import com.gowtham.library.utils.TrimVideo;
 import com.example.morldapp_demo01.R;
-import com.example.morldapp_demo01.camera.VideoRecordingActivity;
+import com.example.morldapp_demo01.activity.Base;
 //import com.karumi.dexter.Dexter;
 //import com.karumi.dexter.PermissionToken;
 //import com.karumi.dexter.listener.PermissionDeniedResponse;
@@ -23,7 +15,8 @@ import com.example.morldapp_demo01.camera.VideoRecordingActivity;
 //import com.karumi.dexter.listener.PermissionRequest;
 //import com.karumi.dexter.listener.single.PermissionListener;
 
-public class video_editor_time extends AppCompatActivity {
+public class video_editor_time extends Base
+{
 
     private VideoView ViewVideo_Player;
     MediaController mediaController;
@@ -47,13 +40,13 @@ public class video_editor_time extends AppCompatActivity {
         ViewVideo_Player.setVideoURI(Uri.parse(input_video_path));
         mediaController.setMediaPlayer(ViewVideo_Player);
 
-        Intent intent2 = new Intent();
-        intent2= new Intent(video_editor_time.this, PoseDetectorEdit.class);
-
-        Bundle objbundle = new Bundle();
-        objbundle.putLong("video_name",timestamp);
-        intent2.putExtras(objbundle);
-        startActivity(intent2);
+//        Intent intent2 = new Intent();
+//        intent2= new Intent(video_editor_time.this, PoseDetectorEdit.class);
+//
+//        Bundle objbundle = new Bundle();
+//        objbundle.putLong("video_name",timestamp);
+//        intent2.putExtras(objbundle);
+//        startActivity(intent2);
 
 
         //ViewVideo_Player.start();

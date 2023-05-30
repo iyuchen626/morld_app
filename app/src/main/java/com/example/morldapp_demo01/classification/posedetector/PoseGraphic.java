@@ -16,22 +16,18 @@
 
 package com.example.morldapp_demo01.classification.posedetector;
 
-import static com.example.morldapp_demo01.classification.posedetector.Deteectitem.getDetectResult;
-
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.os.Environment;
 
+import com.example.morldapp_demo01.Edit.CalculateScore;
+import com.example.morldapp_demo01.Edit.structurepoint;
 import com.example.morldapp_demo01.GraphicOverlay;
 import com.example.morldapp_demo01.GraphicOverlay.Graphic;
 import com.google.mlkit.vision.common.PointF3D;
 import com.google.mlkit.vision.pose.Pose;
 import com.google.mlkit.vision.pose.PoseLandmark;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.util.List;
 
 /** Draw the detected pose in preview. */
@@ -54,9 +50,9 @@ public class PoseGraphic extends Graphic {
   private final List<String> poseClassification;
 
   private final Paint classificationTextPaint;
-  private final Paint leftPaint;
-  private final Paint rightPaint;
-  private final Paint whitePaint;
+  private final Paint RedPaint;
+
+  private structurepoint[] Userposestructurepoint=new structurepoint[12];
 
   PoseGraphic(
           GraphicOverlay overlay,
@@ -77,16 +73,11 @@ public class PoseGraphic extends Graphic {
     classificationTextPaint.setTextSize(POSE_CLASSIFICATION_TEXT_SIZE);
     classificationTextPaint.setShadowLayer(5.0f, 0f, 0f, Color.BLACK);
 
-    whitePaint = new Paint();
-    whitePaint.setStrokeWidth(STROKE_WIDTH);
-    whitePaint.setColor(Color.WHITE);
-    whitePaint.setTextSize(IN_FRAME_LIKELIHOOD_TEXT_SIZE);
-    leftPaint = new Paint();
-    leftPaint.setStrokeWidth(STROKE_WIDTH);
-    leftPaint.setColor(Color.GREEN);
-    rightPaint = new Paint();
-    rightPaint.setStrokeWidth(STROKE_WIDTH);
-    rightPaint.setColor(Color.YELLOW);
+    RedPaint = new Paint();
+    RedPaint.setStrokeWidth(STROKE_WIDTH);
+    RedPaint.setColor(Color.RED);
+    RedPaint.setTextSize(IN_FRAME_LIKELIHOOD_TEXT_SIZE);
+
   }
 
   @Override
@@ -99,30 +90,6 @@ public class PoseGraphic extends Graphic {
     {
     }
 
-    // Draw pose classification text.
-//    float classificationX = POSE_CLASSIFICATION_TEXT_SIZE * 0.5f;
-//    for (int i = 0; i < poseClassification.size(); i++) {
-//      float classificationY =
-//              (canvas.getHeight()
-//                      - POSE_CLASSIFICATION_TEXT_SIZE * 1.5f * (poseClassification.size() - i));
-//      canvas.drawText(
-//              poseClassification.get(i), classificationX, classificationY, classificationTextPaint);
-//    }
-
-    // Draw all the points
-
-
-    //PoseLandmark nose = pose.getPoseLandmark(PoseLandmark.NOSE);
-    //PoseLandmark lefyEyeInner = pose.getPoseLandmark(PoseLandmark.LEFT_EYE_INNER);
-    //PoseLandmark lefyEye = pose.getPoseLandmark(PoseLandmark.LEFT_EYE);
-    //PoseLandmark leftEyeOuter = pose.getPoseLandmark(PoseLandmark.LEFT_EYE_OUTER);
-    //PoseLandmark rightEyeInner = pose.getPoseLandmark(PoseLandmark.RIGHT_EYE_INNER);
-    //PoseLandmark rightEye = pose.getPoseLandmark(PoseLandmark.RIGHT_EYE);
-    //PoseLandmark rightEyeOuter = pose.getPoseLandmark(PoseLandmark.RIGHT_EYE_OUTER);
-    //PoseLandmark leftEar = pose.getPoseLandmark(PoseLandmark.LEFT_EAR);
-    //PoseLandmark rightEar = pose.getPoseLandmark(PoseLandmark.RIGHT_EAR);
-    //PoseLandmark leftMouth = pose.getPoseLandmark(PoseLandmark.LEFT_MOUTH);
-    //PoseLandmark rightMouth = pose.getPoseLandmark(PoseLandmark.RIGHT_MOUTH);
 
     PoseLandmark leftShoulder = pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER);
     PoseLandmark rightShoulder = pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER);
@@ -137,151 +104,60 @@ public class PoseGraphic extends Graphic {
     PoseLandmark leftAnkle = pose.getPoseLandmark(PoseLandmark.LEFT_ANKLE);
     PoseLandmark rightAnkle = pose.getPoseLandmark(PoseLandmark.RIGHT_ANKLE);
 
-    //PoseLandmark leftPinky = pose.getPoseLandmark(PoseLandmark.LEFT_PINKY);
-    //PoseLandmark rightPinky = pose.getPoseLandmark(PoseLandmark.RIGHT_PINKY);
-    //PoseLandmark leftIndex = pose.getPoseLandmark(PoseLandmark.LEFT_INDEX);
-    //PoseLandmark rightIndex = pose.getPoseLandmark(PoseLandmark.RIGHT_INDEX);
-    //PoseLandmark leftThumb = pose.getPoseLandmark(PoseLandmark.LEFT_THUMB);
-    //PoseLandmark rightThumb = pose.getPoseLandmark(PoseLandmark.RIGHT_THUMB);
-    //PoseLandmark leftHeel = pose.getPoseLandmark(PoseLandmark.LEFT_HEEL);
-    //PoseLandmark rightHeel = pose.getPoseLandmark(PoseLandmark.RIGHT_HEEL);
-    //PoseLandmark leftFootIndex = pose.getPoseLandmark(PoseLandmark.LEFT_FOOT_INDEX);
-    //PoseLandmark rightFootIndex = pose.getPoseLandmark(PoseLandmark.RIGHT_FOOT_INDEX);
-
-    // Face
-    //drawLine(canvas, nose, lefyEyeInner, whitePaint);
-    //drawLine(canvas, lefyEyeInner, lefyEye, whitePaint);
-    //drawLine(canvas, lefyEye, leftEyeOuter, whitePaint);
-    //drawLine(canvas, leftEyeOuter, leftEar, whitePaint);
-    //drawLine(canvas, nose, rightEyeInner, whitePaint);
-    //drawLine(canvas, rightEyeInner, rightEye, whitePaint);
-    //drawLine(canvas, rightEye, rightEyeOuter, whitePaint);
-    //drawLine(canvas, rightEyeOuter, rightEar, whitePaint);
-    //drawLine(canvas, leftMouth, rightMouth, whitePaint);
-
-    drawLine(canvas, leftShoulder, rightShoulder, whitePaint);
-    drawLine(canvas, leftHip, rightHip, whitePaint);
+    drawLine(canvas, leftShoulder, rightShoulder, RedPaint);
+    drawLine(canvas, leftHip, rightHip, RedPaint);
 
     // Left body
-    drawLine(canvas, leftShoulder, leftElbow, whitePaint);
-    drawLine(canvas, leftElbow, leftWrist, whitePaint);
-    //drawLine(canvas, leftShoulder, leftHip, whitePaint);
-    drawLine2(canvas, leftShoulder, leftHip, whitePaint);
-    drawLine3(canvas, leftHip, leftShoulder, whitePaint);
-    drawLine(canvas, leftHip, leftKnee, whitePaint);
-    drawLine(canvas, leftKnee, leftAnkle, whitePaint);
-    //drawLine(canvas, leftWrist, leftThumb, whitePaint);
-    //drawLine(canvas, leftWrist, leftPinky, whitePaint);
-    //drawLine(canvas, leftWrist, leftIndex, whitePaint);
-    //drawLine(canvas, leftIndex, leftPinky, whitePaint);
-    //drawLine(canvas, leftAnkle, leftHeel, whitePaint);
-    //drawLine(canvas, leftHeel, leftFootIndex, whitePaint);
+    drawLine(canvas, leftShoulder, leftElbow, RedPaint);
+    drawLine(canvas, leftElbow, leftWrist, RedPaint);
+    drawLine2(canvas, leftShoulder, leftHip, RedPaint);
+    drawLine3(canvas, leftHip, leftShoulder, RedPaint);
+    drawLine(canvas, leftHip, leftKnee, RedPaint);
+    drawLine(canvas, leftKnee, leftAnkle, RedPaint);
 
     // Right body
-    drawLine(canvas, rightShoulder, rightElbow, whitePaint);
-    drawLine(canvas, rightElbow, rightWrist, whitePaint);
-    //drawLine(canvas, rightShoulder, rightHip, whitePaint);
-    drawLine2(canvas, rightShoulder, rightHip, whitePaint);
-    drawLine3(canvas, rightHip, rightShoulder, whitePaint);
-    drawLine(canvas, rightHip, rightKnee, whitePaint);
-    drawLine(canvas, rightKnee, rightAnkle, whitePaint);
-    //drawLine(canvas, rightWrist, rightThumb, whitePaint);
-    //drawLine(canvas, rightWrist, rightPinky, whitePaint);
-    //drawLine(canvas, rightWrist, rightIndex, whitePaint);
-    //drawLine(canvas, rightIndex, rightPinky, whitePaint);
-    //drawLine(canvas, rightAnkle, rightHeel, whitePaint);
-    //drawLine(canvas, rightHeel, rightFootIndex, whitePaint);
+    drawLine(canvas, rightShoulder, rightElbow, RedPaint);
+    drawLine(canvas, rightElbow, rightWrist, RedPaint);
+    drawLine2(canvas, rightShoulder, rightHip, RedPaint);
+    drawLine3(canvas, rightHip, rightShoulder, RedPaint);
+    drawLine(canvas, rightHip, rightKnee, RedPaint);
+    drawLine(canvas, rightKnee, rightAnkle, RedPaint);
 
-    drawPoint(canvas, rightShoulder, whitePaint);
-    drawPoint(canvas, rightElbow, whitePaint);
-    drawPoint(canvas, rightHip, whitePaint);
-    //drawPoint(canvas, rightHeel, whitePaint);
-    drawPoint(canvas, rightKnee, whitePaint);
-    drawPoint(canvas, rightAnkle, whitePaint);
-    drawPoint(canvas, rightWrist, whitePaint);
+    drawPoint(canvas, rightShoulder, RedPaint);
+    drawPoint(canvas, rightElbow, RedPaint);
+    drawPoint(canvas, rightHip, RedPaint);
+    drawPoint(canvas, rightKnee, RedPaint);
+    drawPoint(canvas, rightAnkle, RedPaint);
+    drawPoint(canvas, rightWrist, RedPaint);
 
-    drawPoint(canvas, leftShoulder, whitePaint);
-    drawPoint(canvas, leftElbow, whitePaint);
-    drawPoint(canvas, leftHip, whitePaint);
-    //drawPoint(canvas, leftHeel, whitePaint);
-    drawPoint(canvas, leftKnee, whitePaint);
-    drawPoint(canvas, leftAnkle, whitePaint);
-    drawPoint(canvas, leftWrist, whitePaint);
+    drawPoint(canvas, leftShoulder, RedPaint);
+    drawPoint(canvas, leftElbow, RedPaint);
+    drawPoint(canvas, leftHip, RedPaint);
+    drawPoint(canvas, leftKnee, RedPaint);
+    drawPoint(canvas, leftAnkle, RedPaint);
+    drawPoint(canvas, leftWrist, RedPaint);
 
-    drawPoint2(canvas, leftShoulder, leftHip, whitePaint);
-    drawPoint2(canvas, rightShoulder, rightHip, whitePaint);
+    drawPoint2(canvas, leftShoulder, leftHip, RedPaint);
+    drawPoint2(canvas, rightShoulder, rightHip, RedPaint);
 
 
-    /*if(getDetectResult())
-    {
-      double scroce=100;
-      String filename = "pose_detect.txt";
-      File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-      File file = new File(path, filename);
-      String[][] str2 = new String[12][3];
-      int idx=0;
-      try{
-        //建立FileReader物件，並設定讀取的檔案為CheckFlie.txt
-        FileReader fr = new FileReader(file);
-        //將BufferedReader與FileReader做連結
-        BufferedReader bufFile = new BufferedReader(fr);
+      //n≈≈ew CalculateScore(true);
+      CalculateScore.getScore(pose);
 
-        String readData = "";
-        String temp = bufFile.readLine(); //readLine()讀取一整行
-        while (temp!=null){
-          readData+=temp +  "/n";
-          str2[idx]=temp.split("Data");
-          idx=idx+1;
-          temp=bufFile.readLine();
-        }
-        bufFile.close();
-      }catch(Exception e){
-        e.printStackTrace();
-      }
-      scroce-=Diff(rightShoulder,Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]));
-      scroce-=Diff(rightElbow,Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]));
-      scroce-=Diff(rightHip,Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]));
-      scroce-=Diff(rightKnee,Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]));
-      scroce-=Diff(rightWrist,Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]));
-      scroce-=Diff(leftShoulder,Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]));
-      scroce-=Diff(leftElbow,Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]));
-      scroce-=Diff(leftHip,Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]));
-      scroce-=Diff(leftKnee,Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]));
-      scroce-=Diff(leftAnkle,Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]));
-      scroce-=Diff(leftWrist,Float.valueOf(str2[0][1]),Float.valueOf(str2[0][2]));
-      if(scroce<1)
-        scroce=0;
-      new PoseDetectResult(scroce);
-    }*/
-
-
-
-    // Draw inFrameLikelihood for all points
-    if (showInFrameLikelihood) {
-      for (PoseLandmark landmark : landmarks) {
-        //canvas.drawText(
-        //String.format(Locale.US, "%.2f", landmark.getInFrameLikelihood()),
-        //translateX(landmark.getPosition().x),
-        //translateY(landmark.getPosition().y),
-        //whitePaint);
-      }
-    }
 
   }
 
+
+
   void drawPoint(Canvas canvas, PoseLandmark landmark, Paint paint) {
     PointF3D point = landmark.getPosition3D();
-    //updatePaintColorByZValue(
-    //       paint, canvas, visualizeZ, rescaleZForVisualization, point.getZ(), zMin, zMax);
     canvas.drawCircle(translateX(point.getX()), translateY(point.getY()), DOT_RADIUS, paint);
   }
 
   void drawPoint2(Canvas canvas, PoseLandmark landmark, PoseLandmark endLandmark, Paint paint) {
     PointF3D point = landmark.getPosition3D();
     PointF3D point2 = endLandmark.getPosition3D();
-    //updatePaintColorByZValue(
-    //       paint, canvas, visualizeZ, rescaleZForVisualization, point.getZ(), zMin, zMax);
-    canvas.drawCircle(translateX((point.getX()*1/3+point2.getX()*2/3)), translateY((point.getY()*1/3+point2.getY()*2/3)), DOT_RADIUS, paint);
+      canvas.drawCircle(translateX((point.getX()*1/3+point2.getX()*2/3)), translateY((point.getY()*1/3+point2.getY()*2/3)), DOT_RADIUS, paint);
   }
 
   void drawLine(Canvas canvas, PoseLandmark startLandmark, PoseLandmark endLandmark, Paint paint) {
@@ -334,8 +210,6 @@ public class PoseGraphic extends Graphic {
     X=translateX(point.getX());
     Y=translateY(point.getY());
     Result=Math.pow((double)((X-ansX)*(X-ansX)/200000)+(double)((Y-ansY)*(Y-ansY)/200000),1);
-    //Result=(X-ansX)*(X-ansX)/1000000+((Y-ansY)*(Y-ansY)/1000000);
-    //Result=0;
 
     return Result;
   }

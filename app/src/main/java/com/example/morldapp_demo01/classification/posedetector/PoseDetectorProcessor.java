@@ -55,7 +55,6 @@ public class PoseDetectorProcessor
   private final Executor classificationExecutor;
 
   private PoseClassifierProcessor poseClassifierProcessor;
-  private PosePKResult posePKResult;
   /** Internal class to hold Pose and classification results. */
   protected static class PoseWithClassification {
     private final Pose pose;
@@ -66,29 +65,9 @@ public class PoseDetectorProcessor
       this.classificationResult = classificationResult;
       List<PoseLandmark> landmarks_0=pose.getAllPoseLandmarks();
 
-
-
-      if(landmarks_0.isEmpty())
-      {
-        new PosePKResult(false);
-      }
-      else
-      {
-        new PosePKResult(true);
-      }
-
     }
 
 
-//    public Pose getPose() {
-//      return pose;
-//
-//    }
-
-
-//    public List<String> getClassificationResult() {
-//      return classificationResult;
-//    }
 
   }
 
