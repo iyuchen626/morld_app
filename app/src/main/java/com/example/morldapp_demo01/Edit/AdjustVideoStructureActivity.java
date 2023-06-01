@@ -72,10 +72,7 @@ public class AdjustVideoStructureActivity extends Base implements View.OnClickLi
         Act_Button_Structure_Point_9=findViewById(R.id.layout_Button_Structure_video_Point_9);
         Act_Button_Structure_Point_10=findViewById(R.id.layout_Button_Structure_video_Point_10);
         Act_Button_Structure_Point_11=findViewById(R.id.layout_Button_Structure_video_Point_11);
-
         Act_Button_Structure_Ｗeight_Edit=findViewById(R.id.Layout_Button_video_Structure_ＷeightEdit);
-
-
         Act_TextView_Structure_point=findViewById(R.id.Structure_video_point);
 
         ActText=findViewById(R.id.input_video_PointIdx);
@@ -117,7 +114,7 @@ public class AdjustVideoStructureActivity extends Base implements View.OnClickLi
         new FileMangement(Act_GraphicOverlay_EditStructure);
         for(int TimeIdx=0;TimeIdx<20;TimeIdx++)
         {
-            posestructurepoint[TimeIdx]=FileMangement.ReadFile("qwertyq.txt",TimeIdx);
+            posestructurepoint[TimeIdx]=FileMangement.ReadFile("yuiop1.txt",TimeIdx);
         }
         //posestructurepoint=FileMangement.ReadFile("qwertyq.txt",Timecount);
         Act_GraphicOverlay_EditStructure.clear();
@@ -228,9 +225,9 @@ public class AdjustVideoStructureActivity extends Base implements View.OnClickLi
 
                 try {
                     new FileMangement(Act_GraphicOverlay_EditStructure);
-                    for(int TimeIdx=0;TimeIdx<20;TimeIdx++)
+                    for(int TimeIdx=0;TimeIdx<30;TimeIdx++)
                     {
-                        FileMangement.ReSaveFile("yuiop.txt",posestructurepoint[TimeIdx],TimeIdx);
+                        FileMangement.ReSaveFile("yuiop1.txt",posestructurepoint[TimeIdx],TimeIdx);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

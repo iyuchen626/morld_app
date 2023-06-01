@@ -58,30 +58,36 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
         retriever.setDataSource(StructureUriStr);
         Act_Bitmap_VideoPoseEditor=null;
 
-        for(int idx=0;idx<20;idx++) {
+        mediaController=new MediaController(this);
+        mediaController.setVisibility(View.VISIBLE);
+        Act_VideoView_Pose.setMediaController(mediaController);
+
+        for(int idx=0;idx<30;idx++) {
             Act_Bitmap_VideoPoseEditor = retriever.getFrameAtTime(idx*1000000);
 
             Adjust_Bitmap_ShowVideo = StructureAnalyze.Adjust_picture(Act_Bitmap_VideoPoseEditor);
             Act_ImageView_ShowVideo.setImageBitmap(Adjust_Bitmap_ShowVideo);
 
             InputImage inputImage = InputImage.fromBitmap(Adjust_Bitmap_ShowVideo, 0);
-            StructureAnalyze.Analyze_Structure(inputImage, Act_GraphicOverlay_ShowVideoStructure, "yuiop.txt", idx);
+            StructureAnalyze.Analyze_Structure(inputImage, Act_GraphicOverlay_ShowVideoStructure, "yuiop1.txt", idx);
+            Act_GraphicOverlay_ShowVideoStructure.clear();
         }
         mediaController=new MediaController(this);
         Act_VideoView_Pose.setMediaController(mediaController);
 
-        for (int countidx = 0; countidx < 20; countidx++) {
-            posestructurepoint[countidx] = FileMangement.ReadFile("yuiop.txt", countidx);
+        for (int countidx = 0; countidx < 30; countidx++) {
+            posestructurepoint[countidx] = FileMangement.ReadFile("yuiop1.txt", countidx);
         }
 
       //  Act_VideoView_Pose.start();
+        Act_VideoView_Pose.start();
+        handler.post(myrunnable);
 
     }
 
     void video_structure_show()
     {
         Act_VideoView_Pose.start();
-
         handler.post(myrunnable);
 
 
@@ -112,7 +118,8 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
                 intent2.putExtras(objbundle);
 
                 startActivity(intent2);
-                //finish();
+                finish();
+
                 break;
 
             default:
