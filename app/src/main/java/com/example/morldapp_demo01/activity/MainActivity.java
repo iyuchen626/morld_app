@@ -42,8 +42,6 @@ public class MainActivity extends Base
                         break;
 
                     case R.id.BtnNavView_Main_BtnEditor:
-                        //repleceFragment(new VideoFragment());
-                        //finish();
                         HomeEditor_Dialog();
                         break;
 

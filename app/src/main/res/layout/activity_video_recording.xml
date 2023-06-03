@@ -11,7 +11,9 @@
         android:id="@+id/PreView_Editor"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" >
+
+    </androidx.camera.view.PreviewView>
 
 
     <com.example.morldapp_demo01.GraphicOverlay
@@ -23,6 +25,18 @@
         app:layout_constraintRight_toRightOf="@id/PreView_Editor"
         app:layout_constraintTop_toTopOf="@id/PreView_Editor" />
 
+
+    <TextView
+        android:id="@+id/Layout_TextView_RecordingTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="00:00"
+        android:textColor="@color/white"
+        android:textSize="30sp"
+        android:visibility="invisible"
+        app:layout_constraintLeft_toLeftOf="@id/PreView_Editor"
+        app:layout_constraintTop_toTopOf="@id/PreView_Editor" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@id/control"

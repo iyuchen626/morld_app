@@ -10,27 +10,17 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.util.Size;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-
-import com.example.morldapp_demo01.CameraXViewModel;
-import com.example.morldapp_demo01.Edit.ShowStructureActivity;
-import com.example.morldapp_demo01.Edit.ShowVideoStructureActivity;
-import com.example.morldapp_demo01.PreferenceUtils;
-import com.example.morldapp_demo01.R;
-import com.example.morldapp_demo01.VisionImageProcessor;
-import com.example.morldapp_demo01.activity.Base;
-import com.example.morldapp_demo01.classification.posedetector.PoseDetectorProcessor;
-import com.google.mlkit.common.MlKitException;
-import com.google.mlkit.vision.pose.PoseDetectorOptionsBase;
-
-import java.util.concurrent.Executor;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -49,6 +39,19 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.morldapp_demo01.CameraXViewModel;
+import com.example.morldapp_demo01.Edit.ShowStructureActivity;
+import com.example.morldapp_demo01.Edit.ShowVideoStructureActivity;
+import com.example.morldapp_demo01.PreferenceUtils;
+import com.example.morldapp_demo01.R;
+import com.example.morldapp_demo01.VisionImageProcessor;
+import com.example.morldapp_demo01.activity.Base;
+import com.example.morldapp_demo01.classification.posedetector.PoseDetectorProcessor;
+import com.google.mlkit.common.MlKitException;
+import com.google.mlkit.vision.pose.PoseDetectorOptionsBase;
+
+import java.util.concurrent.Executor;
+
 public class VideoRecordingActivity extends Base implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
 
     private PreviewView PreView;
@@ -58,6 +61,7 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
 
     private ImageButton ImgBtnPhoneVideoGallery;
     private Uri videoUri =null;
+    long starttime=0,currenttime=0,diff=0,minutes,second;
 
     @Nullable
     private ProcessCameraProvider cameraProvider;
@@ -81,6 +85,7 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
     private ImageButton Act_ImgBtnCameraRecording;
     private ImageButton Act_ImgBtnAlbumChoose;
     private ProgressBar Act_ProgressBarCameraRecording;
+    private TextView Act_TextView_RecordingTime;
 
    // private TextView TextViewPKTime;
 
@@ -103,6 +108,9 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
 
         Act_ImgBtnAlbumChoose = findViewById(R.id.Layout_ImgBtnAlbumChoose);
         Act_ImgBtnAlbumChoose.setOnClickListener(this);
+
+        Act_TextView_RecordingTime = findViewById(R.id.Layout_TextView_RecordingTime);
+
 
         Act_ProgressBarCameraRecording = findViewById(R.id.Layout_ProgressBarCameraRecording);
         Act_ProgressBarCameraRecording.setVisibility(View.INVISIBLE);
@@ -186,6 +194,14 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
                     try {
                         imageProcessor.processImageProxy(imageProxy, GraphicOverlay);
                         if(RecordingVideo==true) {
+                            currenttime= SystemClock.elapsedRealtime();
+                            diff=(currenttime-starttime)/1000;
+
+                            minutes=(diff%(60*60))/60;
+                            second=diff % 60;
+
+                            Act_TextView_RecordingTime.setText(minutes+":"+second);
+
                         }
                     } catch (MlKitException e) {
                         e.printStackTrace();
@@ -213,7 +229,7 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
         }
 
         videoCaptureUseCase = new VideoCapture.Builder()
-                .setVideoFrameRate(30)
+                .setVideoFrameRate(60)
                 .build();
         cameraProvider.bindToLifecycle(/* lifecycleOwner= */ this, cameraSelector, videoCaptureUseCase);
     }
@@ -247,15 +263,18 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
                 RecordingVideo = true;
                 Act_ProgressBarCameraRecording.setVisibility(View.VISIBLE);
                 RecordVideo();
+                Act_TextView_RecordingTime.setVisibility(View.VISIBLE);
                 //ADD LOCK
             } else {
                 RecordingVideo = false;
                 Act_ProgressBarCameraRecording.setVisibility(View.INVISIBLE);
+                Act_TextView_RecordingTime.setVisibility(View.INVISIBLE);
                 videoCaptureUseCase.stopRecording();
             }
         }
         else if((view.getId())==(R.id.Layout_ImgBtnAlbumChoose))
         {
+
             //pickimagegallery();
             pickvideogallery();
         }
@@ -273,11 +292,11 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
     private void RecordVideo() {
         if (videoCaptureUseCase != null) {
             long timestamp = System.currentTimeMillis();
-            //long timestamp = 333;
             ContentValues contentValues = new ContentValues();
             contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, timestamp);
             contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4");
             Act_ProgressBarCameraRecording.setVisibility(View.VISIBLE);
+            starttime= SystemClock.elapsedRealtime();
 
             try {
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -300,14 +319,20 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
                         new VideoCapture.OnVideoSavedCallback() {
                             @Override
                             public void onVideoSaved(@NonNull VideoCapture.OutputFileResults outputFileResults) {
-//                                Toast.makeText(getApplicationContext(), "Video has been saved successfully.", Toast.LENGTH_SHORT).show();
-//                                Intent intent2 = new Intent();
-//                                intent2= new Intent(VideoRecordingActivity.this, video_editor_time.class);
-//
-//                                Bundle objbundle = new Bundle();
-//                                objbundle.putLong("video_name",timestamp);
-//                                intent2.putExtras(objbundle);
-//                                startActivity(intent2);
+                                Uri viseoUri =null;
+                                //String videopath= Environment.getExternalStorageDirectory().getPath()+"/Movies/"+timestamp+".mp4";
+                                String videopath= Environment.getExternalStorageDirectory().getPath()+"/Movies/"+timestamp+".mp4";
+
+                                viseoUri= Uri.parse(videopath);
+
+                                Intent intent = new Intent();
+                                intent= new Intent(VideoRecordingActivity.this, ShowVideoStructureActivity.class);
+                                Bundle objbundle = new Bundle();
+                                objbundle.putString("urivideostr", viseoUri.toString());
+                                intent.putExtras(objbundle);
+
+                                startActivity(intent);
+                                finish();
                             }
 
                             @Override
@@ -316,6 +341,7 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
                             }
                         }
                 );
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -397,6 +423,7 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
     private ActivityResultLauncher<Intent> galleryActivityResultLauncher =registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
+                @SuppressLint("WrongConstant")
                 @Override
                 public void onActivityResult(ActivityResult result) {
                     if(result.getResultCode()== Activity.RESULT_OK)
@@ -431,6 +458,7 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
     private ActivityResultLauncher<Intent> videoActivityResultLauncher =registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
+                @SuppressLint("WrongConstant")
                 @Override
                 public void onActivityResult(ActivityResult result) {
                     if(result.getResultCode()== Activity.RESULT_OK)
