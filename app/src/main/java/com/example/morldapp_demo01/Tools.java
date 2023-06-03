@@ -139,6 +139,34 @@ public class Tools
 		alert.show();
 	}
 
+	public static void mm請求所有必要權限(Activity a, final OnPermissionListener cc)
+	{
+		Dexter.withActivity(a)
+				.withPermissions(Manifest.permission.CAMERA,Manifest.permission.RECORD_AUDIO)
+				.withListener(new MultiplePermissionsListener()
+				{
+					@Override
+					public void onPermissionsChecked(MultiplePermissionsReport report)
+					{
+						if (report.areAllPermissionsGranted())
+						{
+							cc.onGranted();
+						}
+						else
+						{
+							cc.onDenied();
+						}
+						Log.i(TAG, report.areAllPermissionsGranted() + "");
+					}
+
+					@Override
+					public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token)
+					{
+						Log.i(TAG, token.toString());
+						token.continuePermissionRequest();
+					}
+				}).check();
+	}
 	public static void mm請求位置(Activity a, final OnPermissionListener cc)
 	{
 		Dexter.withActivity(a)

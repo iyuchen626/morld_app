@@ -2,7 +2,6 @@ package com.example.morldapp_demo01.Edit;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,10 +16,12 @@ import com.example.morldapp_demo01.R;
 import com.example.morldapp_demo01.activity.Base;
 import com.google.mlkit.vision.common.InputImage;
 
+import wseemann.media.FFmpegMediaMetadataRetriever;
+
 public class ShowVideoStructureActivity extends Base implements View.OnClickListener{
 
     VideoView Act_VideoView_Pose;
-    MediaMetadataRetriever retriever;
+    FFmpegMediaMetadataRetriever retriever;
     MediaController mediaController;
     Bitmap Act_Bitmap_VideoPoseEditor=null,Adjust_Bitmap_ShowVideo=null;
     ImageView Act_ImageView_ShowVideo;
@@ -36,7 +37,7 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_video_structure);
-        retriever=new MediaMetadataRetriever();
+        retriever=new FFmpegMediaMetadataRetriever();
 
         Act_VideoView_Pose=findViewById(R.id.Layout_VideoView_ShowVideo);
         Act_ImageView_ShowVideo=findViewById(R.id.Layout_ImageView_ShowVideo);
@@ -54,8 +55,7 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
 
         Act_VideoView_Pose.setVideoURI(Uri.parse(StructureUriStr));
 
-
-        retriever.setDataSource(StructureUriStr);
+        retriever.setDataSource(getActivity(), Uri.parse(StructureUriStr));
         Act_Bitmap_VideoPoseEditor=null;
 
         mediaController=new MediaController(this);
@@ -64,19 +64,19 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
 
         for(int idx=0;idx<30;idx++) {
             Act_Bitmap_VideoPoseEditor = retriever.getFrameAtTime(idx*1000000);
-
+            if(Act_Bitmap_VideoPoseEditor==null) continue;
             Adjust_Bitmap_ShowVideo = StructureAnalyze.Adjust_picture(Act_Bitmap_VideoPoseEditor);
             Act_ImageView_ShowVideo.setImageBitmap(Adjust_Bitmap_ShowVideo);
 
             InputImage inputImage = InputImage.fromBitmap(Adjust_Bitmap_ShowVideo, 0);
-            StructureAnalyze.Analyze_Structure(inputImage, Act_GraphicOverlay_ShowVideoStructure, "yuiop1.txt", idx);
+            StructureAnalyze.Analyze_Structure(getActivity(), inputImage, Act_GraphicOverlay_ShowVideoStructure, "yuiop1.txt", idx);
             Act_GraphicOverlay_ShowVideoStructure.clear();
         }
         mediaController=new MediaController(this);
         Act_VideoView_Pose.setMediaController(mediaController);
 
         for (int countidx = 0; countidx < 30; countidx++) {
-            posestructurepoint[countidx] = FileMangement.ReadFile("yuiop1.txt", countidx);
+            posestructurepoint[countidx] = FileMangement.ReadFile(getActivity(), "yuiop1.txt", countidx);
         }
 
       //  Act_VideoView_Pose.start();
@@ -108,7 +108,8 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
                 break;
 
             case R.id.Layout_Button_VideoStructureEdit:
-
+                retriever.release();
+                finish();
                 int Timecount=((Act_VideoView_Pose.getCurrentPosition())/1000);
                 Intent intent2 = new Intent();
                 intent2= new Intent(ShowVideoStructureActivity.this, AdjustVideoStructureActivity.class);
@@ -116,9 +117,7 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
                 objbundle.putString("uristr_Edit",StructureUriStr);
                 objbundle.putInt("Timecount",Timecount);
                 intent2.putExtras(objbundle);
-
                 startActivity(intent2);
-                finish();
 
                 break;
 

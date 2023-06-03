@@ -29,6 +29,8 @@ public class AnalyzePoseGraphic extends GraphicOverlay.Graphic{
 
     @Override
     public void draw(Canvas canvas) {
+        if(structurepoint==null) return;
+        for(int i=0; i<12; i++) if(structurepoint[i]==null) return;
         drawLine(canvas, structurepoint[6],structurepoint[0], BluePaint);
         drawLine(canvas, structurepoint[8],structurepoint[2], BluePaint);
         drawLine(canvas, structurepoint[6],structurepoint[7], BluePaint);

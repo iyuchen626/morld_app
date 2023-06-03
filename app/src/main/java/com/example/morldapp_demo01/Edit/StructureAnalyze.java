@@ -1,15 +1,13 @@
 package com.example.morldapp_demo01.Edit;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-
-import androidx.annotation.NonNull;
 
 import com.example.morldapp_demo01.GraphicOverlay;
 import com.example.morldapp_demo01.classification.posedetector.EditorPoseGraphic;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.pose.Pose;
 import com.google.mlkit.vision.pose.PoseDetection;
@@ -19,6 +17,8 @@ import com.google.mlkit.vision.pose.accurate.AccuratePoseDetectorOptions;
 
 import java.io.IOException;
 import java.util.List;
+
+import androidx.annotation.NonNull;
 
 public class StructureAnalyze {
     public static Pose StructurePose;
@@ -51,7 +51,7 @@ public class StructureAnalyze {
         return Adjust_Bitmap_ShowPhoto;
     }
 
-    public static void Analyze_Structure(InputImage inputImage, GraphicOverlay graphicoverlay,String filename,int count) {
+    public static void Analyze_Structure(Context context, InputImage inputImage, GraphicOverlay graphicoverlay, String filename, int count) {
 
         AccuratePoseDetectorOptions options =
                 new AccuratePoseDetectorOptions.Builder()
@@ -82,7 +82,7 @@ public class StructureAnalyze {
                                     try {
 
                                         new FileMangement(graphicoverlay);
-                                        FileMangement.SaveFilePose(filename,StructurePose,StructurePoseWeight,count);
+                                        FileMangement.SaveFilePose(context, filename,StructurePose,StructurePoseWeight,count);
                                     } catch (IOException e) {
                                         e.printStackTrace();
                                     }

@@ -64,7 +64,7 @@ public class ShowStructureActivity extends Base
 //        FileMangement.DeleteFile("qwertyq.txt");
 
 
-        StructureAnalyze.Analyze_Structure(inputImage,Act_GraphicOverlay_ShowStructure,"yuiop.txt",0);
+        StructureAnalyze.Analyze_Structure(getActivity(), inputImage,Act_GraphicOverlay_ShowStructure,"yuiop.txt",0);
         ShowStructurepose=StructureAnalyze.StructurePose();
 //        landmarks = ShowStructurepose.getAllPoseLandmarks();
 //        if (landmarks.isEmpty()) {
@@ -86,7 +86,7 @@ public class ShowStructureActivity extends Base
 
         Act_Button_StructureShow.setOnClickListener(v->{
 
-            posestructurepoint=FileMangement.ReadFile("qwertyq.txt",0);
+            posestructurepoint=FileMangement.ReadFile(getActivity(),"qwertyq.txt",0);
             Act_GraphicOverlay_ShowStructure.clear();
 
             Act_GraphicOverlay_ShowStructure.add(

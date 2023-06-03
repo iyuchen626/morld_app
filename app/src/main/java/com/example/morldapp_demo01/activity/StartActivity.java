@@ -1,13 +1,11 @@
 package com.example.morldapp_demo01.activity;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
 import com.example.morldapp_demo01.R;
+import com.example.morldapp_demo01.Tools;
 
 public class StartActivity extends Base
 {
@@ -19,45 +17,25 @@ public class StartActivity extends Base
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-        Thread mythread = new Thread() {
-            public void run() {
-                try {
-
-                    boolean cameraHasGone = false;
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                        cameraHasGone = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                                == PackageManager.PERMISSION_GRANTED;
-                    }
-                    boolean externalReadGone = false;
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                        externalReadGone = checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                                == PackageManager.PERMISSION_GRANTED;
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run()
+            {
+                Tools.mm請求所有必要權限(getActivity(), new Tools.OnPermissionListener() {
+                    @Override
+                    public void onGranted()
+                    {
+                        finish();
+                        startActivity(new Intent(getActivity(), MainActivity.class));
                     }
 
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        String[] permissions;
-
-                        permissions = new String[4];
-                        permissions[0] = Manifest.permission.CAMERA;
-                        permissions[1] = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-                        permissions[2] = Manifest.permission.READ_EXTERNAL_STORAGE;
-                        permissions[3] = Manifest.permission.RECORD_AUDIO;
-
-                        requestPermissions(permissions, 100);
+                    @Override
+                    public void onDenied()
+                    {
                     }
-                    sleep(5000);
-                    Intent intent = new Intent();
-                    intent= new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                } catch(Exception e)
-                {
-                    e.printStackTrace();
-                }
+                });
             }
-        };
-        mythread.start();
+        }, 3000);
 
     }
 }

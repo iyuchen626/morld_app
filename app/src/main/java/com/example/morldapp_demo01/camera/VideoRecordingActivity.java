@@ -389,7 +389,7 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
 
     private void pickvideogallery()
     {
-        Intent intent =new Intent(Intent.ACTION_PICK);
+        Intent intent =new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.setType("video/*");
         videoActivityResultLauncher.launch(intent);
     }
@@ -404,6 +404,10 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
                         Uri imageUri =null;
                         Intent data=result.getData();
                         imageUri=data.getData();
+
+                        final int takeFlags = result.getData().getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                        getContentResolver().takePersistableUriPermission(imageUri, takeFlags);
+
                         String imageuristr=null;
                         imageuristr=imageUri.toString();
                         Intent intent = new Intent();
@@ -434,14 +438,13 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
                         Uri viseoUri =null;
                         Intent data=result.getData();
                         viseoUri=data.getData();
-
-                        String VID_input_video_path = getRealPathFromURI(VideoRecordingActivity.this, viseoUri);
-
+                        final int takeFlags = result.getData().getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                        getContentResolver().takePersistableUriPermission(viseoUri, takeFlags);
                         Intent intent = new Intent();
                         intent= new Intent(VideoRecordingActivity.this, ShowVideoStructureActivity.class);
 
                         Bundle objbundle = new Bundle();
-                        objbundle.putString("urivideostr",VID_input_video_path);
+                        objbundle.putString("urivideostr", viseoUri.toString());
                         intent.putExtras(objbundle);
 
                         startActivity(intent);

@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -12,7 +13,7 @@ android {
         minSdk 21
         targetSdk 33
         versionCode 1
-        versionName "dev2"
+        versionName "dev4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -109,6 +110,8 @@ dependencies {
     implementation 'com.github.wseemann:FFmpegMediaMetadataRetriever-core:1.0.19'
     implementation 'com.github.wseemann:FFmpegMediaMetadataRetriever-native:1.0.19'
     implementation platform('com.google.firebase:firebase-bom:32.0.0')
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-analytics'
     implementation "com.kongzue.dialogx:DialogX:0.0.48"
     implementation "com.kongzue.dialogx.style:DialogXMIUIStyle:0.0.48"
     implementation 'com.github.denzcoskun:ImageSlideshow:0.1.2'

@@ -1,5 +1,6 @@
 package com.example.morldapp_demo01.Edit;
 
+import android.content.Context;
 import android.os.Environment;
 
 import com.example.morldapp_demo01.GraphicOverlay;
@@ -32,12 +33,10 @@ public class FileMangement extends Base
         return imagePixel * overlay.scaleFactor;
     }
 
-    public static void SaveFilePose(String filename, Pose pose,float[]Poseweight,int count) throws IOException {
+    public static void SaveFilePose(Context context, String filename, Pose pose, float[]Poseweight, int count) throws IOException {
 
         String string;
-
-        // 存放檔案位置在 內部空間/Download/
-        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File path = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
         File file = new File(path, filename);
         structurepoint[] savepointscalepoint= new structurepoint[12];
 
@@ -104,13 +103,10 @@ public class FileMangement extends Base
     }
 
 
-    public static void ReSaveFile(String filename,structurepoint[] savepointscalepoint,int count) throws IOException {
-
+    public static void ReSaveFile(Context context, String filename, structurepoint[] savepointscalepoint, int count) throws IOException {
 
         String string;
-
-        // 存放檔案位置在 內部空間/Download/
-        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File path = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
         File file = new File(path, filename);
 
         try {
@@ -168,10 +164,9 @@ public class FileMangement extends Base
         }
     }
 
-    public static void DeleteFile(String filename)
+    public static void DeleteFile(Context context, String filename)
     {
-       // File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File path = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
         File file = new File(path, filename);
         if(!file.exists())
         {
@@ -179,9 +174,8 @@ public class FileMangement extends Base
         }
     }
 
-    public static structurepoint[] ReadFile(String filename, int count) {
-
-        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+    public static structurepoint[] ReadFile(Context context, String filename, int count) {
+        File path = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
         File file = new File(path, filename);
         structurepoint[] posestructurepoint=new structurepoint[12];
 

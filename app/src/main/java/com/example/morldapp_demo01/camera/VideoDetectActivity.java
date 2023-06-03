@@ -111,7 +111,7 @@ public class VideoDetectActivity extends Base implements CompoundButton.OnChecke
 
         Act_Textview_DetectScore = findViewById(R.id.Layout_Textview_DetectScore);
 
-        posestructurepoint= FileMangement.ReadFile("qwertyq.txt",0);
+        posestructurepoint= FileMangement.ReadFile(getActivity(),"qwertyq.txt",0);
 
         new ViewModelProvider(this, (ViewModelProvider.Factory) ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
                 .get(CameraXViewModel.class)

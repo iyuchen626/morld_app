@@ -30,6 +30,10 @@ public class CalculateScore {
 
         for(int idx=0;idx<12;idx++)
         {
+//            if(posestructureuserpoint==null) break;
+//            if(posestructuresamplepoint==null) break;
+            if(posestructureuserpoint[idx]==null) break;
+            if(posestructuresamplepoint[idx]==null) break;
             PointScore(posestructuresamplepoint[idx],posestructureuserpoint[idx]);
         }
 
