@@ -1,11 +1,16 @@
 package com.example.morldapp_demo01.activity;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import com.example.morldapp_demo01.R;
+import com.example.morldapp_demo01.camera.VideoRecordingActivity;
 import com.example.morldapp_demo01.fragmemt.HomeFragment;
-import com.example.morldapp_demo01.fragmemt.VideoFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -37,8 +42,9 @@ public class MainActivity extends Base
                         break;
 
                     case R.id.BtnNavView_Main_BtnEditor:
-                        repleceFragment(new VideoFragment());
-                        finish();
+                        //repleceFragment(new VideoFragment());
+                        //finish();
+                        HomeEditor_Dialog();
                         break;
 
                 }
@@ -73,5 +79,59 @@ public class MainActivity extends Base
             fragmentTransaction.replace(R.id.FrameLayout_Main,fragment);
             fragmentTransaction.commit();
         }
+
+
+    void HomeEditor_Dialog()
+    {
+        BottomSheetDialog Editor_dialog=new BottomSheetDialog(this.getActivity());
+        View view=getLayoutInflater().inflate(R.layout.dialog_editor,null);
+        Editor_dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+
+
+            }
+        });
+        Editor_dialog.setContentView(view);
+
+        LinearLayout Act_Layout_Edit=Editor_dialog.findViewById(R.id.Layout_Layout_Edit);
+        LinearLayout Act_Layout_Morldment=Editor_dialog.findViewById(R.id.Layout_Layout_Morldment);
+
+
+        Act_Layout_Edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent();
+                //intent= new Intent(this.getActivity(), FunctionChooseActivity.class);
+                intent= new Intent(MainActivity.this, VideoRecordingActivity.class);
+                startActivity(intent);
+
+                finish();
+
+            }
+        });
+
+
+        Act_Layout_Morldment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent();
+                //intent= new Intent(this.getActivity(), FunctionChooseActivity.class);
+                intent= new Intent(MainActivity.this, VideoRecordingActivity.class);
+                startActivity(intent);
+
+                finish();
+
+            }
+        });
+
+
+        Editor_dialog.show();
+
+
+
+    }
 
     }

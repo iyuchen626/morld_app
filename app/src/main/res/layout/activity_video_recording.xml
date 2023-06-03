@@ -10,8 +10,7 @@
     <androidx.camera.view.PreviewView
         android:id="@+id/PreView_Editor"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/control"
+        android:layout_height="match_parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 
@@ -29,33 +28,33 @@
         android:id="@id/control"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:background="#000"
+        android:background="#33000000"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="@id/PreView_Editor">
 
-<!--        <ImageView-->
-<!--            android:id="@+id/ImageView_PKTime"-->
-<!--            android:layout_width="60dp"-->
-<!--            android:layout_height="60dp"-->
-<!--            android:layout_marginLeft="8dp"-->
-<!--            android:layout_marginTop="20dp"-->
-<!--            android:layout_marginBottom="20dp"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintLeft_toLeftOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent"-->
-<!--            app:srcCompat="@drawable/circle"/>-->
+        <!--        <ImageView-->
+        <!--            android:id="@+id/ImageView_PKTime"-->
+        <!--            android:layout_width="60dp"-->
+        <!--            android:layout_height="60dp"-->
+        <!--            android:layout_marginLeft="8dp"-->
+        <!--            android:layout_marginTop="20dp"-->
+        <!--            android:layout_marginBottom="20dp"-->
+        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--            app:layout_constraintLeft_toLeftOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="parent"-->
+        <!--            app:srcCompat="@drawable/circle"/>-->
 
 
-<!--        <TextView-->
-<!--            android:id="@+id/TextView_PKTime"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="0"-->
-<!--            android:textColor="@color/purple_200"-->
-<!--            app:layout_constraintBottom_toBottomOf="@+id/ImageView_PKTime"-->
-<!--            app:layout_constraintLeft_toLeftOf="@+id/ImageView_PKTime"-->
-<!--            app:layout_constraintRight_toRightOf="@+id/ImageView_PKTime"-->
-<!--            app:layout_constraintTop_toTopOf="@+id/ImageView_PKTime" />-->
+        <!--        <TextView-->
+        <!--            android:id="@+id/TextView_PKTime"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:text="0"-->
+        <!--            android:textColor="@color/purple_200"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@+id/ImageView_PKTime"-->
+        <!--            app:layout_constraintLeft_toLeftOf="@+id/ImageView_PKTime"-->
+        <!--            app:layout_constraintRight_toRightOf="@+id/ImageView_PKTime"-->
+        <!--            app:layout_constraintTop_toTopOf="@+id/ImageView_PKTime" />-->
 
         <ImageButton
             android:id="@+id/Layout_ImgBtnAlbumChoose"
@@ -64,8 +63,7 @@
             android:contentDescription="@string/Choose"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@android:drawable/ic_media_rew"
-            />
+            app:srcCompat="@android:drawable/ic_media_rew" />
 
         <ProgressBar
             android:id="@+id/Layout_ProgressBarCameraRecording"
@@ -76,7 +74,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:progress="60"/>
+            tools:progress="60" />
 
         <ImageButton
             android:id="@+id/Layout_ImgBtnCameraRecording"
