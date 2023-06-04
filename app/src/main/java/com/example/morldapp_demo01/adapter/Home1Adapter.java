@@ -1,20 +1,19 @@
 package com.example.morldapp_demo01.adapter;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.morldapp_demo01.Tools;
-import com.example.morldapp_demo01.activity.VideoLandscape;
-import com.example.morldapp_demo01.databinding.ListHome1Binding;
-import com.example.morldapp_demo01.pojo.FilmPOJO;
-
-import java.util.List;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.morldapp_demo01.Tools;
+import com.example.morldapp_demo01.databinding.ListHome1Binding;
+import com.example.morldapp_demo01.pojo.FilmPOJO;
+import com.example.morldapp_demo01.test.Test_EXO_Activity;
+
+import java.util.List;
 
 public class Home1Adapter extends RecyclerView.Adapter<Home1Adapter.ViewHolder>
 {
@@ -57,9 +56,10 @@ public class Home1Adapter extends RecyclerView.Adapter<Home1Adapter.ViewHolder>
 			@Override
 			public void onClick(View v)
 			{
-				Bundle bundle = new Bundle();
-				bundle.putSerializable("data", entity);
-				activity.startActivity(new Intent(activity, VideoLandscape.class).putExtras(bundle));
+				//Bundle bundle = new Bundle();
+				//bundle.putSerializable("data", entity);
+				//activity.startActivity(new Intent(activity, VideoLandscape.class).putExtras(bundle));
+				activity.startActivity(new Intent(activity, Test_EXO_Activity.class));
 			}
 		});
 	}
