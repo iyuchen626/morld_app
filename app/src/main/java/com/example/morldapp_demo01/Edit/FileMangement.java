@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Environment;
 
 import com.example.morldapp_demo01.GraphicOverlay;
+import com.example.morldapp_demo01.R;
 import com.example.morldapp_demo01.activity.Base;
 import com.google.mlkit.vision.common.PointF3D;
 import com.google.mlkit.vision.pose.Pose;
@@ -173,6 +174,57 @@ public class FileMangement extends Base
             file.delete();
         }
     }
+
+    public static structurepoint[] testReadFile(Context context, String filename, int count) {
+       // File path = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+        //File file = new File(path, filename);
+        File path = "android.resource://com.android/";
+        //File file = new File(path, filename);
+
+        File file= new File("android.resource://com.android/" + R.raw.structure_data);
+//        MediaItem mediaItem = MediaItem.fromUri(Uri.parse("android.resource://com.android/" + R.raw.test_4));
+//        String Path= "android.resource://"+context.getPackageName()+"/"+ R.raw.structure_data;
+//        File file= new File(Path);
+        structurepoint[] posestructurepoint=new structurepoint[12];
+
+        try {
+            FileReader fr = new FileReader(file);
+            BufferedReader bufFile = new BufferedReader(fr);
+
+            String readData = "";
+            String Filetemp = bufFile.readLine(); //readLine()讀取一整行
+            String[] data = new String[4];
+            int FileIdx=0,ReadIdx=0;
+            //detectcount
+            while ((Filetemp!=null)&&(FileIdx<12*count)){
+//              readData+=temp +  "/n";
+//              str2[idx]=temp.split("Data");
+//              idx=idx+1;
+                FileIdx=FileIdx+1;
+                Filetemp=bufFile.readLine();
+            }
+
+            while ((Filetemp!=null)&&(ReadIdx<12)){
+                data=Filetemp.split("Data");
+                posestructurepoint[ReadIdx]=new structurepoint();
+                //posestructurepoint[ReadIdx].setStructpoint_x(translateX(Float.valueOf(data[1])));
+                //posestructurepoint[ReadIdx].setStructpoint_y(translateY(Float.valueOf(data[2])));
+                posestructurepoint[ReadIdx].setStructpoint_x(Float.valueOf(data[1]));
+                posestructurepoint[ReadIdx].setStructpoint_y(Float.valueOf(data[2]));
+                posestructurepoint[ReadIdx].setStructpoint_weight(Float.valueOf(data[3]));
+
+                ReadIdx++;
+                Filetemp=bufFile.readLine();
+            }
+            bufFile.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return posestructurepoint;
+    }
+
 
     public static structurepoint[] ReadFile(Context context, String filename, int count) {
         File path = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);

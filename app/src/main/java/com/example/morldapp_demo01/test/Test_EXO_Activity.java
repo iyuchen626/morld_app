@@ -1,9 +1,16 @@
 package com.example.morldapp_demo01.test;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
+import android.widget.ImageView;
 
+import com.example.morldapp_demo01.Edit.AnalyzePoseGraphic;
+import com.example.morldapp_demo01.Edit.FileMangement;
+import com.example.morldapp_demo01.Edit.structurepoint;
+import com.example.morldapp_demo01.GraphicOverlay;
 import com.example.morldapp_demo01.R;
 import com.example.morldapp_demo01.activity.Base;
 import com.google.android.exoplayer2.MediaItem;
@@ -20,13 +27,40 @@ public class Test_EXO_Activity extends Base {
     Boolean playwhenReady =true;
     int currentwindow =0;
     long playbackPosition=0;
+
+    private String StructureUriStr;
+    Bitmap Act_Bitmap_VideoPoseEditor=null,Adjust_Bitmap_ShowVideo=null;
+    ImageView Act_ImageView_ShowVideo;
+
+    GraphicOverlay Act_GraphicOverlay_ShowVideoStructure;
+    private structurepoint[][] posestructurepoint=new structurepoint[100][12];
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_exo);
 
         playerView=(PlayerView)findViewById(R.id.Layout_PlayerView);
-        //initplayer();
+
+       // StructureUriStr= "android.resource:"+getActivity().getPackageName() + R.raw.test_4;
+      // retriever.setDataSource(getActivity(), Uri.parse(StructureUriStr));
+
+//        for(int idx=0;idx<30;idx++) {
+//            Act_Bitmap_VideoPoseEditor = retriever.getFrameAtTime(idx*1000000);
+//            if(Act_Bitmap_VideoPoseEditor==null) continue;
+//            Adjust_Bitmap_ShowVideo = StructureAnalyze.Adjust_picture(Act_Bitmap_VideoPoseEditor);
+//            Act_ImageView_ShowVideo.setImageBitmap(Adjust_Bitmap_ShowVideo);
+//
+//            InputImage inputImage = InputImage.fromBitmap(Adjust_Bitmap_ShowVideo, 0);
+//            StructureAnalyze.Analyze_Structure(getActivity(), inputImage, Act_GraphicOverlay_ShowVideoStructure, "yuiop1.txt", idx);
+//            Act_GraphicOverlay_ShowVideoStructure.clear();
+//        }
+//
+        for (int countidx = 0; countidx < 30; countidx++) {
+            posestructurepoint[countidx] = FileMangement.testReadFile(getActivity(), "structure_data.txt", countidx);
+        }
+//
+//        initplayer();
     }
 
         private void initplayer() {
@@ -109,6 +143,31 @@ public class Test_EXO_Activity extends Base {
             player = null;
         }
     }
+
+    private Handler handler=new Handler();
+
+    private Runnable myrunnable =new Runnable() {
+        @Override
+        public void run() {
+
+            long Time=((player.getCurrentPosition()+20)/1000);
+
+            Act_GraphicOverlay_ShowVideoStructure.clear();
+
+            Act_GraphicOverlay_ShowVideoStructure.add(
+                    new AnalyzePoseGraphic(
+                            Act_GraphicOverlay_ShowVideoStructure,
+                            posestructurepoint[Integer.parseInt(String.valueOf(Time))]));
+
+            handler.postDelayed(myrunnable, 980);
+
+            if(Time>10)
+            {
+
+                handler.removeCallbacks(this);
+            }
+        }
+    };
 
 
 }
