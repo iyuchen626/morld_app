@@ -10,6 +10,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class Base extends AppCompatActivity
 {
+    double totalHttpDownloaded;
+    double totalP2pDownloaded;
+    double totalP2pUploaded;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState)
     {

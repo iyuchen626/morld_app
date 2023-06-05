@@ -11,6 +11,7 @@ public class FilmPOJO implements Serializable
 	public String description;
 	public String present_image_slug;
 	public String video_slug;
+	public String video_hls_slug;
 	public String txt_slug;
 	public String video_time;
 	public String view_count;
