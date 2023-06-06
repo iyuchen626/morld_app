@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:name=".MyApplication"
@@ -34,6 +35,8 @@
                 android:value="" />
         </activity>
         <activity android:name=".activity.Login" />
+        <activity android:name=".activity.ScreenShotActivity" />
+        <activity android:name=".mirror.Client" />
         <activity
             android:name=".activity.VideoLandscape"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -128,6 +131,11 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+        <service
+            android:name=".mirror.ScreenService"
+            android:enabled="true"
+            android:exported="true"
+            android:foregroundServiceType="mediaProjection" />
     </application>
 
 </manifest>

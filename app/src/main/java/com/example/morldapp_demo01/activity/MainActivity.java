@@ -2,6 +2,8 @@ package com.example.morldapp_demo01.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.projection.MediaProjectionManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -9,9 +11,13 @@ import android.widget.LinearLayout;
 import com.example.morldapp_demo01.R;
 import com.example.morldapp_demo01.camera.VideoRecordingActivity;
 import com.example.morldapp_demo01.fragmemt.HomeFragment;
+import com.example.morldapp_demo01.mirror.Client;
+import com.example.morldapp_demo01.mirror.ScreenService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -19,17 +25,45 @@ import androidx.fragment.app.FragmentTransaction;
 
 public class MainActivity extends Base
 {
-
-        //ActivityMainBinding binding;
-       // @SuppressLint("NonConstantResourceId")
     BottomNavigationView BtnNavViewMain;
-        @Override
+    private MediaProjectionManager mediaProjectionManager;
+    private static final int PROJECTION_REQUEST_CODE = 1001;
+
+    @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+            mediaProjectionManager = (MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE);
             //binding=ActivityMainBinding.inflate(getLayoutInflater());
             //setContentView(binding.getRoot());
             setContentView(R.layout.activity_main);
-
+            findViewById(R.id.imageView9).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view)
+                {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("選擇類型");
+                    String[] animals = {"投影", "客戶端"};
+                    builder.setItems(animals, new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            switch (which)
+                            {
+                                case 0:
+                                    startProjection();
+//                                    startActivity(new Intent(getActivity(), ScreenShotActivity.class));
+                                    break;
+                                case 1:
+                                    startActivity(new Intent(getActivity(), Client.class));
+                                    break;
+                            }
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+            });
             repleceFragment(new HomeFragment());
             BtnNavViewMain=(BottomNavigationView)findViewById(R.id.BtnNavView_Main);
 
@@ -127,9 +161,36 @@ public class MainActivity extends Base
 
 
         Editor_dialog.show();
-
-
-
     }
 
+    // 请求开始录屏
+    private void startProjection()
+    {
+        Intent intent = mediaProjectionManager.createScreenCaptureIntent();
+        startActivityForResult(intent, PROJECTION_REQUEST_CODE);
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != RESULT_OK)
+        {
+            return;
+        }
+        if (requestCode == PROJECTION_REQUEST_CODE)
+        {
+            Intent service = new Intent(this, ScreenService.class);
+            service.putExtra("code", resultCode);
+            service.putExtra("data", data);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            {
+                startForegroundService(service);
+            }
+            else
+            {
+                startService(service);
+            }
+        }
+    }
+}
