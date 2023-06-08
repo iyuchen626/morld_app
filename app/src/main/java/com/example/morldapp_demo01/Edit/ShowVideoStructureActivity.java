@@ -1,5 +1,7 @@
 package com.example.morldapp_demo01.Edit;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -8,12 +10,17 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
 import com.example.morldapp_demo01.GraphicOverlay;
 import com.example.morldapp_demo01.R;
 import com.example.morldapp_demo01.activity.Base;
+import com.example.morldapp_demo01.activity.EditFinishActivity;
+import com.example.morldapp_demo01.activity.MainActivity;
+import com.example.morldapp_demo01.camera.VideoRecordingActivity;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.mlkit.vision.common.InputImage;
 
 import wseemann.media.FFmpegMediaMetadataRetriever;
@@ -97,14 +104,16 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.Layout_Button_VideoStructureShow:
-                //video_structure_show();
-                int Time=((Act_VideoView_Pose.getCurrentPosition())/1000);
-                Act_GraphicOverlay_ShowVideoStructure.clear();
 
-                Act_GraphicOverlay_ShowVideoStructure.add(
-                        new AnalyzePoseGraphic(
-                                Act_GraphicOverlay_ShowVideoStructure,
-                                posestructurepoint[Time]));
+                HomeEditor_Dialog();
+                //video_structure_show();
+//                int Time=((Act_VideoView_Pose.getCurrentPosition())/1000);
+//                Act_GraphicOverlay_ShowVideoStructure.clear();
+//
+//                Act_GraphicOverlay_ShowVideoStructure.add(
+//                        new AnalyzePoseGraphic(
+//                                Act_GraphicOverlay_ShowVideoStructure,
+//                                posestructurepoint[Time]));
                 break;
 
             case R.id.Layout_Button_VideoStructureEdit:
@@ -151,4 +160,64 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
             }
         }
     };
+
+    void HomeEditor_Dialog()
+    {
+        Dialog Editor_dialog=new Dialog(this.getActivity());
+        View view=getLayoutInflater().inflate(R.layout.dialog_editor_save,null);
+        Editor_dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+
+
+            }
+        });
+        Editor_dialog.setContentView(view);
+
+        Button Act_Button_Cancel=Editor_dialog.findViewById(R.id.button＿cancel);
+        Button Act_Button_Finish=Editor_dialog.findViewById(R.id.button_finish);
+
+
+        Act_Button_Finish.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent();
+                //intent= new Intent(this.getActivity(), FunctionChooseActivity.class);
+                intent= new Intent(ShowVideoStructureActivity.this, EditFinishActivity.class);
+                startActivity(intent);
+
+                finish();
+
+            }
+        });
+        Act_Button_Cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Editor_dialog.dismiss();
+
+            }
+        });
+
+//
+//        Act_Layout_Morldment.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//                Intent intent = new Intent();
+//                //intent= new Intent(this.getActivity(), FunctionChooseActivity.class);
+//                intent= new Intent(MainActivity.this, VideoRecordingActivity.class);
+//                startActivity(intent);
+//
+//                finish();
+//
+//            }
+//        });
+
+
+        Editor_dialog.show();
+    }
+
+
 }
