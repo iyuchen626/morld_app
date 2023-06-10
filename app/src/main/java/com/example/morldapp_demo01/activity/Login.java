@@ -61,7 +61,7 @@ public class Login extends Base
 			@Override
 			public void accept(RegisterResponse res) throws Exception
 			{
-				Tools.hideProgress();
+				Tools.hideProgress(getActivity());
 				if (res.success)
 				{
 					Tools.toastSuccess(getActivity(), res.message);
@@ -76,7 +76,7 @@ public class Login extends Base
 			@Override
 			public void accept(Throwable throwable) throws Exception
 			{
-				Tools.hideProgress();
+				Tools.hideProgress(getActivity());
 				Tools.showError(getActivity(), throwable.getMessage());
 			}
 		});
@@ -103,7 +103,7 @@ public class Login extends Base
 			@Override
 			public void accept(LoginResponse res) throws Exception
 			{
-				Tools.hideProgress();
+				Tools.hideProgress(getActivity());
 				Log.i(Config.TAG, res.message);
 				if (res.success)
 				{
@@ -120,7 +120,7 @@ public class Login extends Base
 			@Override
 			public void accept(Throwable throwable) throws Exception
 			{
-				Tools.hideProgress();
+				Tools.hideProgress(getActivity());
 				Tools.showError(getActivity(), throwable.getMessage());
 			}
 		});

@@ -18,23 +18,21 @@
     <VideoView
         android:id="@+id/Layout_VideoView_ShowVideo"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:scaleType="matrix"
-
-        app:layout_constraintBottom_toBottomOf="@id/Layout_ImageView_ShowVideo"
-        app:layout_constraintLeft_toLeftOf="@id/Layout_ImageView_ShowVideo"
-        app:layout_constraintRight_toRightOf="@id/Layout_ImageView_ShowVideo"
-        app:layout_constraintTop_toTopOf="@id/Layout_ImageView_ShowVideo"
-        />
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.example.morldapp_demo01.GraphicOverlay
         android:id="@+id/Layout_GraphicOverlay_ShowVideoStructure"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@id/Layout_ImageView_ShowVideo"
-        app:layout_constraintLeft_toLeftOf="@id/Layout_ImageView_ShowVideo"
-        app:layout_constraintRight_toRightOf="@id/Layout_ImageView_ShowVideo"
-        app:layout_constraintTop_toTopOf="@id/Layout_ImageView_ShowVideo" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/Layout_Button_VideoStructureEdit"
@@ -56,6 +54,16 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.945" />
+
+    <Button
+        android:id="@+id/layout_Button_ReproducePose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="重跑骨骼"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.945" />

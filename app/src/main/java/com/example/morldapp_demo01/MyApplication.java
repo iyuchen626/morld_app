@@ -2,6 +2,7 @@ package com.example.morldapp_demo01;
 
 import android.util.Log;
 
+import com.hjq.toast.Toaster;
 import com.p2pengine.core.p2p.P2pConfig;
 import com.p2pengine.core.tracking.TrackerZone;
 import com.p2pengine.sdk.P2pEngine;
@@ -28,5 +29,6 @@ public class MyApplication extends android.app.Application
 				.trackerZone(TrackerZone.USA)
 				.build();
 		P2pEngine.init(this, "CU898SlVR", config);
+		Toaster.init(this);
 	}
 }

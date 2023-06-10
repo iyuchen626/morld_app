@@ -25,14 +25,14 @@ import com.example.morldapp_demo01.dialog.Normal;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
+import com.hjq.toast.ToastParams;
+import com.hjq.toast.Toaster;
+import com.hjq.toast.style.CustomToastStyle;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
-import com.kongzue.dialogx.dialogs.PopNotification;
-import com.kongzue.dialogx.dialogs.TipDialog;
-import com.kongzue.dialogx.dialogs.WaitDialog;
 import com.scottyab.aescrypt.AESCrypt;
 import com.squareup.picasso.Picasso;
 
@@ -51,6 +51,7 @@ import java.util.List;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import taimoor.sultani.sweetalert2.Sweetalert;
 
 /**
  * Created by 123 on 2017/9/18.
@@ -60,6 +61,7 @@ public class Tools
 {
 	public static final String TAG = "Morld";
 	static boolean progressDone = false;
+	static  Sweetalert sweetalert;
 	private static Gson gson;
 
 	private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
@@ -76,18 +78,35 @@ public class Tools
 	public static void showProgress(AppCompatActivity a, String msg)
 	{
 		if (a == null || a.isFinishing()) return;
-		WaitDialog.init(a);
-		WaitDialog.show(a, msg);
+		if(sweetalert != null)
+		{
+			sweetalert.setContentText(msg);
+		}
+		else
+		{
+			sweetalert = new Sweetalert(a, Sweetalert.PROGRESS_TYPE)
+					.setContentText(msg);
+			sweetalert.setCancelable(false);
+			sweetalert.show();
+		}
 	}
 
-	public static void hideProgress()
+	public static void hideProgress(AppCompatActivity a)
 	{
-		WaitDialog.dismiss();
+		if (a == null || a.isFinishing()) return;
+		if(sweetalert != null)
+		{
+			sweetalert.dismissWithAnimation();
+			sweetalert = null;
+		}
 	}
 	public static void showError(AppCompatActivity a, String title)
 	{
 		if (a == null || a.isFinishing()) return;
-		TipDialog.show(title, WaitDialog.TYPE.ERROR);
+		new Sweetalert(a, Sweetalert.ERROR_TYPE)
+				.setTitleText("錯誤")
+				.setContentText(title)
+				.show();
 	}
 	public static void showInfo(AppCompatActivity a, String title, String s)
 	{
@@ -107,12 +126,18 @@ public class Tools
 
 	public static void toast(Context context, String msg)
 	{
-		PopNotification.show(msg).autoDismiss(3000);
+		ToastParams params = new ToastParams();
+		params.text = msg;
+		params.style = new CustomToastStyle(R.layout.toast_info);
+		Toaster.show(params);
 	}
 
 	public static void toastSuccess(Context context, String msg)
 	{
-		PopNotification.show(R.drawable.icon_success, msg).autoDismiss(3000);
+		ToastParams params = new ToastParams();
+		params.text = msg;
+		params.style = new CustomToastStyle(R.layout.toast_success);
+		Toaster.show(params);
 	}
 
 	public static float getDensity(Context context)
@@ -152,31 +177,62 @@ public class Tools
 
 	public static void mm請求所有必要權限(Activity a, final OnPermissionListener cc)
 	{
-		Dexter.withActivity(a)
-				.withPermissions(Manifest.permission.CAMERA,Manifest.permission.RECORD_AUDIO)
-				.withListener(new MultiplePermissionsListener()
-				{
-					@Override
-					public void onPermissionsChecked(MultiplePermissionsReport report)
+		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P)
+		{
+			Dexter.withActivity(a)
+					.withPermissions(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+					.withListener(new MultiplePermissionsListener()
 					{
-						if (report.areAllPermissionsGranted())
+						@Override
+						public void onPermissionsChecked(MultiplePermissionsReport report)
 						{
-							cc.onGranted();
+							if (report.areAllPermissionsGranted())
+							{
+								cc.onGranted();
+							}
+							else
+							{
+								cc.onDenied();
+							}
+							Log.i(TAG, report.areAllPermissionsGranted() + "");
 						}
-						else
-						{
-							cc.onDenied();
-						}
-						Log.i(TAG, report.areAllPermissionsGranted() + "");
-					}
 
-					@Override
-					public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token)
+						@Override
+						public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token)
+						{
+							Log.i(TAG, token.toString());
+							token.continuePermissionRequest();
+						}
+					}).check();
+		}
+		else
+		{
+			Dexter.withActivity(a)
+					.withPermissions(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
+					.withListener(new MultiplePermissionsListener()
 					{
-						Log.i(TAG, token.toString());
-						token.continuePermissionRequest();
-					}
-				}).check();
+						@Override
+						public void onPermissionsChecked(MultiplePermissionsReport report)
+						{
+							if (report.areAllPermissionsGranted())
+							{
+								cc.onGranted();
+							}
+							else
+							{
+								cc.onDenied();
+							}
+							Log.i(TAG, report.areAllPermissionsGranted() + "");
+						}
+
+						@Override
+						public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token)
+						{
+							Log.i(TAG, token.toString());
+							token.continuePermissionRequest();
+						}
+					}).check();
+		}
 	}
 	public static void mm請求位置(Activity a, final OnPermissionListener cc)
 	{
@@ -277,7 +333,7 @@ public class Tools
 		return md5(uniqueID.toString());
 	}
 
-	private static final String md5(final String s)
+	public static final String md5(final String s)
 	{
 		final String MD5 = "MD5";
 		try

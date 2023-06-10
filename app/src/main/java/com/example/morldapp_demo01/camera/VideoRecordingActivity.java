@@ -39,6 +39,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.ducky.fastvideoframeextraction.fastextraction.Frame;
+import com.ducky.fastvideoframeextraction.fastextraction.FrameExtractor;
+import com.ducky.fastvideoframeextraction.fastextraction.IVideoFrameExtractor;
 import com.example.morldapp_demo01.CameraXViewModel;
 import com.example.morldapp_demo01.Edit.ShowStructureActivity;
 import com.example.morldapp_demo01.Edit.ShowVideoStructureActivity;
@@ -47,6 +50,7 @@ import com.example.morldapp_demo01.R;
 import com.example.morldapp_demo01.VisionImageProcessor;
 import com.example.morldapp_demo01.activity.Base;
 import com.example.morldapp_demo01.classification.posedetector.PoseDetectorProcessor;
+import com.example.morldapp_demo01.fastextraction.URIPathHelper;
 import com.google.mlkit.common.MlKitException;
 import com.google.mlkit.vision.pose.PoseDetectorOptionsBase;
 
@@ -115,15 +119,15 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
         Act_ProgressBarCameraRecording = findViewById(R.id.Layout_ProgressBarCameraRecording);
         Act_ProgressBarCameraRecording.setVisibility(View.INVISIBLE);
 
-        new ViewModelProvider(this, (ViewModelProvider.Factory) ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
-                .get(CameraXViewModel.class)
-                .getProcessCameraProvider()
-                .observe(
-                        this,
-                        provider -> {
-                            cameraProvider = provider;
-                            bindAllCameraUseCases();
-                        });
+//        new ViewModelProvider(this, (ViewModelProvider.Factory) ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
+//                .get(CameraXViewModel.class)
+//                .getProcessCameraProvider()
+//                .observe(
+//                        this,
+//                        provider -> {
+//                            cameraProvider = provider;
+//                            bindAllCameraUseCases();
+//                        });
     }
 
     private void bindAllCameraUseCases() {
@@ -408,14 +412,14 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
 
     private void pickimagegallery()
     {
-         Intent intent =new Intent(Intent.ACTION_PICK);
+         Intent intent =new Intent(Intent.ACTION_PICK); //極重要，用android 11以上，用ACTION_PICK必閃退
         intent.setType("image/*");
         galleryActivityResultLauncher.launch(intent);
     }
 
     private void pickvideogallery()
     {
-        Intent intent =new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        Intent intent =new Intent(Intent.ACTION_OPEN_DOCUMENT); //極重要，用android 11以上，用ACTION_PICK必閃退
         intent.setType("video/*");
         videoActivityResultLauncher.launch(intent);
     }
@@ -431,9 +435,6 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
                         Uri imageUri =null;
                         Intent data=result.getData();
                         imageUri=data.getData();
-
-                        final int takeFlags = result.getData().getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                        getContentResolver().takePersistableUriPermission(imageUri, takeFlags);
 
                         String imageuristr=null;
                         imageuristr=imageUri.toString();
@@ -466,11 +467,12 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
                         Uri viseoUri =null;
                         Intent data=result.getData();
                         viseoUri=data.getData();
-                        final int takeFlags = result.getData().getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                        getContentResolver().takePersistableUriPermission(viseoUri, takeFlags);
+
+//                        final int takeFlags = result.getData().getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+//                        getContentResolver().takePersistableUriPermission(imageUri, takeFlags);
+
                         Intent intent = new Intent();
                         intent= new Intent(VideoRecordingActivity.this, ShowVideoStructureActivity.class);
-
                         Bundle objbundle = new Bundle();
                         objbundle.putString("urivideostr", viseoUri.toString());
                         intent.putExtras(objbundle);

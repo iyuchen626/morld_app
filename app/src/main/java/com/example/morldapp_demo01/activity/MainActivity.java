@@ -133,14 +133,10 @@ public class MainActivity extends Base
         Act_Layout_Edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Intent intent = new Intent();
-                //intent= new Intent(this.getActivity(), FunctionChooseActivity.class);
+//                intent= new Intent(getActivity(), FunctionChooseActivity.class);
                 intent= new Intent(MainActivity.this, VideoRecordingActivity.class);
                 startActivity(intent);
-
-                finish();
-
             }
         });
 
@@ -148,14 +144,10 @@ public class MainActivity extends Base
         Act_Layout_Morldment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Intent intent = new Intent();
                 //intent= new Intent(this.getActivity(), FunctionChooseActivity.class);
                 intent= new Intent(MainActivity.this, VideoRecordingActivity.class);
                 startActivity(intent);
-
-                finish();
-
             }
         });
 

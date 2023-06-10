@@ -2,7 +2,7 @@ package com.example.morldapp_demo01.Edit;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.media.MediaExtractor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -16,10 +16,8 @@ import com.example.morldapp_demo01.R;
 import com.example.morldapp_demo01.activity.Base;
 import com.example.morldapp_demo01.camera.VideoDetectActivity;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import wseemann.media.FFmpegMediaMetadataRetriever;
 
 public class AdjustVideoStructureActivity extends Base implements View.OnClickListener{
 
@@ -35,7 +33,7 @@ public class AdjustVideoStructureActivity extends Base implements View.OnClickLi
     TextView Act_TextView_Structure_point;
     private int PointIdx=0;
     private structurepoint[][] posestructurepoint=new structurepoint[300][12];
-    FFmpegMediaMetadataRetriever retriever;
+    MediaExtractor retriever;
     Integer Timecount=0;
 
     @Override
@@ -48,10 +46,10 @@ public class AdjustVideoStructureActivity extends Base implements View.OnClickLi
          Timecount = bundle.getInt("Timecount");
         UriStructureEdit= Uri.parse((String)StructureUriStr);
 
-        retriever=new FFmpegMediaMetadataRetriever();
-        retriever.setDataSource(getActivity(), UriStructureEdit);
+        retriever=new MediaExtractor();
+//        retriever.setDataSource(getActivity(), UriStructureEdit);
 
-        Bitmap_EditFramePicture = retriever.getFrameAtTime(Timecount*1000000);
+//        Bitmap_EditFramePicture = retriever.ge(Timecount*1000000);
         Act_ImageView_EditFrame=findViewById(R.id.Layout_ImageView_video_EditFrame);
         Act_GraphicOverlay_EditStructure = findViewById(R.id.Layout_GraphicOverlay_video_EditStructure);
 
@@ -98,25 +96,11 @@ public class AdjustVideoStructureActivity extends Base implements View.OnClickLi
         Act_Button_Structure_Point_11.setOnClickListener(this);
         Act_Button_Structure_Ｗeight_Edit.setOnClickListener(this);
 
-////
-//
-        try {
-            Bitmap_EditFramePicture= BitmapFactory.decodeStream(getContentResolver().openInputStream(UriStructureEdit));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-
-
-//        //Act_ImageView_ShowPhoto.setImageURI(Uri_photo);
-        if(Bitmap_EditFramePicture==null) return;
-        Adjust_Bitmap_EditFramePicture=StructureAnalyze.Adjust_picture(Bitmap_EditFramePicture);
         Act_ImageView_EditFrame.setImageBitmap(Adjust_Bitmap_EditFramePicture);
 //
-        new FileMangement(Act_GraphicOverlay_EditStructure);
         for(int TimeIdx=0;TimeIdx<20;TimeIdx++)
         {
-            posestructurepoint[TimeIdx]=FileMangement.ReadFile(getActivity(),"yuiop1.txt",TimeIdx);
+//            posestructurepoint[TimeIdx]=FileMangement.ReadFile(getActivity(),"yuiop1.txt",TimeIdx);
         }
         //posestructurepoint=FileMangement.ReadFile("qwertyq.txt",Timecount);
         Act_GraphicOverlay_EditStructure.clear();
@@ -130,6 +114,13 @@ public class AdjustVideoStructureActivity extends Base implements View.OnClickLi
         ActText.setText(String.valueOf(posestructurepoint[Timecount][PointIdx].getStructpoint_weight()));
 //
 //
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        retriever.release();
     }
 
     @Override
@@ -226,7 +217,6 @@ public class AdjustVideoStructureActivity extends Base implements View.OnClickLi
             case R.id.Layout_Button_video_StructureEditDone:
 
                 try {
-                    new FileMangement(Act_GraphicOverlay_EditStructure);
                     for(int TimeIdx=0;TimeIdx<30;TimeIdx++)
                     {
                         FileMangement.ReSaveFile(getActivity(),"yuiop1.txt",posestructurepoint[TimeIdx],TimeIdx);

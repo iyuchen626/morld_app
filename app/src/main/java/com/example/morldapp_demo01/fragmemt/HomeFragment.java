@@ -89,7 +89,7 @@ public class HomeFragment extends Fragment{
             @Override
             public void accept(FilmListResponse res) throws Exception
             {
-                Tools.hideProgress();
+                Tools.hideProgress((AppCompatActivity) getActivity());
                 Log.i(Config.TAG, res.error);
                 if (res.error.equals(""))
                 {
@@ -110,7 +110,7 @@ public class HomeFragment extends Fragment{
             @Override
             public void accept(Throwable throwable) throws Exception
             {
-                Tools.hideProgress();
+                Tools.hideProgress((AppCompatActivity) getActivity());
                 Tools.showError((AppCompatActivity) getActivity(), throwable.getMessage());
             }
         });

@@ -86,7 +86,7 @@ public class ShowStructureActivity extends Base
 
         Act_Button_StructureShow.setOnClickListener(v->{
 
-            posestructurepoint=FileMangement.ReadFile(getActivity(),"qwertyq.txt",0);
+//            posestructurepoint=FileMangement.ReadFile(getActivity(),"qwertyq.txt",0);
             Act_GraphicOverlay_ShowStructure.clear();
 
             Act_GraphicOverlay_ShowStructure.add(

@@ -47,7 +47,7 @@ public class VideoLandscape extends Base
 		PlayerView playerView = binding.videoView;
 		player = new SimpleExoPlayer.Builder(getActivity()).build();
 		playerView.setPlayer(player);
-		File ff  = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+		File ff  = getExternalFilesDir(null);
 		ff = new File(ff, data.uuid);
 		MediaItem mediaItem = MediaItem.fromUri(url);
 		if(ff.exists())
@@ -177,7 +177,7 @@ public class VideoLandscape extends Base
 			@Override
 			public void onClick(View v)
 			{
-				File ff  = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+				File ff  = getExternalFilesDir(null);
 				ff = new File(ff, data.uuid);
 				if(ff.exists()) ff.delete();
 //				File[] ffs = getExternalFilesDir(Environment.DIRECTORY_MOVIES).listFiles();
@@ -207,7 +207,7 @@ public class VideoLandscape extends Base
 //		PlayerView playerView = binding.videoView;
 //		player = new SimpleExoPlayer.Builder(getActivity()).build();
 //		playerView.setPlayer(player);
-//		File ff  = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+//		File ff  = getExternalFilesDir(null);
 //		ff = new File(ff, data.uuid);
 //		MediaItem mediaItem = MediaItem.fromUri(data.video_slug);
 //		if(ff.exists())

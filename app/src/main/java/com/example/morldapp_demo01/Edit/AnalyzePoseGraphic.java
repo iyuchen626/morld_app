@@ -15,10 +15,11 @@ public class AnalyzePoseGraphic extends GraphicOverlay.Graphic{
 
     private final Paint BluePaint;
     structurepoint[] structurepoint= new structurepoint[12];
+    GraphicOverlay graphicOverlay;
 
     public AnalyzePoseGraphic(GraphicOverlay overlay,structurepoint[] structurepoint) {
         super(overlay);
-
+        this.graphicOverlay = overlay;
         BluePaint = new Paint();
         BluePaint.setStrokeWidth(STROKE_WIDTH);
         BluePaint.setColor(Color.BLUE);
@@ -29,6 +30,8 @@ public class AnalyzePoseGraphic extends GraphicOverlay.Graphic{
 
     @Override
     public void draw(Canvas canvas) {
+        int h = canvas.getHeight();
+        graphicOverlay.scaleFactor = (float) (h / 800.0);
         if(structurepoint==null) return;
         for(int i=0; i<12; i++) if(structurepoint[i]==null) return;
         drawLine(canvas, structurepoint[6],structurepoint[0], BluePaint);
@@ -69,10 +72,6 @@ public class AnalyzePoseGraphic extends GraphicOverlay.Graphic{
     }
 
     void drawPoint(Canvas canvas,structurepoint startstructurepoint,Paint paint) {
-//    PointF3D point = landmark.getPosition3D();
-        //updatePaintColorByZValue(
-        //       paint, canvas, visualizeZ, rescaleZForVisualization, point.getZ(), zMin, zMax);
-//    canvas.drawCircle(translateX(point.getX()), translateY(point.getY()), DOT_RADIUS, paint);
-        canvas.drawCircle(startstructurepoint.getStructpoint_x(),startstructurepoint.getStructpoint_y(), DOT_RADIUS, paint);
+    canvas.drawCircle(translateX(startstructurepoint.getStructpoint_x()), translateY(startstructurepoint.getStructpoint_y()), DOT_RADIUS, paint);
     }
 }

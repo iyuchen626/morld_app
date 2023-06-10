@@ -105,8 +105,8 @@ public class AdjustStructureActivity extends Base implements View.OnClickListene
         Adjust_Bitmap_EditFramePicture=StructureAnalyze.Adjust_picture(Bitmap_EditFramePicture);
         Act_ImageView_EditFrame.setImageBitmap(Adjust_Bitmap_EditFramePicture);
 //
-        new FileMangement(Act_GraphicOverlay_EditStructure);
-        posestructurepoint=FileMangement.ReadFile(getActivity(),"qwertyq.txt",0);
+
+//        posestructurepoint=FileMangement.ReadFile(getActivity(),"qwertyq.txt",0);
         Act_GraphicOverlay_EditStructure.clear();
 
         Act_GraphicOverlay_EditStructure.add(
@@ -214,7 +214,6 @@ public class AdjustStructureActivity extends Base implements View.OnClickListene
             case R.id.Layout_Button_StructureEditDone:
 
                 try {
-                    new FileMangement(Act_GraphicOverlay_EditStructure);
                     FileMangement.ReSaveFile(getActivity(),"yuiop.txt",posestructurepoint,0);
                 } catch (IOException e) {
                     e.printStackTrace();

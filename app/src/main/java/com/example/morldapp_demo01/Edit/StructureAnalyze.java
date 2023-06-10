@@ -3,7 +3,10 @@ package com.example.morldapp_demo01.Edit;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.icu.util.Output;
+import android.util.Log;
 
+import com.example.morldapp_demo01.Config;
 import com.example.morldapp_demo01.GraphicOverlay;
 import com.example.morldapp_demo01.classification.posedetector.EditorPoseGraphic;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -80,8 +83,6 @@ public class StructureAnalyze {
                                                     graphicoverlay,
                                                     pose,count));
                                     try {
-
-                                        new FileMangement(graphicoverlay);
                                         FileMangement.SaveFilePose(context, filename,StructurePose,StructurePoseWeight,count);
                                     } catch (IOException e) {
                                         e.printStackTrace();
@@ -102,8 +103,63 @@ public class StructureAnalyze {
                 );
     }
 
+    public static String toSaveFilePoseFormat(Pose pose)
+    {
+        float StructurePoseWeight[]={10,10,10,10,10,10,10,10,10,10,10,10};
+        structurepoint[] savepointscalepoint = FileMangement.Translatepoint(pose, StructurePoseWeight);
+        StringBuilder sb = new StringBuilder();
+        for (int idx = 0; idx < 12; idx++)
+        {
+            sb.append(FileMangement.SavePoint(savepointscalepoint[idx]));
+        }
+        sb = sb.deleteCharAt(sb.length()-1);
+        sb.append('\n');
+        String final_s = sb.toString();
+        return final_s;
+    }
+
+    public static void Analyze_Structure(InputImage inputImage, OnAnalyzeStructureListener onAnalyzeStructureListener)
+    {
+        AccuratePoseDetectorOptions options =
+                new AccuratePoseDetectorOptions.Builder()
+                        .setDetectorMode(AccuratePoseDetectorOptions.SINGLE_IMAGE_MODE)
+                        .build();
+        PoseDetector poseDetector = PoseDetection.getClient(options);
+        poseDetector.process(inputImage).addOnSuccessListener(
+                new OnSuccessListener<Pose>()
+                {
+                    @Override
+                    public void onSuccess(Pose pose)
+                    {
+                        List<PoseLandmark> allPoseLandmarks = pose.getAllPoseLandmarks();
+                        if (!allPoseLandmarks.isEmpty())
+                        {
+                            String s = toSaveFilePoseFormat(pose);
+                            onAnalyzeStructureListener.onDone(s);
+                        }
+                        else onAnalyzeStructureListener.onDone("");
+                        poseDetector.close();
+                    }
+                }).addOnFailureListener(
+                new OnFailureListener()
+                {
+                    @Override
+                    public void onFailure(@NonNull Exception e)
+                    {
+                        poseDetector.close();
+                        Log.e(Config.TAG, e.getMessage());
+                        onAnalyzeStructureListener.onDone("");
+                    }
+                }
+        );
+    }
+
     public static Pose StructurePose()
     {
         return StructurePose;
+    }
+
+    public interface OnAnalyzeStructureListener {
+        void onDone(String s);
     }
 }

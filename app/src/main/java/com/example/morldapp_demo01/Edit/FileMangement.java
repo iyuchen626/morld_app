@@ -1,42 +1,51 @@
 package com.example.morldapp_demo01.Edit;
 
 import android.content.Context;
+import android.icu.util.Output;
 import android.os.Environment;
+import android.util.Log;
 
+import com.example.morldapp_demo01.Config;
 import com.example.morldapp_demo01.GraphicOverlay;
 import com.example.morldapp_demo01.activity.Base;
 import com.google.mlkit.vision.common.PointF3D;
 import com.google.mlkit.vision.pose.Pose;
 import com.google.mlkit.vision.pose.PoseLandmark;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class FileMangement extends Base
 {
-
-    public static GraphicOverlay overlay;
-    public boolean isImageFlipped;
-
-    public  FileMangement(GraphicOverlay overlay) {
-        this.overlay = overlay;
-    }
-    public boolean isImageFlipped() {
-        return overlay.isImageFlipped;
+    public  FileMangement( ) {
     }
 
-    /** Adjusts the supplied value from the image scale to the view scale. */
-    public static float scale(float imagePixel) {
-        return imagePixel * overlay.scaleFactor;
+    public static void SaveFile(Context context, String filename, String data)
+    {
+        try
+        {
+            File path = context.getExternalFilesDir(null);
+            File file = new File(path, filename);
+            FileOutputStream Output = new FileOutputStream(file, false);
+            Output.write(data.getBytes());
+            Output.close();
+        }
+        catch (Exception e)
+        {
+            Log.e(Config.TAG, e.getMessage());
+        }
     }
-
     public static void SaveFilePose(Context context, String filename, Pose pose, float[]Poseweight, int count) throws IOException {
 
         String string;
-        File path = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+        File path = context.getExternalFilesDir(null);
         File file = new File(path, filename);
         structurepoint[] savepointscalepoint= new structurepoint[12];
 
@@ -106,7 +115,7 @@ public class FileMangement extends Base
     public static void ReSaveFile(Context context, String filename, structurepoint[] savepointscalepoint, int count) throws IOException {
 
         String string;
-        File path = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+        File path = context.getExternalFilesDir(null);
         File file = new File(path, filename);
 
         try {
@@ -166,58 +175,48 @@ public class FileMangement extends Base
 
     public static void DeleteFile(Context context, String filename)
     {
-        File path = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+        File path = context.getExternalFilesDir(null);
         File file = new File(path, filename);
-        if(!file.exists())
+        if(file.exists())
         {
             file.delete();
         }
     }
 
-    public static structurepoint[] ReadFile(Context context, String filename, int count) {
-        File path = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+    public static HashMap<String, structurepoint[]> ReadFile(Context context, String filename, long offset)
+    {
+        File path = context.getExternalFilesDir(null);
         File file = new File(path, filename);
-        structurepoint[] posestructurepoint=new structurepoint[12];
 
-        try {
-            FileReader fr = new FileReader(file);
-            BufferedReader bufFile = new BufferedReader(fr);
-
-            String readData = "";
-            String Filetemp = bufFile.readLine(); //readLine()讀取一整行
-            String[] data = new String[4];
-            int FileIdx=0,ReadIdx=0;
-            //detectcount
-            while ((Filetemp!=null)&&(FileIdx<12*count)){
-//              readData+=temp +  "/n";
-//              str2[idx]=temp.split("Data");
-//              idx=idx+1;
-                FileIdx=FileIdx+1;
-                Filetemp=bufFile.readLine();
+        HashMap<String, structurepoint[]> res = new HashMap<>();
+        try
+        {
+            List<String> lines = Files.readAllLines(Paths.get(file.getAbsolutePath()), Charset.defaultCharset());
+            for (String s : lines)
+            {
+                String[] data = s.split("#");
+                long time = Long.parseLong(data[0]);
+                time += offset;
+                data[0] = String.valueOf(time);
+                structurepoint[] structurepoints = new structurepoint[12];
+                for (int i = 1; i < 13; i++)
+                {
+                    String[] data2 = data[i].split("Data");
+                    structurepoint posestructurepoint = new structurepoint();
+                    posestructurepoint.setStructpoint_x(Float.valueOf(data2[1]));
+                    posestructurepoint.setStructpoint_y(Float.valueOf(data2[2]));
+                    posestructurepoint.setStructpoint_weight(Float.valueOf(data2[3]));
+                    structurepoints[i - 1] = posestructurepoint;
+                }
+                res.put(data[0], structurepoints);
             }
 
-            while ((Filetemp!=null)&&(ReadIdx<12)){
-                data=Filetemp.split("Data");
-                posestructurepoint[ReadIdx]=new structurepoint();
-               //posestructurepoint[ReadIdx].setStructpoint_x(translateX(Float.valueOf(data[1])));
-               //posestructurepoint[ReadIdx].setStructpoint_y(translateY(Float.valueOf(data[2])));
-                posestructurepoint[ReadIdx].setStructpoint_x(Float.valueOf(data[1]));
-                posestructurepoint[ReadIdx].setStructpoint_y(Float.valueOf(data[2]));
-                posestructurepoint[ReadIdx].setStructpoint_weight(Float.valueOf(data[3]));
-
-                ReadIdx++;
-                Filetemp=bufFile.readLine();
-            }
-            bufFile.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-
-        return posestructurepoint;
+        catch (Exception e) {}
+        return res;
     }
 
-    static structurepoint[] Translatepoint(Pose pose,float []Poseweight) {
+    public static structurepoint[] Translatepoint(Pose pose,float []Poseweight) {
         PoseLandmark landmark;
         PointF3D point ;
         structurepoint[] pointscalepoint=new structurepoint[12];
@@ -310,29 +309,12 @@ public class FileMangement extends Base
         return pointscalepoint;
     }
 
-    static String SavePoint(structurepoint pointscale) {
-
+    public static String SavePoint(structurepoint pointscale)
+    {
         String strline;
-        //updatePaintColorByZValue(
-        //       paint, canvas, visualizeZ, rescaleZForVisualization, point.getZ(), zMin, zMax);
-
-//        strline= "Data"+translateX(point.getX())+"Data"+
-//                translateY(point.getY())+"\n";
-        strline= "Data"+pointscale.getStructpoint_x()+"Data"+
-                pointscale.getStructpoint_y()+"Data"+
-                pointscale.getStructpoint_weight()+"\n";
+        strline = "Data" + pointscale.getStructpoint_x() + "Data" +
+                pointscale.getStructpoint_y() + "Data" +
+                pointscale.getStructpoint_weight() + "#";
         return strline;
-    }
-
-    public static float translateX(float x) {
-        if (overlay.isImageFlipped) {
-            return overlay.getWidth() - (scale(x) - overlay.postScaleWidthOffset);
-        } else {
-            return scale(x) - overlay.postScaleWidthOffset;
-        }
-    }
-
-    public static float translateY(float y) {
-        return scale(y) - overlay.postScaleHeightOffset;
     }
 }
