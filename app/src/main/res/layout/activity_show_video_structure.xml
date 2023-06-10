@@ -12,6 +12,9 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:scaleType="matrix"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
 
@@ -36,27 +39,27 @@
 
     <Button
         android:id="@+id/Layout_Button_VideoStructureEdit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="edit"
+        android:layout_width="54dp"
+        android:layout_height="82dp"
+        android:text="  E   "
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.95"
+        app:layout_constraintHorizontal_bias="0.052"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.036" />
+        app:layout_constraintVertical_bias="0.6" />
 
     <Button
         android:id="@+id/Layout_Button_VideoStructureShow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="SHOW"
+        android:layout_width="49dp"
+        android:layout_height="69dp"
+        android:text="    V   "
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.979"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.945" />
+        app:layout_constraintVertical_bias="0.019" />
 
     <Button
         android:id="@+id/layout_Button_ReproducePose"
