@@ -45,6 +45,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -207,8 +208,18 @@ public class Tools
 		}
 		else
 		{
-			Dexter.withActivity(a)
-					.withPermissions(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
+			List<String> ssd = new ArrayList<>();
+			ssd.add(Manifest.permission.CAMERA);
+			ssd.add(Manifest.permission.RECORD_AUDIO);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2)
+			{
+				ssd.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+			}
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+			{
+				ssd.add(Manifest.permission.READ_MEDIA_VIDEO);
+			}
+			Dexter.withActivity(a).withPermissions(ssd.toArray(new String[0]))
 					.withListener(new MultiplePermissionsListener()
 					{
 						@Override

@@ -43,6 +43,7 @@ import com.ducky.fastvideoframeextraction.fastextraction.Frame;
 import com.ducky.fastvideoframeextraction.fastextraction.FrameExtractor;
 import com.ducky.fastvideoframeextraction.fastextraction.IVideoFrameExtractor;
 import com.example.morldapp_demo01.CameraXViewModel;
+import com.example.morldapp_demo01.Edit.FileMangement;
 import com.example.morldapp_demo01.Edit.ShowStructureActivity;
 import com.example.morldapp_demo01.Edit.ShowVideoStructureActivity;
 import com.example.morldapp_demo01.PreferenceUtils;
@@ -421,6 +422,7 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
     {
         Intent intent =new Intent(Intent.ACTION_OPEN_DOCUMENT); //極重要，用android 11以上，用ACTION_PICK必閃退
         intent.setType("video/*");
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         videoActivityResultLauncher.launch(intent);
     }
 
@@ -467,10 +469,7 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
                         Uri viseoUri =null;
                         Intent data=result.getData();
                         viseoUri=data.getData();
-
-//                        final int takeFlags = result.getData().getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-//                        getContentResolver().takePersistableUriPermission(imageUri, takeFlags);
-
+                        
                         Intent intent = new Intent();
                         intent= new Intent(VideoRecordingActivity.this, ShowVideoStructureActivity.class);
                         Bundle objbundle = new Bundle();
