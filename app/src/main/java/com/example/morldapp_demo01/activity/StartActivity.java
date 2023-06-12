@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
+import com.example.morldapp_demo01.Edit.ShowVideoStructureActivity;
 import com.example.morldapp_demo01.R;
 import com.example.morldapp_demo01.Tools;
 
@@ -27,6 +28,9 @@ public class StartActivity extends Base
                     {
                         finish();
                         startActivity(new Intent(getActivity(), MainActivity.class));
+//                        Bundle bundle = new Bundle();
+//                        bundle.putString("urivideostr","content://com.android.providers.media.documents/document/video%3A42");
+//                        startActivity(new Intent(getActivity(), ShowVideoStructureActivity.class).putExtras(bundle));
                     }
 
                     @Override

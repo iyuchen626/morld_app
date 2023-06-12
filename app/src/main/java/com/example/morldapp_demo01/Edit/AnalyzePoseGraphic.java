@@ -2,8 +2,10 @@ package com.example.morldapp_demo01.Edit;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 
+import com.ducky.fastvideoframeextraction.fastextraction.FrameExtractor;
 import com.example.morldapp_demo01.GraphicOverlay;
 
 public class AnalyzePoseGraphic extends GraphicOverlay.Graphic{
@@ -12,7 +14,6 @@ public class AnalyzePoseGraphic extends GraphicOverlay.Graphic{
     private static final float IN_FRAME_LIKELIHOOD_TEXT_SIZE = 30.0f;
     private static final float STROKE_WIDTH = 7.0f;
     private static final float POSE_CLASSIFICATION_TEXT_SIZE = 60.0f;
-
     private final Paint BluePaint;
     structurepoint[] structurepoint= new structurepoint[12];
     GraphicOverlay graphicOverlay;
@@ -25,15 +26,27 @@ public class AnalyzePoseGraphic extends GraphicOverlay.Graphic{
         BluePaint.setColor(Color.BLUE);
         BluePaint.setTextSize(IN_FRAME_LIKELIHOOD_TEXT_SIZE);
         this.structurepoint=structurepoint;
-
     }
 
     @Override
     public void draw(Canvas canvas) {
-        int h = canvas.getHeight();
-        graphicOverlay.scaleFactor = (float) (h / 800.0);
+        float scale1 = (float) (canvas.getHeight() / FrameExtractor.MAX_RESOLUTION);
+        float scale2 = (float) (canvas.getWidth() / FrameExtractor.MAX_RESOLUTION);
+        if(scale2 > scale1) scale1 = scale2;
+        float offset = 1.3f;
+        scale1 *= offset;
+        float hDes = (float) (-canvas.getHeight()*0.01) * offset;
         if(structurepoint==null) return;
-        for(int i=0; i<12; i++) if(structurepoint[i]==null) return;
+        for (int i = 0; i < 12; i++)
+        {
+            if (structurepoint[i] == null)
+            {
+                return;
+            }
+        }
+
+        canvas.translate(0, hDes);
+        canvas.scale(scale1, scale1);
         drawLine(canvas, structurepoint[6],structurepoint[0], BluePaint);
         drawLine(canvas, structurepoint[8],structurepoint[2], BluePaint);
         drawLine(canvas, structurepoint[6],structurepoint[7], BluePaint);

@@ -315,7 +315,7 @@ class FrameExtractor(private val listener: IVideoFrameExtractor) {
                     if (doRender) {
                         if (lastHandlerMicrosecond == 0L) lastHandlerMicrosecond =
                             presentationTimeUs
-                        if (Math.abs(lastHandlerMicrosecond - presentationTimeUs) >= ((1.0/(FPS*0.25))) * 1000 * 1000) {
+                        if (Math.abs(lastHandlerMicrosecond - presentationTimeUs) >= ((1.0/(FPS*0.2))) * 1000 * 1000) {
                             lastHandlerMicrosecond = presentationTimeUs
 
                             if (verbose) Log.d(TAG, "Awaiting decode of frame $decodeCount")
@@ -357,6 +357,6 @@ class FrameExtractor(private val listener: IVideoFrameExtractor) {
 
     companion object {
         const val TAG = "FrameExtractor"
-        const val MAX_RESOLUTION = 800
+        const val MAX_RESOLUTION = 600
     }
 }
