@@ -48,60 +48,11 @@ public class ApiStrategy
 {
 	Gson gson;
 	//读超时长，单位：毫秒
-	public static final int READ_TIME_OUT = 5000;
+	public static final int READ_TIME_OUT = 15000;
 	//连接时长，单位：毫秒
-	public static final int CONNECT_TIME_OUT = 5000;
-	private final static String CLIENT_PRI_KEY = "client-cert.bks";
-	private final static String TRUSTSTORE_PUB_KEY = "server-cert.bks";
-	private final static String CLIENT_BKS_PASSWORD = "123456";
-	private final static String TRUSTSTORE_BKS_PASSWORD = "123456";
-	private final static String KEYSTORE_TYPE = "BKS";
-	private final static String PROTOCOL_TYPE = "TLS";
-	private final static String CERTIFICATE_STANDARD = "X509";
-	/**
-	 * 设缓存有效期为两天
-	 */
-	private static final long CACHE_STALE_SEC = 60 * 60 * 24 * 2;
+	public static final int CONNECT_TIME_OUT = 15000;
 	public static ApiService apiService;
-	static SSLSocketFactory sslSocketFactory;
-	private static X509TrustManager x509TrustManager;
 	private static String lastUrl = "";
-	/**
-	 * 云端响应头拦截器，用来配置缓存策略
-	 * Dangerous interceptor that rewrites the server's cache-control header.
-	 */
-	private final Interceptor mRewriteCacheControlInterceptor = new Interceptor()
-	{
-		@Override
-		public Response intercept(Chain chain) throws IOException
-		{
-			Request request = chain.request();
-			String cacheControl = request.cacheControl().toString();
-			if (!Tools.isNetworkConnected(MyApplication.getInstance()))
-			{
-				request = request.newBuilder()
-						.cacheControl(TextUtils.isEmpty(cacheControl) ? CacheControl
-								.FORCE_NETWORK : CacheControl.FORCE_CACHE)
-						.build();
-			}
-			Response originalResponse = chain.proceed(request);
-			if (!Tools.isNetworkConnected(MyApplication.getInstance()))
-			{
-				return originalResponse.newBuilder()
-						.header("Cache-Control", cacheControl)
-						.removeHeader("Pragma")
-						.build();
-			}
-			else
-			{
-				return originalResponse.newBuilder()
-						.header("Cache-Control", "public, only-if-cached, max-stale=" +
-								CACHE_STALE_SEC)
-						.removeHeader("Pragma")
-						.build();
-			}
-		}
-	};
 
 	private ApiStrategy(String base_url)
 	{
@@ -114,32 +65,20 @@ public class ApiStrategy
 		Cache cache = new Cache(cacheFile, 1024 * 1024 * 10);
 
 		//增加头部信息
-		Interceptor headerInterceptor = new Interceptor()
-		{
+		Interceptor headerInterceptor = new Interceptor() {
 			@Override
-			public Response intercept(Chain chain) throws IOException
-			{
-				Request request = chain.request();
-				Response originalResponse = chain.proceed(request);
-				return originalResponse.newBuilder().addHeader("Authorization", "Bearer 123")
+			public Response intercept(Chain chain) throws IOException {
+				Log.i(Config.TAG, "token="+Config.mmToken);
+				Request newRequest  = chain.request().newBuilder()
+						.addHeader("Authorization", "Bearer " + Config.mmToken)
 						.build();
-//				Response mainRes ponse = chain.proceed(chain.request());
-//
-//				Log.i(Config.TAG, "請求:" + chain.request().url().encodedPath());
-//				String token = "000";
-//				Request build = chain.request().newBuilder()
-//						.addHeader("Authorization", "Bearer " + token)//设置允许请求json数据
-//						.build();
-//				return chain.proceed(build);
+				return chain.proceed(newRequest);
 			}
 		};
 
-		//创建一个OkHttpClient并设置超时时间
 		OkHttpClient client = new OkHttpClient.Builder()
 				.readTimeout(READ_TIME_OUT, TimeUnit.MILLISECONDS)
 				.connectTimeout(CONNECT_TIME_OUT, TimeUnit.MILLISECONDS)
-				.addInterceptor(mRewriteCacheControlInterceptor)
-				.addNetworkInterceptor(mRewriteCacheControlInterceptor)
 				.addInterceptor(headerInterceptor)
 				.cache(cache)
 				.hostnameVerifier(new HostnameVerifier()

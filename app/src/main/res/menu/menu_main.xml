@@ -1,11 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.myapplication.MainActivity">
-    <item
-        android:id="@+id/media_route_menu_item"
-        android:title="123"
-        app:actionProviderClass="androidx.mediarouter.app.MediaRouteActionProvider"
-        app:showAsAction="always"/>
-
+    tools:showIn="navigation_view">
+    <group
+        android:id="@+id/drawer_group1"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_channel"
+            android:icon="@drawable/icon_channel"
+            android:title="你的頻道" />
+        <item
+            android:id="@+id/nav_wallet"
+            android:icon="@drawable/icon_wallet"
+            android:title="你的錢包" />
+        <item
+            android:id="@+id/nav_setting"
+            android:icon="@drawable/icon_setting"
+            android:title="設定" />
+        <item
+            android:id="@+id/nav_service"
+            android:icon="@drawable/icon_service"
+            android:title="說明和意見回饋" />
+    </group>
 </menu>

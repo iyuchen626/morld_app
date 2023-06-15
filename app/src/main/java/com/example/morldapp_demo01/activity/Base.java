@@ -1,12 +1,18 @@
 package com.example.morldapp_demo01.activity;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
 
 
+import com.example.morldapp_demo01.Config;
+import com.example.morldapp_demo01.Tools;
+import com.example.morldapp_demo01.pojo.User;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.LayoutInflaterCompat;
 import androidx.work.impl.utils.EnqueueRunnable;
 
 public class Base extends AppCompatActivity
@@ -15,10 +21,22 @@ public class Base extends AppCompatActivity
     double totalHttpDownloaded;
     double totalP2pDownloaded;
     double totalP2pUploaded;
+
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState)
+    protected void onCreate(@Nullable Bundle savedInstanceState)
     {
-        super.onCreate(savedInstanceState, persistentState);
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        User user = user();
+        if(user != null)
+        {
+            Config.mmToken = user.token;
+        }
     }
 
     @Override
@@ -31,6 +49,13 @@ public class Base extends AppCompatActivity
             {
             }
         }, 50);
+    }
+
+    protected User user()
+    {
+        String s = Tools.mmRead(getActivity(), Config.KEY_User);
+        User u = Tools.getGson().fromJson(s, User.class);
+        return u;
     }
 
     protected AppCompatActivity getActivity()

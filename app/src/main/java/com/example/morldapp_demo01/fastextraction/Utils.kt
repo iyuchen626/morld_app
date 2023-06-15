@@ -9,10 +9,15 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.DisplayMetrics
+import android.view.View
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
+import java.net.URL
 import java.nio.ByteBuffer
 
 
@@ -26,14 +31,29 @@ object Utils {
     /**
      * Get bitmap from ByteBuffer
      */
-    @JvmStatic fun fromBufferToBitmap(buffer: ByteBuffer, width: Int, height: Int): Bitmap? {
+    @JvmStatic fun fromBufferToBitmap(buffer: ByteBuffer, width: Int, height: Int, rotate: Float, isFlip: Boolean): Bitmap? {
         val result = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         buffer.rewind()
         result.copyPixelsFromBuffer(buffer)
         val transformMatrix = Matrix()
+        transformMatrix.setRotate(rotate)
+        if(isFlip) transformMatrix.postScale(-1F, 1F)
         val outputBitmap = Bitmap.createBitmap(result, 0, 0, result.width, result.height, transformMatrix, false)
         outputBitmap.density = DisplayMetrics.DENSITY_DEFAULT
         return outputBitmap
+    }
+
+    interface OnDownloadDoneListener {
+        fun onDone(dd:ByteArray)
+    }
+
+    @JvmStatic fun urlToBytes(url: String, onn: OnDownloadDoneListener) {
+        val scope = CoroutineScope(Dispatchers.Default)
+        scope.launch {
+            val url = URL(url)
+            val imageData = url.readBytes()
+            onn.onDone(imageData)
+        }
     }
 
 

@@ -16,6 +16,8 @@ import android.os.Build;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -76,6 +78,32 @@ public class Tools
 		return new String(hexChars);
 	}
 
+	public static void showQuestion(AppCompatActivity a, String title, String content, String leftText, String rightText, final View.OnClickListener left, View.OnClickListener right)
+	{
+		Normal editNameDialog = new Normal();
+		editNameDialog.setTitle(title);
+		editNameDialog.setContent(content);
+		editNameDialog.setCancel(leftText, new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View view)
+			{
+				editNameDialog.dismiss();
+				if (left != null) left.onClick(view);
+			}
+		});
+		editNameDialog.setOK(rightText, new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View view)
+			{
+				editNameDialog.dismiss();
+				if (right != null) right.onClick(view);
+			}
+		});
+		editNameDialog.show(a.getSupportFragmentManager(), "EditNameDialog");
+	}
+
 	public static void showProgress(AppCompatActivity a, String msg)
 	{
 		if (a == null || a.isFinishing()) return;
@@ -107,7 +135,13 @@ public class Tools
 		new Sweetalert(a, Sweetalert.ERROR_TYPE)
 				.setTitleText("錯誤")
 				.setContentText(title)
-				.show();
+				.setConfirmButton("確定", new Sweetalert.OnSweetClickListener() {
+					@Override
+					public void onClick(Sweetalert sweetAlertDialog)
+					{
+						sweetAlertDialog.dismissWithAnimation();
+					}
+				}).show();
 	}
 	public static void showInfo(AppCompatActivity a, String title, String s)
 	{
@@ -314,6 +348,21 @@ public class Tools
 		{
 			//handle error
 		}
+	}
+
+	public static String mm讀取帳密(Context context, String key)
+	{
+		try
+		{
+			String p = Tools.readData(context, key);
+			p = AESCrypt.decrypt(Tools.getUniqueID(context), p);
+			return p;
+		}
+		catch (GeneralSecurityException e)
+		{
+			//handle error
+		}
+		return "";
 	}
 
 	public static String getUniqueID(Context context)

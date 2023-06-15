@@ -7,17 +7,23 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.morldapp_demo01.R;
+import com.example.morldapp_demo01.Tools;
 import com.example.morldapp_demo01.camera.VideoRecordingActivity;
 import com.example.morldapp_demo01.fragmemt.HomeFragment;
 import com.example.morldapp_demo01.mirror.Client;
 import com.example.morldapp_demo01.mirror.ScreenService;
+import com.example.morldapp_demo01.pojo.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -28,6 +34,9 @@ public class MainActivity extends Base
     BottomNavigationView BtnNavViewMain;
     private MediaProjectionManager mediaProjectionManager;
     private static final int PROJECTION_REQUEST_CODE = 1001;
+    DrawerLayout drawerLayout;
+    NavigationView navigationView;
+    TextView userNmae;
 
     @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +44,25 @@ public class MainActivity extends Base
             mediaProjectionManager = (MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE);
             //binding=ActivityMainBinding.inflate(getLayoutInflater());
             //setContentView(binding.getRoot());
-            setContentView(R.layout.activity_main);
+            setContentView(R.layout.main);
+            drawerLayout = findViewById(R.id.drawer_layout);
+            navigationView = findViewById(R.id.nav_view);
+            userNmae = navigationView.getHeaderView(0).findViewById(R.id.name);
+            navigationView.getHeaderView(0).findViewById(R.id.root).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v)
+                {
+                    drawerLayout.close();
+                    startActivity(new Intent(getActivity(), Login.class));
+                }
+            });
+            findViewById(R.id.imagelogo).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v)
+                {
+                    drawerLayout.open();
+                }
+            });
             findViewById(R.id.imageView9).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view)
@@ -153,6 +180,16 @@ public class MainActivity extends Base
 
 
         Editor_dialog.show();
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        User user = user();
+        if(user != null) {
+            userNmae.setText("已登入");
+        }
     }
 
     // 请求开始录屏

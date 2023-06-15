@@ -18,6 +18,7 @@ import java.io.IOException
 class FrameExtractor(private val listener: IVideoFrameExtractor) {
     private var isTerminated = false
     var FPS: Int = 1
+    var isPause: Boolean = false
     var lastHandlerMicrosecond:Long = 0
     private val size = 1
     private val frameCount = Int.MAX_VALUE
@@ -239,7 +240,10 @@ class FrameExtractor(private val listener: IVideoFrameExtractor) {
 
         if (verbose) Log.d(TAG, "Start extract loop...")
         while (!outputDone && !isTerminated) {
-
+            if(isPause) {
+                Thread.sleep(1_000)
+                continue
+            }
             // Feed more data to the decoder.
             if (!inputDone) {
                 val inputBufIndex = decoder.dequeueInputBuffer(TIMEOUT_USEC.toLong())

@@ -11,6 +11,7 @@ import com.example.morldapp_demo01.pojo.LoginRequest;
 import com.example.morldapp_demo01.pojo.LoginResponse;
 import com.example.morldapp_demo01.pojo.RegisterRequest;
 import com.example.morldapp_demo01.pojo.RegisterResponse;
+import com.example.morldapp_demo01.pojo.User;
 import com.example.morldapp_demo01.retrofit2.ApiStrategy;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -62,13 +63,13 @@ public class Login extends Base
 			public void accept(RegisterResponse res) throws Exception
 			{
 				Tools.hideProgress(getActivity());
-				if (res.success)
+				if (res.error.equals(""))
 				{
-					Tools.toastSuccess(getActivity(), res.message);
+					Tools.toastSuccess(getActivity(), res.data.message);
 				}
 				else
 				{
-					Tools.showError(getActivity(), res.message);
+					Tools.showError(getActivity(), res.error);
 				}
 			}
 		}, new Consumer<Throwable>()
@@ -104,11 +105,14 @@ public class Login extends Base
 			public void accept(LoginResponse res) throws Exception
 			{
 				Tools.hideProgress(getActivity());
-				Log.i(Config.TAG, res.message);
-				if (res.success)
+				Log.i(Config.TAG, res.error);
+				if (res.error.equals(""))
 				{
 					Tools.mm儲存帳密(getApplicationContext(), Config.KEY_TOKEN, res.data.token);
-					Tools.toastSuccess(getActivity(), res.message);
+					String s = Tools.getGson().toJson(res.data, User.class);
+					Tools.mmSave(getActivity(), Config.KEY_User, s);
+					Tools.toastSuccess(getActivity(), "已登入");
+					finish();
 				}
 				else
 				{
