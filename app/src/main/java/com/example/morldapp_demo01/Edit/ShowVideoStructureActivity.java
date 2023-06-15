@@ -1,5 +1,7 @@
 package com.example.morldapp_demo01.Edit;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,7 +12,10 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.VideoView;
@@ -26,6 +31,7 @@ import com.example.morldapp_demo01.activity.Base;
 import com.example.morldapp_demo01.activity.EditFinishActivity;
 import com.example.morldapp_demo01.fastextraction.URIPathHelper;
 import com.example.morldapp_demo01.fastextraction.Utils;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.mlkit.vision.common.InputImage;
 
 import java.io.File;
@@ -48,7 +54,9 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
     MediaController mediaController;
     ImageView Act_ImageView_ShowVideo;
     GraphicOverlay Act_GraphicOverlay_ShowVideoStructure;
-    Button Act_Button_VideoStructureEdit,Act_Button_VideoStructureShow;
+    ImageButton Act_ImgButton_VideoStructureEdit;
+    ImageButton Act_ImgImgButton_video_StructureEditUp,Act_ImgImgButton_video_StructureEditDown,Act_ImgImgButton_video_StructureEditLeft,Act_ImgImgButton_video_StructureEditRight;
+    Button Act_Button_VideoStructureShow;
     private HashMap<String,  structurepoint[]> posestructurepoint=new HashMap<>();
     int count=0;
     private String StructureUriStr,videoInputPath;
@@ -59,28 +67,45 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
     private FrameExtractor frameExtractor;
     int orientation;
     int lastFindIndex = 0;
+    private Boolean structure_show=false;
+    int PointIdx = 0;
+    Boolean EditStructureFlag = false;
+    structurepoint[] structurepoints;
+    float original_y, original_x;
 
+    @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_video_structure);
         frameExtractor = new FrameExtractor(ShowVideoStructureActivity.this);
         handler.postDelayed(myrunnable, 500);
-        findViewById(R.id.layout_Button_ReproducePose).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                mm產生骨骼();
-            }
-        });
+//        findViewById(R.id.layout_Button_ReproducePose).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v)
+//            {
+//                mm產生骨骼();
+//            }
+//        });
         Act_VideoView_Pose=findViewById(R.id.Layout_VideoView_ShowVideo);
         Act_ImageView_ShowVideo=findViewById(R.id.Layout_ImageView_ShowVideo);
         Act_GraphicOverlay_ShowVideoStructure=findViewById(R.id.Layout_GraphicOverlay_ShowVideoStructure);
-        Act_Button_VideoStructureEdit=findViewById(R.id.Layout_Button_VideoStructureEdit);
+        Act_ImgButton_VideoStructureEdit=findViewById(R.id.layout_ImgButton_video_StructureEdit);
         Act_Button_VideoStructureShow=findViewById(R.id.Layout_Button_VideoStructureShow);
 
-        Act_Button_VideoStructureEdit.setOnClickListener(this);
+
+        Act_ImgImgButton_video_StructureEditUp=findViewById(R.id.layout_ImgButton_video_StructureEditUp);
+        Act_ImgImgButton_video_StructureEditLeft=findViewById(R.id.layout_ImgButton_video_StructureEditLeft);
+        Act_ImgImgButton_video_StructureEditRight=findViewById(R.id.layout_ImgButton_video_StructureEditRight);
+        Act_ImgImgButton_video_StructureEditDown=findViewById(R.id.layout_ImgButton_video_StructureEditDown);
+
+        Act_ImgButton_VideoStructureEdit.setOnClickListener(this);
         Act_Button_VideoStructureShow.setOnClickListener(this);
+
+        Act_ImgImgButton_video_StructureEditUp.setOnClickListener(this);
+        Act_ImgImgButton_video_StructureEditLeft.setOnClickListener(this);
+        Act_ImgImgButton_video_StructureEditRight.setOnClickListener(this);
+        Act_ImgImgButton_video_StructureEditDown.setOnClickListener(this);
 
 
         Intent intent=getIntent();
@@ -99,6 +124,7 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
         videoInputPath = uriPathHelper.getPath(getActivity(), uri).toString();
         frameExtractor.init(videoInputPath);
         orientation = frameExtractor.getOrientation(videoInputPath);
+        mm產生骨骼();
     }
 
     void mm產生骨骼()
@@ -127,23 +153,53 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
 
     @Override
     public void onClick(View v) {
+        Act_GraphicOverlay_ShowVideoStructure.clear();
         switch (v.getId()) {
             case R.id.Layout_Button_VideoStructureShow:
-                HomeEditor_Dialog();
+                if(EditStructureFlag==false) {
+                    HomeEditor_Dialog();
+                }
+                else
+                {
+                    Act_ImgImgButton_video_StructureEditUp.setVisibility(View.INVISIBLE);
+                    Act_ImgImgButton_video_StructureEditLeft.setVisibility(View.INVISIBLE);
+                    Act_ImgImgButton_video_StructureEditRight.setVisibility(View.INVISIBLE);
+                    Act_ImgImgButton_video_StructureEditDown.setVisibility(View.INVISIBLE);
+                    EditStructureFlag=false;
+                    Act_GraphicOverlay_ShowVideoStructure.setVisibility(View.INVISIBLE);
+
+                }
                 break;
 
-            case R.id.Layout_Button_VideoStructureEdit:
-                Act_VideoView_Pose.pause();
-                long currentTimeMicrosecond=(Act_VideoView_Pose.getCurrentPosition() * 1000);
-                Intent intent2 = new Intent();
-                intent2= new Intent(ShowVideoStructureActivity.this, AdjustVideoStructureActivity.class);
-                Bundle objbundle = new Bundle();
-                objbundle.putString("uristr_Edit",StructureUriStr);
-//                objbundle.putInt("Timecount",Timecount);
-                intent2.putExtras(objbundle);
-                startActivity(intent2);
+            case R.id.layout_ImgButton_video_StructureEdit:
+                Structure_Dialog();
+                break;
+
+            case R.id.layout_ImgButton_video_StructureEditUp:
+                original_y=structurepoints[PointIdx].getStructpoint_y();
+                structurepoints[PointIdx].setStructpoint_y(original_y-20);
+                Act_GraphicOverlay_ShowVideoStructure.add(new EditPoseGraphic(Act_GraphicOverlay_ShowVideoStructure, structurepoints,PointIdx));
+                break;
+
+            case R.id.layout_ImgButton_video_StructureEditLeft:
+                original_x=structurepoints[PointIdx].getStructpoint_x();
+                structurepoints[PointIdx].setStructpoint_x(original_x-20);
+                Act_GraphicOverlay_ShowVideoStructure.add(new EditPoseGraphic(Act_GraphicOverlay_ShowVideoStructure, structurepoints,PointIdx));
+                break;
+
+            case R.id.layout_ImgButton_video_StructureEditRight:
+                original_x=structurepoints[PointIdx].getStructpoint_x();
+                structurepoints[PointIdx].setStructpoint_x(original_x+20);
+                Act_GraphicOverlay_ShowVideoStructure.add(new EditPoseGraphic(Act_GraphicOverlay_ShowVideoStructure, structurepoints,PointIdx));
+                break;
+
+            case R.id.layout_ImgButton_video_StructureEditDown:
+                original_y=structurepoints[PointIdx].getStructpoint_y();
+                structurepoints[PointIdx].setStructpoint_y(original_y+20);
+                Act_GraphicOverlay_ShowVideoStructure.add(new EditPoseGraphic(Act_GraphicOverlay_ShowVideoStructure, structurepoints,PointIdx));
 
                 break;
+
 
             default:
                 break;
@@ -183,7 +239,7 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
             String wantId = mm取得對應時間軸之key(currentTimeMicrosecond);
             if(!wantId.equals(""))
             {
-                structurepoint[] structurepoints = posestructurepoint.get(wantId);
+                structurepoints = posestructurepoint.get(wantId);
                 Act_GraphicOverlay_ShowVideoStructure.clear();
                 Act_GraphicOverlay_ShowVideoStructure.add(new AnalyzePoseGraphic(Act_GraphicOverlay_ShowVideoStructure, structurepoints));
             }
@@ -292,22 +348,211 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
             }
         });
 
-//
-//        Act_Layout_Morldment.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//                Intent intent = new Intent();
-//                //intent= new Intent(this.getActivity(), FunctionChooseActivity.class);
-//                intent= new Intent(MainActivity.this, VideoRecordingActivity.class);
-//                startActivity(intent);
-//
-//                finish();
-//
-//            }
-//        });
+
+        Editor_dialog.show();
+    }
+
+    void Structure_Dialog()
+    {
+        Dialog Editor_dialog=new Dialog(this.getActivity());
+        View view=getLayoutInflater().inflate(R.layout.dialog_structure_option,null);
+        Editor_dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+
+
+            }
+        });
+        Editor_dialog.setContentView(view);
+
+        Window window = Editor_dialog.getWindow();
+        WindowManager.LayoutParams params = window.getAttributes();
+        params.x =(int)Act_ImgButton_VideoStructureEdit.getScaleX();
+        params.y = (int)Act_ImgButton_VideoStructureEdit.getScaleY();
+        window.setAttributes(params);
+
+        ImageButton Act_Button_Structure_Show=Editor_dialog.findViewById(R.id.Layout_ImgBtn_Structure_Show);
+        ImageButton Act_Button_Structure_NotShow=Editor_dialog.findViewById(R.id.Layout_ImgBtn_Structure_NotShow);
+        ImageButton Act_Button_Structure_AdjustPostion=Editor_dialog.findViewById(R.id.Layout_ImgBtn_Structure_Adjust_Postion);
+
+
+        Act_Button_Structure_Show.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Act_GraphicOverlay_ShowVideoStructure.setVisibility(View.VISIBLE);
+                Editor_dialog.dismiss();
+            }
+        });
+
+        Act_Button_Structure_NotShow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Act_GraphicOverlay_ShowVideoStructure.setVisibility(View.INVISIBLE);
+                Editor_dialog.dismiss();
+            }
+        });
+
+        Act_Button_Structure_AdjustPostion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Act_GraphicOverlay_ShowVideoStructure.setVisibility(View.VISIBLE);
+                Editor_dialog.dismiss();
+                Poistion_Dialog();
+            }
+        });
+
 
 
         Editor_dialog.show();
+    }
+
+    void Poistion_Dialog()
+    {
+        EditStructureFlag=true;
+        Act_VideoView_Pose.pause();
+
+        BottomSheetDialog Editor_dialog = new BottomSheetDialog(this.getActivity());
+        View view = getLayoutInflater().inflate(R.layout.dialog_editor_pointchoose, null);
+        Button Act_Button_Structure_Point_0, Act_Button_Structure_Point_1, Act_Button_Structure_Point_2, Act_Button_Structure_Point_3, Act_Button_Structure_Point_4, Act_Button_Structure_Point_5, Act_Button_Structure_Point_6, Act_Button_Structure_Point_7, Act_Button_Structure_Point_8, Act_Button_Structure_Point_9, Act_Button_Structure_Point_10, Act_Button_Structure_Point_11;
+
+        Editor_dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                Editor_dialog.dismiss();
+
+            }
+        });
+
+        Editor_dialog.setContentView(view);
+
+        Act_Button_Structure_Point_0 = Editor_dialog.findViewById(R.id.layout_Button_Structure_video_Point_0);
+        Act_Button_Structure_Point_1 = Editor_dialog.findViewById(R.id.layout_Button_Structure_video_Point_1);
+        Act_Button_Structure_Point_2 = Editor_dialog.findViewById(R.id.layout_Button_Structure_video_Point_2);
+        Act_Button_Structure_Point_3 = Editor_dialog.findViewById(R.id.layout_Button_Structure_video_Point_3);
+        Act_Button_Structure_Point_4 = Editor_dialog.findViewById(R.id.layout_Button_Structure_video_Point_4);
+        Act_Button_Structure_Point_5 = Editor_dialog.findViewById(R.id.layout_Button_Structure_video_Point_5);
+        Act_Button_Structure_Point_6 = Editor_dialog.findViewById(R.id.layout_Button_Structure_video_Point_6);
+        Act_Button_Structure_Point_7 = Editor_dialog.findViewById(R.id.layout_Button_Structure_video_Point_7);
+        Act_Button_Structure_Point_8 = Editor_dialog.findViewById(R.id.layout_Button_Structure_video_Point_8);
+        Act_Button_Structure_Point_9 = Editor_dialog.findViewById(R.id.layout_Button_Structure_video_Point_9);
+        Act_Button_Structure_Point_10 = Editor_dialog.findViewById(R.id.layout_Button_Structure_video_Point_10);
+        Act_Button_Structure_Point_11 = Editor_dialog.findViewById(R.id.layout_Button_Structure_video_Point_11);
+
+        Act_Button_Structure_Point_0.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PointIdx=0;
+                Editor_dialog.dismiss();
+            }
+        });
+
+        Act_Button_Structure_Point_1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PointIdx=1;
+                poistioneditshow();
+                Editor_dialog.dismiss();
+            }
+        });
+        Act_Button_Structure_Point_2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PointIdx=2;
+                poistioneditshow();
+                Editor_dialog.dismiss();
+            }
+        });
+        Act_Button_Structure_Point_3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PointIdx=3;
+                poistioneditshow();
+                Editor_dialog.dismiss();
+            }
+        });
+        Act_Button_Structure_Point_4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PointIdx=4;
+                poistioneditshow();
+                Editor_dialog.dismiss();
+            }
+        });
+        Act_Button_Structure_Point_5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PointIdx=5;
+                poistioneditshow();
+                Editor_dialog.dismiss();
+            }
+        });
+        Act_Button_Structure_Point_6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PointIdx=6;
+                poistioneditshow();
+               Editor_dialog.dismiss();
+            }
+        });
+        Act_Button_Structure_Point_7.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PointIdx=7;
+                poistioneditshow();
+                Editor_dialog.dismiss();
+            }
+        });
+        Act_Button_Structure_Point_8.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PointIdx=8;
+                poistioneditshow();
+                Editor_dialog.dismiss();
+            }
+        });
+        Act_Button_Structure_Point_9.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PointIdx=9;
+                poistioneditshow();
+                Editor_dialog.dismiss();
+            }
+        });
+        Act_Button_Structure_Point_10.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PointIdx=10;
+                poistioneditshow();
+                Editor_dialog.dismiss();
+            }
+        });
+        Act_Button_Structure_Point_11.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PointIdx=11;
+                poistioneditshow();
+                Editor_dialog.dismiss();
+
+            }
+        });
+        Act_ImgImgButton_video_StructureEditUp.setVisibility(View.VISIBLE);
+        Act_ImgImgButton_video_StructureEditLeft.setVisibility(View.VISIBLE);
+        Act_ImgImgButton_video_StructureEditRight.setVisibility(View.VISIBLE);
+        Act_ImgImgButton_video_StructureEditDown.setVisibility(View.VISIBLE);
+
+        Editor_dialog.show();
+    }
+
+    void poistioneditshow()
+    {
+
+        long currentTimeMicrosecond=(Act_VideoView_Pose.getCurrentPosition() * 1000);
+        String wantId = mm取得對應時間軸之key(currentTimeMicrosecond);
+        if(!wantId.equals(""))
+        {
+            structurepoints = posestructurepoint.get(wantId);
+            Act_GraphicOverlay_ShowVideoStructure.clear();
+            Act_GraphicOverlay_ShowVideoStructure.add(new EditPoseGraphic(Act_GraphicOverlay_ShowVideoStructure, structurepoints,PointIdx));
+        }
     }
 }
