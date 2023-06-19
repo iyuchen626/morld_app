@@ -16,9 +16,14 @@ public class FilmPOJO implements Serializable
 	public String video_time;
 	public String view_count;
 	public String like_count;
+	public float video_offset; //先隨便取名，後端應該要存的offset
 	public List<KeyImageInfo> key_image_info = new ArrayList<>();
 	public DetailInfo detail_info;
 	public UserInfo user_info;
+
+	public FilmPOJO() {
+		video_offset = 0;
+	}
 
 	public class UserInfo implements Serializable
 	{

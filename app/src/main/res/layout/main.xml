@@ -5,8 +5,7 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:openDrawer="start">
+    android:fitsSystemWindows="true">
 
     <include
         android:id="@+id/app_bar_main"
@@ -18,9 +17,9 @@
         android:id="@+id/nav_view"
         android:layout_width="220dp"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
         android:background="#1b1b1b"
         android:fitsSystemWindows="true"
+        android:layout_gravity="right"
         app:headerLayout="@layout/header_navigation_drawer"
         app:itemIconTint="#FBDA2D"
         app:itemTextColor="#FBDA2D"

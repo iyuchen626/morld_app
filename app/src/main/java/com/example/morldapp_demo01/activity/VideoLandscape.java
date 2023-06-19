@@ -6,10 +6,16 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.example.morldapp_demo01.Config;
+import com.example.morldapp_demo01.Edit.AnalyzePoseGraphic;
+import com.example.morldapp_demo01.Edit.FileMangement;
+import com.example.morldapp_demo01.Edit.structurepoint;
 import com.example.morldapp_demo01.R;
+import com.example.morldapp_demo01.Tools;
 import com.example.morldapp_demo01.databinding.VideoLandscapeBinding;
 import com.example.morldapp_demo01.pojo.FilmPOJO;
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -28,6 +34,7 @@ import com.p2pengine.core.p2p.PlayerInteractor;
 import com.p2pengine.sdk.P2pEngine;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -41,23 +48,27 @@ public class VideoLandscape extends Base
 	private int currentWindow = 0;
 	private long playbackPosition = 0L;
 	String MEDIA_TYPE;
+	private HashMap<String,  structurepoint[]> posestructurepoint=new HashMap<>();
 
 	void initializeFile播放器(String url)
 	{
 		PlayerView playerView = binding.videoView;
 		player = new SimpleExoPlayer.Builder(getActivity()).build();
 		playerView.setPlayer(player);
-		File ff  = getExternalFilesDir(null);
+		File ff  = getExternalFilesDir("videos");
 		ff = new File(ff, data.uuid);
 		MediaItem mediaItem = MediaItem.fromUri(url);
 		if(ff.exists())
 		{
 			mediaItem = MediaItem.fromUri(ff.getAbsolutePath());
 		}
+		else
+		{
+			player.prepare();
+		}
 		player.setMediaItem(mediaItem);
 		player.setPlayWhenReady(playWhenReady);
 		player.seekTo(currentWindow, playbackPosition);
-		player.prepare();
 		View controlView = playerView.findViewById(R.id.exo_controller);
 		ImageView fullscreenIcon = controlView.findViewById(R.id.exo_fullscreen_icon);
 		fullscreenIcon.setOnClickListener(new View.OnClickListener()
@@ -162,6 +173,7 @@ public class VideoLandscape extends Base
 		super.onCreate(savedInstanceState);
 		MEDIA_TYPE = getIntent().getExtras().getString("MEDIA_TYPE");
 		binding = VideoLandscapeBinding.inflate(getLayoutInflater());
+		handler.postDelayed(myrunnable, 50);
 		binding.imageRetry.setOnClickListener(new View.OnClickListener()
 		{
 			@Override
@@ -177,57 +189,129 @@ public class VideoLandscape extends Base
 			@Override
 			public void onClick(View v)
 			{
-				File ff  = getExternalFilesDir(null);
-				ff = new File(ff, data.uuid);
-				if(ff.exists()) ff.delete();
-//				File[] ffs = getExternalFilesDir(Environment.DIRECTORY_MOVIES).listFiles();
-//				for(File f : ffs)
-//				{
-//					Log.i(Config.TAG, f.getName());
-//				}
-				DownloadManager downloadmanager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-				Uri uri = Uri.parse(data.video_slug);
-				DownloadManager.Request request = new DownloadManager.Request(uri);
-				request.setTitle("下載影片");
-				request.setDescription(data.title);
-				request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-				request.setVisibleInDownloadsUi(false);
-				request.setDestinationInExternalFilesDir(getApplicationContext(),  Environment.DIRECTORY_MOVIES, data.uuid);
-				downloadmanager.enqueue(request);
+				Tools.showQuestion(getActivity(), "訊息", "確認下載影片? (下載後才可提供骨骼播放功能)", "是", "否", new View.OnClickListener()
+				{
+					@Override
+					public void onClick(View v)
+					{
+						File ff  = getExternalFilesDir("videos");
+						ff = new File(ff, data.uuid);
+						if(ff.exists())
+						{
+
+						}
+						else
+						{
+							DownloadManager downloadmanager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+							Uri uri = Uri.parse(data.video_slug);
+							DownloadManager.Request request = new DownloadManager.Request(uri);
+							request.setTitle("下載影片");
+							request.setDescription(data.title);
+							request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+							request.setVisibleInDownloadsUi(false);
+							request.setDestinationInExternalFilesDir(getApplicationContext(), "videos", data.uuid);
+							downloadmanager.enqueue(request);
+							binding.imageDownload.setVisibility(View.GONE);
+						}
+					}
+				}, new View.OnClickListener() {
+					@Override
+					public void onClick(View v)
+					{
+
+					}
+				});
 			}
 		});
 		setContentView(binding.getRoot());
+		findViewById(R.id.des).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v)
+			{
+				mm遞減骨骼();
+			}
+		});
+		findViewById(R.id.add).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v)
+			{
+				mm遞增骨骼();
+			}
+		});
 		data = (FilmPOJO) getIntent().getExtras().getSerializable("data");
+		File ff  = getExternalFilesDir("videos");
+		ff = new File(ff, data.uuid);
+		if(ff.exists())
+		{
+			binding.imageDownload.setVisibility(View.GONE);
+			FileMangement.ReadFileFromTxt(getActivity(), "https://case.unood.me/test1.txt", (long) (data.video_offset * 1000 * 1000), new FileMangement.OnReadFileFromTxtListener() {
+				@Override
+				public void onTxt(HashMap<String, structurepoint[]> s)
+				{
+					binding.editOffsetLayout.setVisibility(View.VISIBLE);
+					posestructurepoint = s;
+					player.prepare();
+				}
+			});
+		}
 	}
+
+	void mm遞減骨骼()
+	{
+		data.video_offset -= 0.05f;
+		Tools.toast(getActivity(), "減少偏差值至:"+data.video_offset);
+		FileMangement.ReadFileFromTxt(getActivity(), "https://case.unood.me/test1.txt", (long) (data.video_offset * 1000 * 1000), new FileMangement.OnReadFileFromTxtListener() {
+			@Override
+			public void onTxt(HashMap<String, structurepoint[]> s)
+			{
+				binding.editOffsetLayout.setVisibility(View.VISIBLE);
+				posestructurepoint = s;
+			}
+		});
+	}
+
+	void mm遞增骨骼()
+	{
+		data.video_offset += 0.05f;
+		Tools.toast(getActivity(), "減少偏差值至:"+data.video_offset);
+		FileMangement.ReadFileFromTxt(getActivity(), "https://case.unood.me/test1.txt", (long) (data.video_offset * 1000 * 1000), new FileMangement.OnReadFileFromTxtListener() {
+			@Override
+			public void onTxt(HashMap<String, structurepoint[]> s)
+			{
+				binding.editOffsetLayout.setVisibility(View.VISIBLE);
+				posestructurepoint = s;
+			}
+		});
+	}
+
+	private Runnable myrunnable = new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			float fps = 30; //後端也要存fps，或著存到txt表頭去
+			long delay = (long) ((1.0 / fps) * 1000);
+			if (!binding.videoView.getPlayer().isPlaying())
+			{
+				handler.postDelayed(myrunnable, delay); return;
+			}
+			long currentTimeMicrosecond = (binding.videoView.getPlayer().getCurrentPosition() * 1000);
+			String wantId = Tools.mm取得對應時間軸之key(posestructurepoint, currentTimeMicrosecond);
+			if (!wantId.equals(""))
+			{
+				Log.i(Config.TAG, "wantID="+wantId +" currentTimeMicrosecond="+currentTimeMicrosecond);
+				binding.videoStructure.clear();
+				structurepoint[] structurepoints = posestructurepoint.get(wantId);
+				binding.videoStructure.add(new AnalyzePoseGraphic(binding.videoStructure, structurepoints));
+			}
+			handler.postDelayed(myrunnable, delay / 2);
+		}
+	};
 
 	void initializePlayer()
 	{
 		if(MEDIA_TYPE.equals("file")) initializeFile播放器(data.video_slug);
 		if(MEDIA_TYPE.equals("stream")) initP2P播放器(data.video_hls_slug);
-//		PlayerView playerView = binding.videoView;
-//		player = new SimpleExoPlayer.Builder(getActivity()).build();
-//		playerView.setPlayer(player);
-//		File ff  = getExternalFilesDir(null);
-//		ff = new File(ff, data.uuid);
-//		MediaItem mediaItem = MediaItem.fromUri(data.video_slug);
-//		if(ff.exists())
-//		{
-//			mediaItem = MediaItem.fromUri(ff.getAbsolutePath());
-//		}
-//		player.setMediaItem(mediaItem);
-//		player.setPlayWhenReady(playWhenReady);
-//		player.seekTo(currentWindow, playbackPosition);
-//		player.prepare();
-//		View controlView = playerView.findViewById(R.id.exo_controller);
-//		ImageView fullscreenIcon = controlView.findViewById(R.id.exo_fullscreen_icon);
-//		fullscreenIcon.setOnClickListener(new View.OnClickListener()
-//		{
-//			@Override
-//			public void onClick(View v)
-//			{
-//				finish();
-//			}
-//		});
 	}
 
 	@Override

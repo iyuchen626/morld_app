@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.morldapp_demo01.Edit.structurepoint;
 import com.example.morldapp_demo01.dialog.Normal;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -49,8 +50,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -142,6 +146,29 @@ public class Tools
 						sweetAlertDialog.dismissWithAnimation();
 					}
 				}).show();
+	}
+
+	public static String mm取得對應時間軸之key(HashMap<String,  structurepoint[]> posestructurepoint, long currentTimeMicrosecond)
+	{
+		long distance = Long.MAX_VALUE; //預設極大值
+		String wantId = "";
+		Set<String> keysOri = posestructurepoint.keySet();
+		List<String> keys = new ArrayList<String>();
+		keys.addAll(keysOri);
+		Collections.sort(keys);
+		int i;
+		for (i = 0; i < keys.size(); i++)
+		{
+			String f = keys.get(i);
+			long id = Long.parseLong(f);
+			long currentDis = Math.abs(id - currentTimeMicrosecond);
+			if (currentDis < distance) //求跟目前影片播放時間距離最近的key，反查出姿態點
+			{
+				distance = currentDis;
+				wantId = f;
+			}
+		}
+		return wantId;
 	}
 	public static void showInfo(AppCompatActivity a, String title, String s)
 	{

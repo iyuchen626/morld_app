@@ -225,7 +225,7 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
                 MultipartBody.Part multipartImage = MultipartBody.Part.createFormData("present_img", "f.jpg", requestFile2);
                 RequestBody title_ = RequestBody.create(MediaType.parse("text/plain"), title);
                 RequestBody desc_ = RequestBody.create(MediaType.parse("text/plain"), desc);
-                RequestBody film_txt = RequestBody.create(MediaType.parse("text/plain"), "1");
+                RequestBody film_txt = RequestBody.create(MediaType.parse("text/plain"),  FileMangement.ReadFile(getActivity(), filename));
                 RequestBody film_type_id = RequestBody.create(MediaType.parse("text/plain"), "1");
                 RequestBody sell = RequestBody.create(MediaType.parse("text/plain"), "1");
                 RequestBody public_ = RequestBody.create(MediaType.parse("text/plain"), "1");
@@ -355,36 +355,13 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
         }
     }
 
-    String mm取得對應時間軸之key(long currentTimeMicrosecond)
-    {
-        long distance = Long.MAX_VALUE; //預設極大值
-        String wantId = "";
-        Set<String> keysOri = posestructurepoint.keySet();
-        List<String> keys = new ArrayList<String>();
-        keys.addAll(keysOri);
-        Collections.sort(keys);
-        int i;
-        for (i = 0; i < keys.size(); i++)
-        {
-            String f = keys.get(i);
-            long id = Long.parseLong(f);
-            long currentDis = Math.abs(id - currentTimeMicrosecond);
-            if (currentDis < distance) //求跟目前影片播放時間距離最近的key，反查出姿態點
-            {
-                distance = currentDis;
-                wantId = f;
-            }
-        }
-        return wantId;
-    }
-
     private Runnable myrunnable =new Runnable() {
         @Override
         public void run() {
             long delay = (long) ((1.0 / frameExtractor.getFPS())*1000);
             if(!Act_VideoView_Pose.isPlaying()) {            handler.postDelayed(myrunnable, delay); return;}
             long currentTimeMicrosecond=(Act_VideoView_Pose.getCurrentPosition() * 1000);
-            String wantId = mm取得對應時間軸之key(currentTimeMicrosecond);
+            String wantId = Tools.mm取得對應時間軸之key(posestructurepoint, currentTimeMicrosecond);
             if(!wantId.equals(""))
             {
                 structurepoints = posestructurepoint.get(wantId);
@@ -746,7 +723,7 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
     {
 
         long currentTimeMicrosecond=(Act_VideoView_Pose.getCurrentPosition() * 1000);
-        String wantId = mm取得對應時間軸之key(currentTimeMicrosecond);
+        String wantId =  Tools.mm取得對應時間軸之key(posestructurepoint, currentTimeMicrosecond);
         if(!wantId.equals(""))
         {
             structurepoints = posestructurepoint.get(wantId);

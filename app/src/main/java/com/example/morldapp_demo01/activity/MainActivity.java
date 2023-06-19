@@ -5,14 +5,14 @@ import android.content.Intent;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.morldapp_demo01.R;
-import com.example.morldapp_demo01.Tools;
 import com.example.morldapp_demo01.camera.VideoRecordingActivity;
+import com.example.morldapp_demo01.dialog.PromptDialogBuilder;
 import com.example.morldapp_demo01.fragmemt.HomeFragment;
 import com.example.morldapp_demo01.mirror.Client;
 import com.example.morldapp_demo01.mirror.ScreenService;
@@ -52,18 +52,25 @@ public class MainActivity extends Base
                 @Override
                 public void onClick(View v)
                 {
-                    drawerLayout.close();
+                    drawerLayout.closeDrawer(Gravity.RIGHT);
                     startActivity(new Intent(getActivity(), Login.class));
                 }
             });
-            findViewById(R.id.imagelogo).setOnClickListener(new View.OnClickListener() {
+            findViewById(R.id.imageView10).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v)
                 {
-                    drawerLayout.open();
+                    drawerLayout.openDrawer(Gravity.RIGHT);
                 }
             });
             findViewById(R.id.imageView9).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v)
+                {
+                    mm搜尋();
+                }
+            });
+            findViewById(R.id.media_route_button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view)
                 {
@@ -221,5 +228,21 @@ public class MainActivity extends Base
                 startService(service);
             }
         }
+    }
+
+    void mm搜尋()
+    {
+        new PromptDialogBuilder(this)
+                .setPositiveButton("11") // sets the positive (ok) button text
+                // .setNegativeButton(R.string.cancel) // we can use it but the default should be sufficient
+                .setPromptListener(new PromptDialogBuilder.PromptListener.Impl() {
+                    @Override
+                    public void onInputProvided(String input) {
+                        // do whatever with the email
+                    }
+                }) //
+                .setTitle("fff") // This one now returns the AlertDialog.Builder and now we handle it as a normal Builder
+                .setMessage("fsafs") //
+                .show();
     }
 }

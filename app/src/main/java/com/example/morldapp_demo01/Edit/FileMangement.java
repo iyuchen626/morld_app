@@ -1,26 +1,32 @@
 package com.example.morldapp_demo01.Edit;
 
 import android.content.Context;
-import android.icu.util.Output;
-import android.os.Environment;
 import android.util.Log;
 
 import com.example.morldapp_demo01.Config;
-import com.example.morldapp_demo01.GraphicOverlay;
 import com.example.morldapp_demo01.activity.Base;
 import com.google.mlkit.vision.common.PointF3D;
 import com.google.mlkit.vision.pose.Pose;
 import com.google.mlkit.vision.pose.PoseLandmark;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class FileMangement extends Base
 {
@@ -183,6 +189,52 @@ public class FileMangement extends Base
         }
     }
 
+    public static void ReadFileFromTxt(AppCompatActivity context, String link, long offset, OnReadFileFromTxtListener onReadFileFromTxtListener)
+    {
+        new Thread(new Runnable() {
+            @Override
+            public void run()
+            {
+                HashMap<String, structurepoint[]> res = new HashMap<>();
+                try
+                {
+                    OkHttpClient client = new OkHttpClient();
+                    Request request = new Request.Builder().url(link).build();
+                    Response response = client.newCall(request).execute();
+                    String res2 = response.body().string();
+                    String[] ss = res2.split("\r\n");
+                    List<String> lines =  Arrays.asList(ss);
+                    for (String s : lines)
+                    {
+                        String[] data = s.split("#");
+                        long time = Long.parseLong(data[0]);
+                        time += offset;
+                        data[0] = String.valueOf(time);
+                        structurepoint[] structurepoints = new structurepoint[12];
+                        for (int i = 1; i < 13; i++)
+                        {
+                            String[] data2 = data[i].split("Data");
+                            structurepoint posestructurepoint = new structurepoint();
+                            posestructurepoint.setStructpoint_x(Float.valueOf(data2[1]));
+                            posestructurepoint.setStructpoint_y(Float.valueOf(data2[2]));
+                            posestructurepoint.setStructpoint_weight(Float.valueOf(data2[3]));
+                            structurepoints[i - 1] = posestructurepoint;
+                        }
+                        res.put(data[0], structurepoints);
+                    }
+                    context.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run()
+                        {
+                            onReadFileFromTxtListener.onTxt(res);
+                        }
+                    });
+                }
+                catch (Exception e) {}
+            }
+        }).start();
+    }
+
     public static HashMap<String, structurepoint[]> ReadFile(Context context, String filename, long offset)
     {
         File path = context.getExternalFilesDir(null);
@@ -191,6 +243,8 @@ public class FileMangement extends Base
         HashMap<String, structurepoint[]> res = new HashMap<>();
         try
         {
+            byte[] bbs = Files.readAllBytes(Paths.get(file.getAbsolutePath()));
+            String sss = new String(bbs);
             List<String> lines = Files.readAllLines(Paths.get(file.getAbsolutePath()), Charset.defaultCharset());
             for (String s : lines)
             {
@@ -214,6 +268,22 @@ public class FileMangement extends Base
         }
         catch (Exception e) {}
         return res;
+    }
+
+    public static String ReadFile(Context context, String filename)
+    {
+        File path = context.getExternalFilesDir(null);
+        File file = new File(path, filename);
+
+        HashMap<String, structurepoint[]> res = new HashMap<>();
+        try
+        {
+            byte[] bbs = Files.readAllBytes(Paths.get(file.getAbsolutePath()));
+            String s = new String(bbs);
+            return s;
+        }
+        catch (Exception e) {}
+        return "";
     }
 
     public static structurepoint[] Translatepoint(Pose pose,float []Poseweight) {
@@ -316,5 +386,10 @@ public class FileMangement extends Base
                 pointscale.getStructpoint_y() + "Data" +
                 pointscale.getStructpoint_weight() + "#";
         return strline;
+    }
+
+    public interface OnReadFileFromTxtListener
+    {
+        void onTxt(HashMap<String, structurepoint[]>  s);
     }
 }
