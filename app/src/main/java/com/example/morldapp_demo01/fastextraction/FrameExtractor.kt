@@ -319,7 +319,7 @@ class FrameExtractor(private val listener: IVideoFrameExtractor) {
                     if (doRender) {
                         if (lastHandlerMicrosecond == 0L) lastHandlerMicrosecond =
                             presentationTimeUs
-                        if (Math.abs(lastHandlerMicrosecond - presentationTimeUs) >= ((1.0/(FPS*0.2))) * 1000 * 1000) {
+                        if (Math.abs(lastHandlerMicrosecond - presentationTimeUs) >= ((1.0/(FPS*0.4))) * 1000 * 1000) {
                             lastHandlerMicrosecond = presentationTimeUs
 
                             if (verbose) Log.d(TAG, "Awaiting decode of frame $decodeCount")

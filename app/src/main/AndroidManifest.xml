@@ -50,6 +50,7 @@
         </activity>
         <activity android:name=".activity.Login" />
         <activity android:name=".mirror.Client" />
+        <activity android:name=".activity.MyVideo" />
         <activity
             android:name=".activity.VideoLandscape"
             android:configChanges="orientation|keyboardHidden|screenSize"

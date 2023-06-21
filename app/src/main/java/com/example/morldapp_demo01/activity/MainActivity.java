@@ -6,13 +6,15 @@ import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.morldapp_demo01.R;
 import com.example.morldapp_demo01.camera.VideoRecordingActivity;
-import com.example.morldapp_demo01.dialog.PromptDialogBuilder;
+import com.example.morldapp_demo01.event.SearchVideoEvent;
 import com.example.morldapp_demo01.fragmemt.HomeFragment;
 import com.example.morldapp_demo01.mirror.Client;
 import com.example.morldapp_demo01.mirror.ScreenService;
@@ -21,6 +23,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.navigation.NavigationView;
 
+import org.greenrobot.eventbus.EventBus;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -47,6 +52,19 @@ public class MainActivity extends Base
             setContentView(R.layout.main);
             drawerLayout = findViewById(R.id.drawer_layout);
             navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item)
+            {
+                if(item.getItemId() == R.id.nav_channel)
+                {
+                    drawerLayout.closeDrawer(Gravity.RIGHT);
+                    startActivity(new Intent(getActivity(), MyVideo.class));
+                    return true;
+                }
+                return false;
+            }
+        });
             userNmae = navigationView.getHeaderView(0).findViewById(R.id.name);
             navigationView.getHeaderView(0).findViewById(R.id.root).setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -232,17 +250,20 @@ public class MainActivity extends Base
 
     void mm搜尋()
     {
-        new PromptDialogBuilder(this)
-                .setPositiveButton("11") // sets the positive (ok) button text
-                // .setNegativeButton(R.string.cancel) // we can use it but the default should be sufficient
-                .setPromptListener(new PromptDialogBuilder.PromptListener.Impl() {
+        final EditText taskEditText = new EditText(getActivity());
+        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                .setTitle("搜尋影片")
+                .setMessage("請輸入標題關鍵字")
+                .setView(taskEditText)
+                .setPositiveButton("確定", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onInputProvided(String input) {
-                        // do whatever with the email
+                    public void onClick(DialogInterface dialog, int which) {
+                        String task = String.valueOf(taskEditText.getText());
+                        EventBus.getDefault().post(new SearchVideoEvent(task));
                     }
-                }) //
-                .setTitle("fff") // This one now returns the AlertDialog.Builder and now we handle it as a normal Builder
-                .setMessage("fsafs") //
-                .show();
+                })
+                .setNegativeButton("取消", null)
+                .create();
+        dialog.show();
     }
 }

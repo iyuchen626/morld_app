@@ -202,7 +202,7 @@ public class FileMangement extends Base
                     Request request = new Request.Builder().url(link).build();
                     Response response = client.newCall(request).execute();
                     String res2 = response.body().string();
-                    String[] ss = res2.split("\r\n");
+                    String[] ss = res2.split("\n");
                     List<String> lines =  Arrays.asList(ss);
                     for (String s : lines)
                     {

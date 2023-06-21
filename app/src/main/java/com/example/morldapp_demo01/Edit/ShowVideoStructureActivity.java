@@ -223,13 +223,14 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
             {
                 RequestBody requestFile2 = RequestBody.create(MediaType.parse("*/*"), bb);
                 MultipartBody.Part multipartImage = MultipartBody.Part.createFormData("present_img", "f.jpg", requestFile2);
+                RequestBody requestFile3 = RequestBody.create(MediaType.parse("*/*"), FileMangement.ReadFile(getActivity(), filename));
+                MultipartBody.Part multipartTxt = MultipartBody.Part.createFormData("film_txt", "f.txt", requestFile3);
                 RequestBody title_ = RequestBody.create(MediaType.parse("text/plain"), title);
                 RequestBody desc_ = RequestBody.create(MediaType.parse("text/plain"), desc);
-                RequestBody film_txt = RequestBody.create(MediaType.parse("text/plain"),  FileMangement.ReadFile(getActivity(), filename));
                 RequestBody film_type_id = RequestBody.create(MediaType.parse("text/plain"), "1");
                 RequestBody sell = RequestBody.create(MediaType.parse("text/plain"), "1");
                 RequestBody public_ = RequestBody.create(MediaType.parse("text/plain"), "1");
-                Disposable disposable = ApiStrategy.getApiService().mm上傳個人影片(multipartFilm, multipartImage, title_,desc_, film_txt, film_type_id,sell,public_).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>()
+                Disposable disposable = ApiStrategy.getApiService().mm上傳個人影片(multipartFilm, multipartImage, multipartTxt, title_,desc_, film_type_id,sell,public_).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>()
                 {
                     @Override
                     public void accept(String res) throws Exception

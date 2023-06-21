@@ -15,9 +15,14 @@ import com.example.morldapp_demo01.Tools;
 import com.example.morldapp_demo01.adapter.Home1Adapter;
 import com.example.morldapp_demo01.adapter.Home2Adapter;
 import com.example.morldapp_demo01.databinding.FragmentHomeBinding;
+import com.example.morldapp_demo01.event.SearchVideoEvent;
 import com.example.morldapp_demo01.pojo.FilmListResponse;
 import com.example.morldapp_demo01.pojo.FilmPOJO;
 import com.example.morldapp_demo01.retrofit2.ApiStrategy;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,13 +83,13 @@ public class HomeFragment extends Fragment{
     public void onAttach(@NonNull Context context)
     {
         super.onAttach(context);
-        reload();
+        reload("");
     }
 
-    void reload()
+    void reload(String title)
     {
         Tools.showProgress((AppCompatActivity) getActivity(), "請稍後...");
-        Disposable disposable = ApiStrategy.getApiService().mm影片清單().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<FilmListResponse>()
+        Disposable disposable = ApiStrategy.getApiService().mm影片清單(title).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<FilmListResponse>()
         {
             @Override
             public void accept(FilmListResponse res) throws Exception
@@ -114,6 +119,23 @@ public class HomeFragment extends Fragment{
                 Tools.showError((AppCompatActivity) getActivity(), throwable.getMessage());
             }
         });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(SearchVideoEvent event) {
+        reload(event.like);
     }
 }
 

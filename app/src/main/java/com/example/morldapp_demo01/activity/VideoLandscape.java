@@ -244,7 +244,7 @@ public class VideoLandscape extends Base
 		if(ff.exists())
 		{
 			binding.imageDownload.setVisibility(View.GONE);
-			FileMangement.ReadFileFromTxt(getActivity(), "https://case.unood.me/test1.txt", (long) (data.video_offset * 1000 * 1000), new FileMangement.OnReadFileFromTxtListener() {
+			FileMangement.ReadFileFromTxt(getActivity(), data.txt_slug, (long) (data.video_offset * 1000 * 1000), new FileMangement.OnReadFileFromTxtListener() {
 				@Override
 				public void onTxt(HashMap<String, structurepoint[]> s)
 				{
