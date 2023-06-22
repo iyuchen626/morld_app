@@ -26,7 +26,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#00000000"
-                android:text="0" />
+                android:text="0"
+                android:textColor="@color/toast_warn_color"
+                android:textSize="24sp" />
 
             <Button
                 android:id="@+id/layout_Button_Structure_video_Point_1"
@@ -34,7 +36,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#00000000"
-                android:text="1" />
+                android:text="1"
+                android:textColor="@color/toast_warn_color"
+                android:textSize="24sp" />
 
             <Button
                 android:id="@+id/layout_Button_Structure_video_Point_2"
@@ -42,7 +46,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#00000000"
-                android:text="2" />
+                android:text="2"
+                android:textColor="@color/toast_warn_color"
+                android:textSize="24sp" />
 
             <Button
                 android:id="@+id/layout_Button_Structure_video_Point_3"
@@ -50,7 +56,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#00000000"
-                android:text="3" />
+                android:text="3"
+                android:textColor="@color/toast_warn_color"
+                android:textSize="24sp" />
 
             <Button
                 android:id="@+id/layout_Button_Structure_video_Point_4"
@@ -58,7 +66,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#00000000"
-                android:text="4" />
+                android:text="4"
+                android:textColor="@color/toast_warn_color"
+                android:textSize="24sp" />
 
             <Button
                 android:id="@+id/layout_Button_Structure_video_Point_5"
@@ -66,7 +76,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#00000000"
-                android:text="5" />
+                android:text="5"
+                android:textColor="@color/toast_warn_color"
+                android:textSize="24sp" />
 
         </LinearLayout>
 
@@ -84,7 +96,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#00000000"
-                android:text="6" />
+                android:text="6"
+                android:textColor="@color/toast_warn_color"
+                android:textSize="24sp" />
 
             <Button
                 android:id="@+id/layout_Button_Structure_video_Point_7"
@@ -92,7 +106,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#00000000"
-                android:text="7" />
+                android:text="7"
+                android:textColor="@color/toast_warn_color"
+                android:textSize="24sp" />
 
             <Button
                 android:id="@+id/layout_Button_Structure_video_Point_8"
@@ -100,7 +116,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#00000000"
-                android:text="8" />
+                android:text="8"
+                android:textColor="@color/toast_warn_color"
+                android:textSize="24sp" />
 
             <Button
                 android:id="@+id/layout_Button_Structure_video_Point_9"
@@ -108,7 +126,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#00000000"
-                android:text="9" />
+                android:text="9"
+                android:textColor="@color/toast_warn_color"
+                android:textSize="24sp" />
 
             <Button
                 android:id="@+id/layout_Button_Structure_video_Point_10"
@@ -116,7 +136,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#00000000"
-                android:text="10" />
+                android:text="10"
+                android:textColor="@color/toast_warn_color"
+                android:textSize="24sp" />
 
             <Button
                 android:id="@+id/layout_Button_Structure_video_Point_11"
@@ -124,7 +146,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#00000000"
-                android:text="11" />
+                android:text="11"
+                android:textColor="@color/toast_warn_color"
+                android:textSize="24sp" />
         </LinearLayout>
 
     </LinearLayout>

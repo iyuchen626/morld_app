@@ -16,8 +16,8 @@
 
     <com.example.morldapp_demo01.GraphicOverlay
         android:id="@+id/GraphicOverlay_Detect"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="@id/PreView_Detect_Editor"
         app:layout_constraintLeft_toLeftOf="@id/PreView_Detect_Editor"
         app:layout_constraintRight_toRightOf="@id/PreView_Detect_Editor"

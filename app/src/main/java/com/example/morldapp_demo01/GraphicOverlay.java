@@ -130,7 +130,8 @@ public class GraphicOverlay extends View {
 //      } else {
 //        return scale(x) - overlay.postScaleWidthOffset;
 //      }
-      return (x);
+
+     return scale(x);
     }
 
     /**
@@ -138,7 +139,8 @@ public class GraphicOverlay extends View {
      */
     public float translateY(float y) {
 //      return scale(y) - overlay.postScaleHeightOffset;
-      return (y);
+      //return overlay.getHeight() - (scale(y) - overlay.postScaleHeightOffset);
+     return (y);
     }
 
     /**

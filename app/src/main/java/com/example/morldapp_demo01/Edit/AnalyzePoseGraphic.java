@@ -17,8 +17,9 @@ public class AnalyzePoseGraphic extends GraphicOverlay.Graphic{
     private final Paint BluePaint;
     structurepoint[] structurepoint= new structurepoint[12];
     GraphicOverlay graphicOverlay;
+    float height=0, width=0;
 
-    public AnalyzePoseGraphic(GraphicOverlay overlay,structurepoint[] structurepoint) {
+    public AnalyzePoseGraphic(GraphicOverlay overlay,structurepoint[] structurepoint,float height,float width) {
         super(overlay);
         this.graphicOverlay = overlay;
         BluePaint = new Paint();
@@ -26,15 +27,25 @@ public class AnalyzePoseGraphic extends GraphicOverlay.Graphic{
         BluePaint.setColor(Color.BLUE);
         BluePaint.setTextSize(IN_FRAME_LIKELIHOOD_TEXT_SIZE);
         this.structurepoint=structurepoint;
+        this.height=height;
+        this.width=width;
+
     }
 
     @Override
     public void draw(Canvas canvas) {
-        float scale1 = (float) canvas.getHeight();
-        float scale2 = (float) canvas.getWidth();
-        if(scale2 < scale1) scale1 = scale2;
-        scale1 = scale1 / FrameExtractor.MAX_RESOLUTION;
-        scale1 *= 2.2;
+//        float scale1 = (float) (canvas.getHeight() / 600);
+//        float scale2 = (float) (canvas.getWidth() / 276);
+        float scale1 = (float) (canvas.getHeight())/(float)height;
+        float scale2 = (float) (canvas.getWidth())/(float)width;
+
+        //if(scale2 > scale1) scale1 = scale2;
+        //scale1*=1.4;
+//        float scale1 = (float) canvas.getHeight();
+//        float scale2 = (float) canvas.getWidth();
+//        if(scale2 < scale1) scale1 = scale2;
+//        scale1 = scale1 / FrameExtractor.MAX_RESOLUTION;
+//        scale1 *= 1;
 //        scale1 *= offset;
 //        float hDes = (float) (-canvas.getHeight()*0.01) * offset;
         if(structurepoint==null) return;
@@ -47,7 +58,7 @@ public class AnalyzePoseGraphic extends GraphicOverlay.Graphic{
         }
 
 //        canvas.translate(0, hDes);
-        canvas.scale(scale1, scale1);
+         canvas.scale((float) scale1, (float)scale2);
         drawLine(canvas, structurepoint[6],structurepoint[0], BluePaint);
         drawLine(canvas, structurepoint[8],structurepoint[2], BluePaint);
         drawLine(canvas, structurepoint[6],structurepoint[7], BluePaint);

@@ -5,12 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#1B1B1B"
-    tools:context=".Result.FinishActivity">
+   >
 
     <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/video_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_width="600dp"
+        android:layout_height="wrap_content"
+        android:scaleType="fitStart"
+        tools:ignore="ExtraText,MissingConstraints">
 
     </com.google.android.exoplayer2.ui.PlayerView>
 
@@ -84,10 +86,11 @@
         android:id="@+id/videoStructure"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="@+id/video_view"
+        app:layout_constraintEnd_toEndOf="@+id/video_view"
+        app:layout_constraintStart_toStartOf="@+id/video_view"
+        app:layout_constraintTop_toTopOf="@+id/video_view" />
 
     <LinearLayout
         android:id="@+id/edit_offset_layout"

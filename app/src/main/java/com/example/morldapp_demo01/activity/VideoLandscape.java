@@ -3,6 +3,7 @@ package com.example.morldapp_demo01.activity;
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -10,6 +11,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.ducky.fastvideoframeextraction.fastextraction.Frame;
+import com.ducky.fastvideoframeextraction.fastextraction.FrameExtractor;
+import com.ducky.fastvideoframeextraction.fastextraction.IVideoFrameExtractor;
 import com.example.morldapp_demo01.Config;
 import com.example.morldapp_demo01.Edit.AnalyzePoseGraphic;
 import com.example.morldapp_demo01.Edit.FileMangement;
@@ -17,6 +21,8 @@ import com.example.morldapp_demo01.Edit.structurepoint;
 import com.example.morldapp_demo01.R;
 import com.example.morldapp_demo01.Tools;
 import com.example.morldapp_demo01.databinding.VideoLandscapeBinding;
+import com.example.morldapp_demo01.fastextraction.URIPathHelper;
+import com.example.morldapp_demo01.fastextraction.Utils;
 import com.example.morldapp_demo01.pojo.FilmPOJO;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.LoadControl;
@@ -36,6 +42,8 @@ import com.p2pengine.sdk.P2pEngine;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import androidx.annotation.NonNull;
 
@@ -49,6 +57,9 @@ public class VideoLandscape extends Base
 	private long playbackPosition = 0L;
 	String MEDIA_TYPE;
 	private HashMap<String,  structurepoint[]> posestructurepoint=new HashMap<>();
+	private ExecutorService executorService= Executors.newSingleThreadExecutor();
+	float height,width;
+	private FrameExtractor frameExtractor;
 
 	void initializeFile播放器(String url)
 	{
@@ -302,7 +313,7 @@ public class VideoLandscape extends Base
 				Log.i(Config.TAG, "wantID="+wantId +" currentTimeMicrosecond="+currentTimeMicrosecond);
 				binding.videoStructure.clear();
 				structurepoint[] structurepoints = posestructurepoint.get(wantId);
-				binding.videoStructure.add(new AnalyzePoseGraphic(binding.videoStructure, structurepoints));
+				binding.videoStructure.add(new AnalyzePoseGraphic(binding.videoStructure, structurepoints,height,width));
 			}
 			handler.postDelayed(myrunnable, delay / 2);
 		}
@@ -312,6 +323,7 @@ public class VideoLandscape extends Base
 	{
 		if(MEDIA_TYPE.equals("file")) initializeFile播放器(data.video_slug);
 		if(MEDIA_TYPE.equals("stream")) initP2P播放器(data.video_hls_slug);
+		getframesize();
 	}
 
 	@Override
@@ -389,6 +401,11 @@ public class VideoLandscape extends Base
 		}
 		String s = String.format("P2P Ratio: %.0f%%", ratio * 100);
 		binding.debugRatio.setText(s);
+	}
+
+	public void getframesize() {
+		height = 337;
+		width = 600;
 	}
 }
 

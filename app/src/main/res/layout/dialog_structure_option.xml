@@ -17,34 +17,38 @@
 
             <ImageButton
                 android:id="@+id/Layout_ImgBtn_Structure_Show"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:minHeight="48dp"
-                app:srcCompat="@drawable/morldment"
+                android:scaleType="centerInside"
+                app:srcCompat="@drawable/view"
                 tools:ignore="SpeakableTextPresentCheck" />
 
             <ImageButton
                 android:id="@+id/Layout_ImgBtn_Structure_NotShow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:minHeight="48dp"
-                app:srcCompat="@drawable/morldment"
+                android:scaleType="centerInside"
+                app:srcCompat="@drawable/noview"
                 tools:ignore="SpeakableTextPresentCheck" />
 
             <ImageButton
                 android:id="@+id/Layout_ImgBtn_Structure_Adjust_Postion"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:minHeight="48dp"
-                app:srcCompat="@drawable/morldment"
+                android:scaleType="centerInside"
+                app:srcCompat="@drawable/direction"
                 tools:ignore="SpeakableTextPresentCheck" />
 
             <ImageButton
                 android:id="@+id/Layout_ImgBtn_Structure3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:minHeight="48dp"
-                app:srcCompat="@drawable/morldment"
+                android:scaleType="centerInside"
+                app:srcCompat="@drawable/weight"
                 tools:ignore="SpeakableTextPresentCheck" />
 
         </LinearLayout>

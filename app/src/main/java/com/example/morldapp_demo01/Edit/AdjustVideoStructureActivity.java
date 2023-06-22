@@ -108,7 +108,7 @@ public class AdjustVideoStructureActivity extends Base implements View.OnClickLi
         Act_GraphicOverlay_EditStructure.add(
                 new AnalyzePoseGraphic(
                         Act_GraphicOverlay_EditStructure,
-                        posestructurepoint[Timecount]));
+                        posestructurepoint[Timecount],1,1));
 
         Act_TextView_Structure_point.setText(String.valueOf(PointIdx));
         ActText.setText(String.valueOf(posestructurepoint[Timecount][PointIdx].getStructpoint_weight()));
@@ -224,7 +224,7 @@ public class AdjustVideoStructureActivity extends Base implements View.OnClickLi
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                //               FileMangement.SaveFile(filename,structurepoint,0);
+                //FileMangement.SaveFile(filename,structurepoint,0);
 //                posestructurepoint[PointIdx].setStructpoint_x(original_x+20);
                 Intent intent2 = new Intent();
                 intent2= new Intent(AdjustVideoStructureActivity.this, VideoDetectActivity.class);
@@ -241,7 +241,7 @@ public class AdjustVideoStructureActivity extends Base implements View.OnClickLi
         Act_GraphicOverlay_EditStructure.add(
                 new AnalyzePoseGraphic(
                         Act_GraphicOverlay_EditStructure,
-                        posestructurepoint[Timecount]));
+                        posestructurepoint[Timecount],1,1));
 
     }
 }

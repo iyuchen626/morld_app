@@ -38,12 +38,12 @@ public class EditPoseGraphic extends GraphicOverlay.Graphic{
 
     @Override
     public void draw(Canvas canvas) {
-        float scale1 = (float) (canvas.getHeight() / FrameExtractor.MAX_RESOLUTION);
-        float scale2 = (float) (canvas.getWidth() / FrameExtractor.MAX_RESOLUTION);
-        if(scale2 > scale1) scale1 = scale2;
-        float offset = 1.3f;
-        scale1 *= offset;
-        float hDes = (float) (-canvas.getHeight()*0.01) * offset;
+        float scale1 = (float) (canvas.getHeight() / 660);
+        float scale2 = (float) (canvas.getWidth() / 442);
+       // if(scale2 > scale1) scale1 = scale2;
+        //float offset = 1.3f;
+        //scale1 *= offset;
+        //float hDes = (float) (-canvas.getHeight()*0.01) * offset;
         if(structurepoint==null) return;
         for (int i = 0; i < 12; i++)
         {
@@ -53,8 +53,8 @@ public class EditPoseGraphic extends GraphicOverlay.Graphic{
             }
         }
 
-        canvas.translate(0, hDes);
-        canvas.scale(scale1, scale1);
+       // canvas.translate(0, 0);
+        canvas.scale(scale1, scale2);
         drawLine(canvas, structurepoint[6],structurepoint[0], BluePaint);
         drawLine(canvas, structurepoint[8],structurepoint[2], BluePaint);
         drawLine(canvas, structurepoint[6],structurepoint[7], BluePaint);

@@ -112,7 +112,7 @@ public class AdjustStructureActivity extends Base implements View.OnClickListene
         Act_GraphicOverlay_EditStructure.add(
                 new AnalyzePoseGraphic(
                         Act_GraphicOverlay_EditStructure,
-                        posestructurepoint));
+                        posestructurepoint,1,1));
 
         Act_TextView_Structure_point.setText(String.valueOf(PointIdx));
         ActText.setText(String.valueOf(posestructurepoint[PointIdx].getStructpoint_weight()));
@@ -235,7 +235,7 @@ public class AdjustStructureActivity extends Base implements View.OnClickListene
         Act_GraphicOverlay_EditStructure.add(
                 new AnalyzePoseGraphic(
                         Act_GraphicOverlay_EditStructure,
-                        posestructurepoint));
+                        posestructurepoint,1,1));
 
     }
 }

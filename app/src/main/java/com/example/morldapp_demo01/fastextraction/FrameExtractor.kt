@@ -39,7 +39,7 @@ class FrameExtractor(private val listener: IVideoFrameExtractor) {
     }
 
     fun getOrientation(inputFilePath: String):Int {
-        var extractor: MediaExtractor? = null
+         var extractor: MediaExtractor? = null
         val inputFile: File = File(inputFilePath)
         if (!inputFile.canRead()) {
             throw FileNotFoundException("Unable to read $inputFile")
@@ -79,9 +79,11 @@ class FrameExtractor(private val listener: IVideoFrameExtractor) {
             extractor = MediaExtractor()
             extractor.setDataSource(inputFile.toString())
             val trackIndex = selectTrack(extractor)
+
             if (trackIndex < 0) {
                 throw IOException("No video track found in $inputFile")
             }
+
             extractor.selectTrack(trackIndex)
 
             // Checking orientation by degree
@@ -101,6 +103,7 @@ class FrameExtractor(private val listener: IVideoFrameExtractor) {
 
             height = format.getInteger(MediaFormat.KEY_HEIGHT)
             width = format.getInteger(MediaFormat.KEY_WIDTH)
+
             if (height > MAX_RESOLUTION || width > MAX_RESOLUTION) {
                 val ratio = height.toFloat() / width
                 if (height > width) {
@@ -116,10 +119,10 @@ class FrameExtractor(private val listener: IVideoFrameExtractor) {
                 "$height  h : w  $width"
             )
 
-
             // Checking video orientation is portrait or landscape
             isPortrait = orientation == 90 || orientation == 270
             Log.d(TAG, "isPortrait:  $isPortrait")
+
             if (SDK_VERSION_INT >= 21) {
                 if (isPortrait) {
                     savedFrameHeight = (if (width > height) width else height) / size
@@ -132,6 +135,7 @@ class FrameExtractor(private val listener: IVideoFrameExtractor) {
                 savedFrameHeight = height / size
                 savedFrameWidth = width / size
             }
+
             if (verbose) {
                 Log.d(TAG, "Video size: " + format.getInteger(MediaFormat.KEY_WIDTH) + "x" + format.getInteger(MediaFormat.KEY_HEIGHT))
             }
@@ -142,6 +146,7 @@ class FrameExtractor(private val listener: IVideoFrameExtractor) {
             // Create a MediaCodec decoder, and configure it with the MediaFormat from the
             // extractor.  It's very important to use the format from the extractor because
             // it contains a copy of the CSD-0/CSD-1 codec-specific data chunks.
+
             val mime = format.getString(MediaFormat.KEY_MIME)
             decoder = MediaCodec.createDecoderByType(mime!!)
             Log.d(TAG, "Mime :  $mime")

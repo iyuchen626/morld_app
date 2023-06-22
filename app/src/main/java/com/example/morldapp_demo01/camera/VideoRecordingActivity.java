@@ -120,15 +120,15 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
         Act_ProgressBarCameraRecording = findViewById(R.id.Layout_ProgressBarCameraRecording);
         Act_ProgressBarCameraRecording.setVisibility(View.INVISIBLE);
 
-//        new ViewModelProvider(this, (ViewModelProvider.Factory) ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
-//                .get(CameraXViewModel.class)
-//                .getProcessCameraProvider()
-//                .observe(
-//                        this,
-//                        provider -> {
-//                            cameraProvider = provider;
-//                            bindAllCameraUseCases();
-//                        });
+        new ViewModelProvider(this, (ViewModelProvider.Factory) ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
+                .get(CameraXViewModel.class)
+                .getProcessCameraProvider()
+                .observe(
+                        this,
+                        provider -> {
+                            cameraProvider = provider;
+                            bindAllCameraUseCases();
+                        });
     }
 
     private void bindAllCameraUseCases() {
@@ -478,6 +478,7 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
 
                         startActivity(intent);
                         finish();
+
                     }
                     else
                     {

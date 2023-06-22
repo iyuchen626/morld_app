@@ -180,10 +180,10 @@ public class VideoDetectActivity extends Base implements CompoundButton.OnChecke
 
                     Act_GraphicOverlay_Structure_Sample.clear();
 
-                    Act_GraphicOverlay_Structure_Sample.add(
-                            new AnalyzePoseGraphic(
-                                    Act_GraphicOverlay_Structure_Sample,
-                                    posestructurepoint));
+//                    Act_GraphicOverlay_Structure_Sample.add(
+//                            new AnalyzePoseGraphic(
+//                                    Act_GraphicOverlay_Structure_Sample,
+//                                    posestructurepoint));
                     new CalculateScore(true,posestructurepoint);
 
                     if (needUpdateGraphicOverlayImageSourceInfo) {

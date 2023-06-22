@@ -26,10 +26,13 @@ import com.example.morldapp_demo01.GraphicOverlay;
 import com.example.morldapp_demo01.R;
 import com.example.morldapp_demo01.Tools;
 import com.example.morldapp_demo01.activity.Base;
+import com.example.morldapp_demo01.activity.EditFinishActivity;
+import com.example.morldapp_demo01.camera.VideoRecordingActivity;
 import com.example.morldapp_demo01.fastextraction.URIPathHelper;
 import com.example.morldapp_demo01.fastextraction.Utils;
 import com.example.morldapp_demo01.pojo.UploadVideoResponsePOJO;
 import com.example.morldapp_demo01.retrofit2.ApiStrategy;
+import com.example.morldapp_demo01.video.VideoStructurePlayingActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.common.io.ByteStreams;
 import com.google.mlkit.vision.common.InputImage;
@@ -84,7 +87,7 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
     int PointIdx = 0;
     Boolean EditStructureFlag = false;
     structurepoint[] structurepoints;
-    float original_y, original_x;
+    float original_y, original_x,height,width;
     boolean is設定旋轉與鏡像 = false;
     int degress = 0;
     boolean isFlip = false;
@@ -144,6 +147,7 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
             public void onClick(View v)
             {
                 mm遞減骨骼();
+
             }
         });
         findViewById(R.id.add).setOnClickListener(new View.OnClickListener() {
@@ -154,10 +158,13 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
             }
         });
         mm讀取骨骼資料();
+
     }
 
     void mm讀取骨骼資料()
     {
+
+
         float offset = 0;
         try
         {
@@ -166,11 +173,14 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
         catch (Exception e)
         {
         }
+
         posestructurepoint = FileMangement.ReadFile(getActivity(), filename, (long) (offset*1000*1000));
+
     }
 
     void mm遞減骨骼()
     {
+
         String s = Tools.mmRead(getActivity(), Config.KEY_骨骼時間軸偏差值+filename);
         float offset = 0;
         try
@@ -247,8 +257,11 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
                         {
                             UploadVideoResponsePOJO uploadVideoResponsePOJO = Tools.getGson().fromJson(res, UploadVideoResponsePOJO.class);
                             Tools.showInfo(getActivity(), "已上傳", uploadVideoResponsePOJO.data.uuid);
+
+
                             return;
                         }
+
                         JSONObject app_error = data.getJSONObject("error");
                         while (app_error.keys().hasNext())
                         {
@@ -273,6 +286,7 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
                 });
             }
         });
+
     }
 
     void mm產生骨骼()
@@ -367,7 +381,7 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
             {
                 structurepoints = posestructurepoint.get(wantId);
                 Act_GraphicOverlay_ShowVideoStructure.clear();
-                Act_GraphicOverlay_ShowVideoStructure.add(new AnalyzePoseGraphic(Act_GraphicOverlay_ShowVideoStructure, structurepoints));
+                Act_GraphicOverlay_ShowVideoStructure.add(new AnalyzePoseGraphic(Act_GraphicOverlay_ShowVideoStructure, structurepoints,height,width));
             }
             handler.postDelayed(myrunnable, delay / 2);
         }
@@ -442,6 +456,9 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
     public void onCurrentFrameExtracted(@NonNull Frame currentFrame)
     {
         Bitmap imageBitmap = Utils.fromBufferToBitmap(currentFrame.getByteBuffer(), currentFrame.getWidth(), currentFrame.getHeight(), degress, isFlip);
+        height=currentFrame.getHeight();
+        width=currentFrame.getWidth();
+
         runOnUiThread(new Runnable() {
             @Override
             public void run()
@@ -501,14 +518,17 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
         View view=getLayoutInflater().inflate(R.layout.dialog_editor_save,null);
         EditText editTextTextTitle = view.findViewById(R.id.editTextTextTitle);
         EditText editTextTextContent = view.findViewById(R.id.editTextTextContent);
+
         Editor_dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialogInterface) {
             }
         });
+
         Editor_dialog.setContentView(view);
         Button Act_Button_Cancel=Editor_dialog.findViewById(R.id.button＿cancel);
         Button Act_Button_Finish=Editor_dialog.findViewById(R.id.button_finish);
+
         Act_Button_Finish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -516,11 +536,16 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
                 {
                     Editor_dialog.dismiss();
                     mm上傳影片(editTextTextTitle.getText().toString(),editTextTextContent.getText().toString());
+
+
                 }
                 catch (IOException e)
                 {
                     throw new RuntimeException(e);
                 }
+
+
+
             }
         });
         Act_Button_Cancel.setOnClickListener(new View.OnClickListener() {

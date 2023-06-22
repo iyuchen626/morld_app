@@ -92,7 +92,7 @@ public class ShowStructureActivity extends Base
             Act_GraphicOverlay_ShowStructure.add(
                     new AnalyzePoseGraphic(
                             Act_GraphicOverlay_ShowStructure,
-                            posestructurepoint));
+                            posestructurepoint,1,1));
         });
 
         Act_Button_StructureEdit.setOnClickListener(v->{
