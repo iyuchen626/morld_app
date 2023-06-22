@@ -44,6 +44,8 @@ public class HomeFragment extends Fragment{
     FragmentHomeBinding binding;
     private Home1Adapter adapter1;
     private Home2Adapter adapter2;
+    int page = 1;
+    boolean isLoading = false;
 
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -76,6 +78,7 @@ public class HomeFragment extends Fragment{
 //        for(int i =1; i<= 100; i++) fake.add(new Home1POJO());
         adapter2 = new Home2Adapter(fake);
         recyclerView.setAdapter(adapter2);
+        mm初始化瀑布流();
         return binding.getRoot();
     }
 
@@ -86,10 +89,31 @@ public class HomeFragment extends Fragment{
         reload("");
     }
 
+    private void mm初始化瀑布流() {
+        binding.recyclerView1.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                if (!isLoading) {
+                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == adapter1.mDataset.size() - 1) {
+                        reload("");
+                        isLoading = true;
+                    }
+                }
+            }
+        });
+    }
+
     void reload(String title)
     {
         Tools.showProgress((AppCompatActivity) getActivity(), "請稍後...");
-        Disposable disposable = ApiStrategy.getApiService().mm影片清單(title).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<FilmListResponse>()
+        Disposable disposable = ApiStrategy.getApiService().mm影片清單(title, page).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<FilmListResponse>()
         {
             @Override
             public void accept(FilmListResponse res) throws Exception
@@ -98,12 +122,12 @@ public class HomeFragment extends Fragment{
                 Log.i(Config.TAG, res.error);
                 if (res.error.equals(""))
                 {
-                    adapter1.mDataset.clear();
-                    adapter1.mDataset.addAll(res.data);
+                    adapter1.mDataset.addAll(res.data.data);
                     adapter1.notifyDataSetChanged();
-                    adapter2.mDataset.clear();
-                    adapter2.mDataset.addAll(res.data);
+                    adapter2.mDataset.addAll(res.data.data);
                     adapter2.notifyDataSetChanged();
+                    page++;
+                    isLoading = false;
                 }
                 else
                 {

@@ -5,6 +5,6 @@ import java.util.List;
 
 public class FilmListResponse
 {
-	public List<FilmPOJO> data = new ArrayList<>();
+	public FilmListData data = new FilmListData();
 	public String error;
 }

@@ -29,10 +29,10 @@ public interface ApiService
 	Observable<LoginResponse> mmd登入(@Body LoginRequest description);
 
 	@GET("film")
-	Observable<FilmListResponse> mm影片清單(@Query("title") String title);
+	Observable<FilmListResponse> mm影片清單(@Query("title") String title, @Query("page") int page);
 
 	@GET("film_p")
-	Observable<FilmListResponse> mm個人影片清單(@Query("title") String title);
+	Observable<FilmListResponse> mm個人影片清單(@Query("title") String title, @Query("page") int page);
 
 	@HTTP(method = "DELETE", path = "film_p", hasBody = true)
 	Observable<FilmListResponse> mm刪除個人影片(@Body FilmPOJO uuid);

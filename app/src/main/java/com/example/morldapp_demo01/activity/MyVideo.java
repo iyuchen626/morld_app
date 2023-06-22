@@ -23,6 +23,7 @@ import com.example.morldapp_demo01.retrofit2.ApiStrategy;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -37,6 +38,8 @@ public class MyVideo extends Base
 {
 	MyVideoBinding binding;
 	private MyVideoAdapter adapter;
+	int page = 1;
+	boolean isLoading = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -62,12 +65,34 @@ public class MyVideo extends Base
 		adapter = new MyVideoAdapter((AppCompatActivity) getActivity(),fake);
 		recyclerView.setAdapter(adapter);
 		reload("");
+		mm初始化瀑布流();
+	}
+
+	private void mm初始化瀑布流() {
+		binding.recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+			@Override
+			public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+				super.onScrollStateChanged(recyclerView, newState);
+			}
+
+			@Override
+			public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+				super.onScrolled(recyclerView, dx, dy);
+				LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+				if (!isLoading) {
+					if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == adapter.mDataset.size() - 1) {
+						reload("");
+						isLoading = true;
+					}
+				}
+			}
+		});
 	}
 
 	void reload(String title)
 	{
 		Tools.showProgress((AppCompatActivity) getActivity(), "請稍後...");
-		Disposable disposable = ApiStrategy.getApiService().mm個人影片清單(title).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<FilmListResponse>()
+		Disposable disposable = ApiStrategy.getApiService().mm個人影片清單(title, page).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<FilmListResponse>()
 		{
 			@Override
 			public void accept(FilmListResponse res) throws Exception
@@ -76,9 +101,10 @@ public class MyVideo extends Base
 				Log.i(Config.TAG, res.error);
 				if (res.error.equals(""))
 				{
-					adapter.mDataset.clear();
-					adapter.mDataset.addAll(res.data);
+					adapter.mDataset.addAll(res.data.data);
 					adapter.notifyDataSetChanged();
+					page++;
+					isLoading = false;
 				}
 				else
 				{
