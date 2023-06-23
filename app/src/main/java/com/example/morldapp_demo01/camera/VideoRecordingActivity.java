@@ -22,6 +22,26 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.example.morldapp_demo01.CameraXViewModel;
+import com.example.morldapp_demo01.Edit.ShowStructureActivity;
+import com.example.morldapp_demo01.Edit.ShowVideoStructureActivity;
+import com.example.morldapp_demo01.PreferenceUtils;
+import com.example.morldapp_demo01.R;
+import com.example.morldapp_demo01.Tools;
+import com.example.morldapp_demo01.VisionImageProcessor;
+import com.example.morldapp_demo01.activity.Base;
+import com.example.morldapp_demo01.classification.posedetector.PoseDetectorProcessor;
+import com.example.morldapp_demo01.fastextraction.URIPathHelper;
+import com.google.mlkit.common.MlKitException;
+import com.google.mlkit.vision.pose.PoseDetectorOptionsBase;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
+import java.util.concurrent.Executor;
+
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -38,24 +58,6 @@ import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
-
-import com.ducky.fastvideoframeextraction.fastextraction.Frame;
-import com.ducky.fastvideoframeextraction.fastextraction.FrameExtractor;
-import com.ducky.fastvideoframeextraction.fastextraction.IVideoFrameExtractor;
-import com.example.morldapp_demo01.CameraXViewModel;
-import com.example.morldapp_demo01.Edit.FileMangement;
-import com.example.morldapp_demo01.Edit.ShowStructureActivity;
-import com.example.morldapp_demo01.Edit.ShowVideoStructureActivity;
-import com.example.morldapp_demo01.PreferenceUtils;
-import com.example.morldapp_demo01.R;
-import com.example.morldapp_demo01.VisionImageProcessor;
-import com.example.morldapp_demo01.activity.Base;
-import com.example.morldapp_demo01.classification.posedetector.PoseDetectorProcessor;
-import com.example.morldapp_demo01.fastextraction.URIPathHelper;
-import com.google.mlkit.common.MlKitException;
-import com.google.mlkit.vision.pose.PoseDetectorOptionsBase;
-
-import java.util.concurrent.Executor;
 
 public class VideoRecordingActivity extends Base implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
 
@@ -469,15 +471,33 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
                         Uri viseoUri =null;
                         Intent data=result.getData();
                         viseoUri=data.getData();
-                        
-                        Intent intent = new Intent();
-                        intent= new Intent(VideoRecordingActivity.this, ShowVideoStructureActivity.class);
-                        Bundle objbundle = new Bundle();
-                        objbundle.putString("urivideostr", viseoUri.toString());
-                        intent.putExtras(objbundle);
 
-                        startActivity(intent);
-                        finish();
+                        try
+                        {
+                            URIPathHelper uriPathHelper = new URIPathHelper();
+                            String videoInputPath = uriPathHelper.getPath(getActivity(), viseoUri).toString();
+                            File src = new File(videoInputPath);
+                            FileInputStream inStream = new FileInputStream(videoInputPath);
+                            File path = getExternalFilesDir(null);
+                            File file = new File(path, src.getName());
+                            FileOutputStream outStream = new FileOutputStream(file.getAbsolutePath());
+                            FileChannel inChannel = inStream.getChannel();
+                            FileChannel outChannel = outStream.getChannel();
+                            inChannel.transferTo(0, inChannel.size(), outChannel);
+                            inStream.close();
+                            outStream.close();
+
+                            Intent intent = new Intent(VideoRecordingActivity.this, ShowVideoStructureActivity.class);
+                            Bundle objbundle = new Bundle();
+                            objbundle.putString("urivideostr", file.getAbsolutePath());
+                            intent.putExtras(objbundle);
+                            startActivity(intent);
+                            finish();
+                        }
+                        catch (IOException e)
+                        {
+                            Tools.showError(getActivity(), e.getMessage());
+                        }
 
                     }
                     else

@@ -29,14 +29,6 @@
             android:scaleType="centerCrop"
             app:srcCompat="@drawable/fregmenthome_ad" />
 
-        <ImageView
-            android:id="@+id/icon_user"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
-            android:layout_marginTop="4dp"
-            app:srcCompat="@drawable/icon_user" />
-
     </com.google.android.material.card.MaterialCardView>
 
 
@@ -61,7 +53,7 @@
             android:fontFamily="@font/font1"
             android:maxLines="3"
             android:text="NameNameNameNameNameNameNameNameNameNameNameNameNameNameNameNameNameNameNameNameNameNameNameNameNameName"
-            android:textAlignment="center"
+            android:textAlignment="textStart"
             android:textColor="#FBDA2D"
             android:textSize="15sp"
             app:layout_constraintEnd_toEndOf="@+id/materialCardView"
@@ -73,7 +65,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
+            android:layout_marginTop="4dp"
             android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/icon_user"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/icon_user" />
 
             <TextView
                 android:id="@+id/likes"

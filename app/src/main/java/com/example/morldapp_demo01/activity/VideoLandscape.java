@@ -24,6 +24,7 @@ import com.example.morldapp_demo01.databinding.VideoLandscapeBinding;
 import com.example.morldapp_demo01.fastextraction.URIPathHelper;
 import com.example.morldapp_demo01.fastextraction.Utils;
 import com.example.morldapp_demo01.pojo.FilmPOJO;
+import com.example.morldapp_demo01.pojo.TxtConfigPOJO;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.MediaItem;
@@ -213,6 +214,7 @@ public class VideoLandscape extends Base
 						}
 						else
 						{
+							Tools.mmSave(getApplicationContext(), "videos/"+data.uuid, Tools.getGson().toJson(data, FilmPOJO.class));
 							DownloadManager downloadmanager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
 							Uri uri = Uri.parse(data.video_slug);
 							DownloadManager.Request request = new DownloadManager.Request(uri);
@@ -259,6 +261,9 @@ public class VideoLandscape extends Base
 				@Override
 				public void onTxt(HashMap<String, structurepoint[]> s)
 				{
+					TxtConfigPOJO txt = Tools.getGson().fromJson(Tools.mmRead(getActivity(), Config.KEY_TXT_CONFIG), TxtConfigPOJO.class);
+					width = txt.width;
+					height = txt.height;
 					binding.editOffsetLayout.setVisibility(View.VISIBLE);
 					posestructurepoint = s;
 					player.prepare();
@@ -323,7 +328,6 @@ public class VideoLandscape extends Base
 	{
 		if(MEDIA_TYPE.equals("file")) initializeFile播放器(data.video_slug);
 		if(MEDIA_TYPE.equals("stream")) initP2P播放器(data.video_hls_slug);
-		getframesize();
 	}
 
 	@Override
@@ -401,20 +405,6 @@ public class VideoLandscape extends Base
 		}
 		String s = String.format("P2P Ratio: %.0f%%", ratio * 100);
 		binding.debugRatio.setText(s);
-	}
-
-	public void getframesize() {
-		//取代
-//		if(Direction==0)
-//		{
-			height = 600;
-			width = 276;
-//		}
-//		else
-//		{
-//			height = 337;
-//			width = 600;
-//		}
 	}
 }
 

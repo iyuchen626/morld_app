@@ -127,7 +127,7 @@ public class HomeFragment extends Fragment{
                     adapter2.mDataset.addAll(res.data.data);
                     adapter2.notifyDataSetChanged();
                     page++;
-                    isLoading = false;
+                    if(res.data.data.size()>0) isLoading = false;
                 }
                 else
                 {

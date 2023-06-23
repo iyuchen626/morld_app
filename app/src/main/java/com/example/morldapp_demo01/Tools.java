@@ -369,7 +369,7 @@ public class Tools
 		try
 		{
 			p = AESCrypt.encrypt(Tools.getUniqueID(context), p);
-			Tools.saveData(context, key, p);
+			Tools.mmSave(context, key, p);
 		}
 		catch (GeneralSecurityException e)
 		{
@@ -381,7 +381,7 @@ public class Tools
 	{
 		try
 		{
-			String p = Tools.readData(context, key);
+			String p = Tools.mmRead(context, key);
 			p = AESCrypt.decrypt(Tools.getUniqueID(context), p);
 			return p;
 		}
@@ -681,20 +681,6 @@ public class Tools
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		String s = simpleDateFormat.format(date);
 		return s;
-	}
-
-	public static void saveData(Context context, String key, String value)
-	{
-		SharedPreferences sharedPref = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putString(key, value);
-		editor.apply();
-	}
-
-	public static String readData(Context context, String key)
-	{
-		SharedPreferences settings = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
-		return settings.getString(key, "");
 	}
 
 	public static boolean check餘額(Context context, int point)

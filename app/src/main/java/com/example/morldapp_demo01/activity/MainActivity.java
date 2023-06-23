@@ -85,7 +85,7 @@ public class MainActivity extends Base
                 @Override
                 public void onClick(View v)
                 {
-                    mm搜尋();
+                    startActivity(new Intent(getActivity(), SearchVideo.class));
                 }
             });
             findViewById(R.id.media_route_button).setOnClickListener(new View.OnClickListener() {
@@ -180,7 +180,14 @@ public class MainActivity extends Base
 
         LinearLayout Act_Layout_Edit=Editor_dialog.findViewById(R.id.Layout_Layout_Edit);
         LinearLayout Act_Layout_Morldment=Editor_dialog.findViewById(R.id.Layout_Layout_Morldment);
-
+        Editor_dialog.findViewById(R.id.Layout_Layout_media).setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                startActivity(new Intent(getActivity(), MyDownloadVideo.class));
+            }
+        });
 
         Act_Layout_Edit.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -4,17 +4,16 @@ import android.content.Context;
 import android.util.Log;
 
 import com.example.morldapp_demo01.Config;
+import com.example.morldapp_demo01.Tools;
 import com.example.morldapp_demo01.activity.Base;
+import com.example.morldapp_demo01.pojo.TxtConfigPOJO;
 import com.google.mlkit.vision.common.PointF3D;
 import com.google.mlkit.vision.pose.Pose;
 import com.google.mlkit.vision.pose.PoseLandmark;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -23,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -204,8 +202,19 @@ public class FileMangement extends Base
                     String res2 = response.body().string();
                     String[] ss = res2.split("\n");
                     List<String> lines =  Arrays.asList(ss);
-                    for (String s : lines)
+                    for (int q=0; q<lines.size(); q++)
                     {
+                        String s = lines.get(q);
+                        if(q == 0)
+                        {
+                            String[] s1 = s.split(",");
+                            TxtConfigPOJO txtConfigPOJO = new TxtConfigPOJO();
+                            txtConfigPOJO.width = Float.parseFloat(s1[0]);
+                            txtConfigPOJO.height = Float.parseFloat(s1[1]);
+                            String s22 = Tools.getGson().toJson(txtConfigPOJO, TxtConfigPOJO.class);
+                            Tools.mmSave(context, Config.KEY_TXT_CONFIG, s22);
+                            continue;
+                        }
                         String[] data = s.split("#");
                         long time = Long.parseLong(data[0]);
                         time += offset;
@@ -243,11 +252,20 @@ public class FileMangement extends Base
         HashMap<String, structurepoint[]> res = new HashMap<>();
         try
         {
-            byte[] bbs = Files.readAllBytes(Paths.get(file.getAbsolutePath()));
-            String sss = new String(bbs);
             List<String> lines = Files.readAllLines(Paths.get(file.getAbsolutePath()), Charset.defaultCharset());
-            for (String s : lines)
+            for (int q=0; q< lines.size(); q++)
             {
+                String s = lines.get(q);
+                if(q == 0)
+                {
+                    String[] s1 = s.split(",");
+                    TxtConfigPOJO txtConfigPOJO = new TxtConfigPOJO();
+                    txtConfigPOJO.width = Float.parseFloat(s1[0]);
+                    txtConfigPOJO.height = Float.parseFloat(s1[1]);
+                    String s22 = Tools.getGson().toJson(txtConfigPOJO, TxtConfigPOJO.class);
+                    Tools.mmSave(context, Config.KEY_TXT_CONFIG, s22);
+                    continue;
+                }
                 String[] data = s.split("#");
                 long time = Long.parseLong(data[0]);
                 time += offset;
@@ -266,7 +284,9 @@ public class FileMangement extends Base
             }
 
         }
-        catch (Exception e) {}
+        catch (Exception e) {
+            Log.e(Config.TAG, e.getMessage());
+        }
         return res;
     }
 

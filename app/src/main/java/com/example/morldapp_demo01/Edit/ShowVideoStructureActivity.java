@@ -30,6 +30,7 @@ import com.example.morldapp_demo01.activity.EditFinishActivity;
 import com.example.morldapp_demo01.camera.VideoRecordingActivity;
 import com.example.morldapp_demo01.fastextraction.URIPathHelper;
 import com.example.morldapp_demo01.fastextraction.Utils;
+import com.example.morldapp_demo01.pojo.TxtConfigPOJO;
 import com.example.morldapp_demo01.pojo.UploadVideoResponsePOJO;
 import com.example.morldapp_demo01.retrofit2.ApiStrategy;
 import com.example.morldapp_demo01.video.VideoStructurePlayingActivity;
@@ -75,7 +76,7 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
     Button Act_Button_VideoStructureShow;
     private HashMap<String,  structurepoint[]> posestructurepoint=new HashMap<>();
     int count=0;
-    private String StructureUriStr,videoInputPath;
+    private String StructureUriStr;
     private ExecutorService executorService= Executors.newSingleThreadExecutor();
     private LinkedList<String> queue;
     private StringBuilder sb;
@@ -131,17 +132,14 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
         Bundle bundle=intent.getExtras();
         StructureUriStr = bundle.getString("urivideostr");
         filename = Tools.md5(StructureUriStr);
-        Act_VideoView_Pose.setVideoURI(Uri.parse(StructureUriStr));
+        Act_VideoView_Pose.setVideoPath(StructureUriStr);
         mediaController=new MediaController(this);
         mediaController.setVisibility(View.VISIBLE);
         Act_VideoView_Pose.setMediaController(mediaController);
         sb = new StringBuilder();
         queue = new LinkedList<String>();
-        URIPathHelper uriPathHelper = new URIPathHelper();
-        Uri uri = Uri.parse(StructureUriStr);
-        videoInputPath = uriPathHelper.getPath(getActivity(), uri).toString();
-        frameExtractor.init(videoInputPath);
-        orientation = frameExtractor.getOrientation(videoInputPath);
+        frameExtractor.init(StructureUriStr);
+        orientation = frameExtractor.getOrientation(StructureUriStr);
         findViewById(R.id.des).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
@@ -163,8 +161,6 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
 
     void mm讀取骨骼資料()
     {
-
-
         float offset = 0;
         try
         {
@@ -172,10 +168,12 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
         }
         catch (Exception e)
         {
+            Log.e(Config.TAG, e.getMessage());
         }
-
         posestructurepoint = FileMangement.ReadFile(getActivity(), filename, (long) (offset*1000*1000));
-
+        TxtConfigPOJO txt = Tools.getGson().fromJson(Tools.mmRead(getActivity(), Config.KEY_TXT_CONFIG), TxtConfigPOJO.class);
+        width = txt.width;
+        height = txt.height;
     }
 
     void mm遞減骨骼()
@@ -218,10 +216,7 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
     void mm上傳影片(final String title,final String desc) throws IOException
     {
         Tools.showProgress(getActivity(), "上傳中");
-        URIPathHelper uriPathHelper = new URIPathHelper();
-        Uri uri = Uri.parse(StructureUriStr);
-        String videoInputPath = uriPathHelper.getPath(getActivity(), uri).toString();
-        File videoInputFile = new File(videoInputPath);
+        File videoInputFile = new File(StructureUriStr);
         InputStream is = new FileInputStream(videoInputFile);
         byte[] inputData = ByteStreams.toByteArray(is);
         RequestBody requestFile = RequestBody.create(MediaType.parse("*/*"), inputData);
@@ -300,10 +295,7 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
             {
                 try
                 {
-                    URIPathHelper uriPathHelper = new URIPathHelper();
-                    Uri uri = Uri.parse(StructureUriStr);
-                    String videoInputPath = uriPathHelper.getPath(getActivity(), uri).toString();
-                    File videoInputFile = new File(videoInputPath);
+                    File videoInputFile = new File(StructureUriStr);
                     frameExtractor.extractFrames(videoInputFile.getAbsolutePath());
                 }
                 catch (Exception exception)
@@ -456,17 +448,14 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
     public void onCurrentFrameExtracted(@NonNull Frame currentFrame)
     {
         Bitmap imageBitmap = Utils.fromBufferToBitmap(currentFrame.getByteBuffer(), currentFrame.getWidth(), currentFrame.getHeight(), degress, isFlip);
-        height=currentFrame.getHeight();
-        width=currentFrame.getWidth();
-
-        sb.append("currentFrame height"+height+ "currentFrame width"+width);
-
+        if(frameExtractor.isPause()) return;
         runOnUiThread(new Runnable() {
             @Override
             public void run()
             {
                 if(!is設定旋轉與鏡像)
                 {
+                    sb.append(width+","+height+"\n");
                     Act_ImageView_ShowVideo.setImageBitmap(imageBitmap);
                     Act_ImageView_ShowVideo.setVisibility(View.VISIBLE);
                     frameExtractor.setPause(true);

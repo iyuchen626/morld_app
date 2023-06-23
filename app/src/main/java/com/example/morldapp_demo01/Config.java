@@ -9,6 +9,7 @@ public class Config
 	public static String KEY_骨骼時間軸偏差值 = "key_1";
 	public static String KEY_TOKEN = "key_token";
 	public static String KEY_User = "key_user";
+	public static String KEY_TXT_CONFIG = "KEY_TXT_CONFIG";
 	public static String host = "http://34.81.18.17/";
 	public static String api_host = host + "api/";
 	public static String mmToken = "";

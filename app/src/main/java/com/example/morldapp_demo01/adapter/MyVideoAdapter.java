@@ -94,7 +94,7 @@ public class MyVideoAdapter extends RecyclerView.Adapter<MyVideoAdapter.ViewHold
 									@Override
 									public void onClick(View v)
 									{
-										ApiStrategy.getApiService().mm刪除個人影片(entity).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<FilmListResponse>()
+										Disposable disposable = ApiStrategy.getApiService().mm刪除個人影片(entity).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<FilmListResponse>()
 										{
 											@Override
 											public void accept(FilmListResponse filmListResponse) throws Exception

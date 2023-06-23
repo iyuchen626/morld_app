@@ -34,7 +34,7 @@ public interface ApiService
 	@GET("film_p")
 	Observable<FilmListResponse> mm個人影片清單(@Query("title") String title, @Query("page") int page);
 
-	@HTTP(method = "DELETE", path = "film_p", hasBody = true)
+	@HTTP(method = "DELETE", path = "film", hasBody = true)
 	Observable<FilmListResponse> mm刪除個人影片(@Body FilmPOJO uuid);
 
 	@Multipart
