@@ -271,7 +271,7 @@ public class VideoLandscape extends Base
 	{
 		data.video_offset -= 0.05f;
 		Tools.toast(getActivity(), "減少偏差值至:"+data.video_offset);
-		FileMangement.ReadFileFromTxt(getActivity(), "https://case.unood.me/test1.txt", (long) (data.video_offset * 1000 * 1000), new FileMangement.OnReadFileFromTxtListener() {
+		FileMangement.ReadFileFromTxt(getActivity(), data.txt_slug, (long) (data.video_offset * 1000 * 1000), new FileMangement.OnReadFileFromTxtListener() {
 			@Override
 			public void onTxt(HashMap<String, structurepoint[]> s)
 			{
@@ -285,7 +285,7 @@ public class VideoLandscape extends Base
 	{
 		data.video_offset += 0.05f;
 		Tools.toast(getActivity(), "減少偏差值至:"+data.video_offset);
-		FileMangement.ReadFileFromTxt(getActivity(), "https://case.unood.me/test1.txt", (long) (data.video_offset * 1000 * 1000), new FileMangement.OnReadFileFromTxtListener() {
+		FileMangement.ReadFileFromTxt(getActivity(), data.txt_slug, (long) (data.video_offset * 1000 * 1000), new FileMangement.OnReadFileFromTxtListener() {
 			@Override
 			public void onTxt(HashMap<String, structurepoint[]> s)
 			{
@@ -404,8 +404,17 @@ public class VideoLandscape extends Base
 	}
 
 	public void getframesize() {
-		height = 337;
-		width = 600;
+		//取代
+//		if(Direction==0)
+//		{
+			height = 600;
+			width = 276;
+//		}
+//		else
+//		{
+//			height = 337;
+//			width = 600;
+//		}
 	}
 }
 

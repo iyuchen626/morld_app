@@ -9,8 +9,8 @@
 
     <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/video_view"
-        android:layout_width="600dp"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         android:scaleType="fitStart"
         tools:ignore="ExtraText,MissingConstraints">
 

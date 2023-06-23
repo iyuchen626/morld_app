@@ -459,6 +459,8 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
         height=currentFrame.getHeight();
         width=currentFrame.getWidth();
 
+        sb.append("currentFrame height"+height+ "currentFrame width"+width);
+
         runOnUiThread(new Runnable() {
             @Override
             public void run()
