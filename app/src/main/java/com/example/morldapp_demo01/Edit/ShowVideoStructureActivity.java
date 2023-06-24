@@ -171,9 +171,12 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
             Log.e(Config.TAG, e.getMessage());
         }
         posestructurepoint = FileMangement.ReadFile(getActivity(), filename, (long) (offset*1000*1000));
+
         TxtConfigPOJO txt = Tools.getGson().fromJson(Tools.mmRead(getActivity(), Config.KEY_TXT_CONFIG), TxtConfigPOJO.class);
-        width = txt.width;
-        height = txt.height;
+        if(txt!=null) {
+            width = txt.width;
+            height = txt.height;
+        }
     }
 
     void mm遞減骨骼()
@@ -455,7 +458,7 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
             {
                 if(!is設定旋轉與鏡像)
                 {
-                    sb.append(width+","+height+"\n");
+                    sb.append(currentFrame.getWidth()+","+currentFrame.getHeight()+"\n");
                     Act_ImageView_ShowVideo.setImageBitmap(imageBitmap);
                     Act_ImageView_ShowVideo.setVisibility(View.VISIBLE);
                     frameExtractor.setPause(true);
