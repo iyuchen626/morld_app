@@ -264,13 +264,17 @@ public class VideoLandscape extends Base
 					TxtConfigPOJO txt = Tools.getGson().fromJson(Tools.mmRead(getActivity(), Config.KEY_TXT_CONFIG), TxtConfigPOJO.class);
 					width = txt.width;
 					height = txt.height;
+					Tools.toast(getActivity(), "width:"+width+"height"+height);
 					binding.editOffsetLayout.setVisibility(View.VISIBLE);
 					posestructurepoint = s;
 					player.prepare();
 				}
 			});
+
 		}
 	}
+
+
 
 	void mm遞減骨骼()
 	{

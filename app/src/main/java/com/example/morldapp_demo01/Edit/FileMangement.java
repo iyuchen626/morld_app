@@ -244,6 +244,7 @@ public class FileMangement extends Base
         }).start();
     }
 
+
     public static HashMap<String, structurepoint[]> ReadFile(Context context, String filename, long offset)
     {
         File path = context.getExternalFilesDir(null);

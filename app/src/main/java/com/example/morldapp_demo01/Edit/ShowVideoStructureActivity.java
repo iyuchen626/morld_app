@@ -88,7 +88,7 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
     int PointIdx = 0;
     Boolean EditStructureFlag = false;
     structurepoint[] structurepoints;
-    float original_y, original_x,height,width;
+    private float original_y, original_x,height,width;
     boolean is設定旋轉與鏡像 = false;
     int degress = 0;
     boolean isFlip = false;
@@ -155,9 +155,9 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
                 mm遞增骨骼();
             }
         });
-        mm讀取骨骼資料();
 
     }
+
 
     void mm讀取骨骼資料()
     {
@@ -170,12 +170,21 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
         {
             Log.e(Config.TAG, e.getMessage());
         }
+
+
         posestructurepoint = FileMangement.ReadFile(getActivity(), filename, (long) (offset*1000*1000));
 
         TxtConfigPOJO txt = Tools.getGson().fromJson(Tools.mmRead(getActivity(), Config.KEY_TXT_CONFIG), TxtConfigPOJO.class);
         if(txt!=null) {
             width = txt.width;
             height = txt.height;
+
+        }
+
+        if((posestructurepoint.size()==0)||(width==0)||(height==0))
+        {
+            Tools.toast(getActivity(), "骨骼分析失敗..... 請重新分析 "+posestructurepoint.size()+","+width+","+height);
+            mm產生骨骼();
         }
     }
 
@@ -336,25 +345,25 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
             case R.id.layout_ImgButton_video_StructureEditUp:
                 original_y=structurepoints[PointIdx].getStructpoint_y();
                 structurepoints[PointIdx].setStructpoint_y(original_y-20);
-                Act_GraphicOverlay_ShowVideoStructure.add(new EditPoseGraphic(Act_GraphicOverlay_ShowVideoStructure, structurepoints,PointIdx));
+                Act_GraphicOverlay_ShowVideoStructure.add(new EditPoseGraphic(Act_GraphicOverlay_ShowVideoStructure, structurepoints,PointIdx,height,width));
                 break;
 
             case R.id.layout_ImgButton_video_StructureEditLeft:
                 original_x=structurepoints[PointIdx].getStructpoint_x();
                 structurepoints[PointIdx].setStructpoint_x(original_x-20);
-                Act_GraphicOverlay_ShowVideoStructure.add(new EditPoseGraphic(Act_GraphicOverlay_ShowVideoStructure, structurepoints,PointIdx));
+                Act_GraphicOverlay_ShowVideoStructure.add(new EditPoseGraphic(Act_GraphicOverlay_ShowVideoStructure, structurepoints,PointIdx,height,width));
                 break;
 
             case R.id.layout_ImgButton_video_StructureEditRight:
                 original_x=structurepoints[PointIdx].getStructpoint_x();
                 structurepoints[PointIdx].setStructpoint_x(original_x+20);
-                Act_GraphicOverlay_ShowVideoStructure.add(new EditPoseGraphic(Act_GraphicOverlay_ShowVideoStructure, structurepoints,PointIdx));
+                Act_GraphicOverlay_ShowVideoStructure.add(new EditPoseGraphic(Act_GraphicOverlay_ShowVideoStructure, structurepoints,PointIdx,height,width));
                 break;
 
             case R.id.layout_ImgButton_video_StructureEditDown:
                 original_y=structurepoints[PointIdx].getStructpoint_y();
                 structurepoints[PointIdx].setStructpoint_y(original_y+20);
-                Act_GraphicOverlay_ShowVideoStructure.add(new EditPoseGraphic(Act_GraphicOverlay_ShowVideoStructure, structurepoints,PointIdx));
+                Act_GraphicOverlay_ShowVideoStructure.add(new EditPoseGraphic(Act_GraphicOverlay_ShowVideoStructure, structurepoints,PointIdx,height,width));
 
                 break;
 
@@ -451,6 +460,8 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
     public void onCurrentFrameExtracted(@NonNull Frame currentFrame)
     {
         Bitmap imageBitmap = Utils.fromBufferToBitmap(currentFrame.getByteBuffer(), currentFrame.getWidth(), currentFrame.getHeight(), degress, isFlip);
+        height=currentFrame.getHeight();
+        width=currentFrame.getWidth();
         if(frameExtractor.isPause()) return;
         runOnUiThread(new Runnable() {
             @Override
@@ -748,7 +759,7 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
         {
             structurepoints = posestructurepoint.get(wantId);
             Act_GraphicOverlay_ShowVideoStructure.clear();
-            Act_GraphicOverlay_ShowVideoStructure.add(new EditPoseGraphic(Act_GraphicOverlay_ShowVideoStructure, structurepoints,PointIdx));
+            Act_GraphicOverlay_ShowVideoStructure.add(new EditPoseGraphic(Act_GraphicOverlay_ShowVideoStructure, structurepoints,PointIdx, height, width));
         }
     }
 }

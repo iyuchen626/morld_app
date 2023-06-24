@@ -18,8 +18,9 @@ public class EditPoseGraphic extends GraphicOverlay.Graphic{
     int PointIdx = 0;
     structurepoint[] structurepoint= new structurepoint[12];
     GraphicOverlay graphicOverlay;
+    float height=0, width=0;
 
-    public EditPoseGraphic(GraphicOverlay overlay, structurepoint[] structurepoint, int PointIdx) {
+    public EditPoseGraphic(GraphicOverlay overlay, structurepoint[] structurepoint, int PointIdx,float height,float width) {
         super(overlay);
         this.graphicOverlay = overlay;
         BluePaint = new Paint();
@@ -34,17 +35,20 @@ public class EditPoseGraphic extends GraphicOverlay.Graphic{
 
         this.structurepoint=structurepoint;
         this.PointIdx=PointIdx;
+        this.height=height;
+        this.width=width;
     }
 
     @Override
     public void draw(Canvas canvas) {
-        float scale1 = (float) (canvas.getHeight() / 660);
-        float scale2 = (float) (canvas.getWidth() / 442);
+        float scale1 = (float) (canvas.getHeight())/(float)height;
+        float scale2 = (float) (canvas.getWidth())/(float)width;
        // if(scale2 > scale1) scale1 = scale2;
         //float offset = 1.3f;
         //scale1 *= offset;
         //float hDes = (float) (-canvas.getHeight()*0.01) * offset;
         if(structurepoint==null) return;
+       // canvas.scale((float) scale1, (float)scale2);
         for (int i = 0; i < 12; i++)
         {
             if (structurepoint[i] == null)
@@ -54,7 +58,7 @@ public class EditPoseGraphic extends GraphicOverlay.Graphic{
         }
 
        // canvas.translate(0, 0);
-        canvas.scale(scale1, scale2);
+        canvas.scale((float) scale1, (float)scale2);
         drawLine(canvas, structurepoint[6],structurepoint[0], BluePaint);
         drawLine(canvas, structurepoint[8],structurepoint[2], BluePaint);
         drawLine(canvas, structurepoint[6],structurepoint[7], BluePaint);
