@@ -104,7 +104,9 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
             @Override
             public void onClick(View v)
             {
+                is設定旋轉與鏡像 = false;
                 mm產生骨骼();
+                Act_VideoView_Pose.pause();
             }
         });
         Act_VideoView_Pose=findViewById(R.id.Layout_VideoView_ShowVideo);
@@ -184,7 +186,7 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
         if((posestructurepoint.size()==0)||(width==0)||(height==0))
         {
             Tools.toast(getActivity(), "骨骼分析失敗..... 請重新分析 "+posestructurepoint.size()+","+width+","+height);
-            mm產生骨骼();
+            //mm產生骨骼();
         }
     }
 
@@ -400,58 +402,19 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
 
     void mm校正流程(Frame currentFrame)
     {
-        Tools.showQuestion(getActivity(), "校正", "請問畫面是否為正的?", "是", "否", new View.OnClickListener()
+        Tools.showQuestion(getActivity(), "校正", "請問畫面是否鏡像?", "是", "否", new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                Tools.showQuestion(getActivity(), "校正", "請問畫面是否鏡像?", "是", "否", new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        isFlip = true;
-                        Bitmap b = Utils.fromBufferToBitmap(currentFrame.getByteBuffer(), currentFrame.getWidth(), currentFrame.getHeight(), degress, isFlip);
-                        Act_ImageView_ShowVideo.setImageBitmap(b);
-                        Tools.showQuestion(getActivity(), "校正", "請問畫面是否正常?", "是", "否", new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                Act_ImageView_ShowVideo.setVisibility(View.INVISIBLE);
-                                frameExtractor.setPause(false);
-                                is設定旋轉與鏡像 = true;
-                            }
-                        }, new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                mm校正流程(currentFrame);
-                            }
-                        });
-                    }
-                }, new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        Act_ImageView_ShowVideo.setVisibility(View.INVISIBLE);
-                        frameExtractor.setPause(false);
-                        is設定旋轉與鏡像 = true;
-                    }
-                });
-
+              isFlip = true;
             }
         }, new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                degress += 90;
-                Bitmap b = Utils.fromBufferToBitmap(currentFrame.getByteBuffer(), currentFrame.getWidth(), currentFrame.getHeight(), degress, isFlip);
-                Act_ImageView_ShowVideo.setImageBitmap(b);
-                mm校正流程(currentFrame);
+                isFlip = false;
             }
         });
     }
@@ -459,9 +422,8 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
     @Override
     public void onCurrentFrameExtracted(@NonNull Frame currentFrame)
     {
+
         Bitmap imageBitmap = Utils.fromBufferToBitmap(currentFrame.getByteBuffer(), currentFrame.getWidth(), currentFrame.getHeight(), degress, isFlip);
-        height=currentFrame.getHeight();
-        width=currentFrame.getWidth();
         if(frameExtractor.isPause()) return;
         runOnUiThread(new Runnable() {
             @Override
@@ -470,10 +432,13 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
                 if(!is設定旋轉與鏡像)
                 {
                     sb.append(currentFrame.getWidth()+","+currentFrame.getHeight()+"\n");
-                    Act_ImageView_ShowVideo.setImageBitmap(imageBitmap);
-                    Act_ImageView_ShowVideo.setVisibility(View.VISIBLE);
+                    //Act_ImageView_ShowVideo.setImageBitmap(imageBitmap);
+                    //Act_ImageView_ShowVideo.setVisibility(View.VISIBLE);
                     frameExtractor.setPause(true);
                     mm校正流程(currentFrame);
+                    //Act_ImageView_ShowVideo.setVisibility(View.INVISIBLE);
+                    frameExtractor.setPause(false);
+                    is設定旋轉與鏡像 = true;
                 }
                 Tools.showProgress(getActivity(), "生成骨骼中\n" + currentFrame.getPosition());
             }
@@ -494,9 +459,9 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
                     if (queue.size() == 0)
                     {
                         FileMangement.SaveFile(getActivity(), filename, sb.toString());
-                        mm讀取骨骼資料();
                         Tools.hideProgress(getActivity());
                         Tools.toastSuccess(getActivity(), "骨骼已儲存txt");
+                        mm讀取骨骼資料();
                     }
                 }
             }
