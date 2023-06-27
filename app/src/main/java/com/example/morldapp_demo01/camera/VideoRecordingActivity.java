@@ -282,8 +282,8 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
         else if((view.getId())==(R.id.Layout_ImgBtnAlbumChoose))
         {
 
-            pickimagegallery();
-            //pickvideogallery();
+            //pickimagegallery();
+            pickvideogallery();
         }
         else
         {
@@ -447,7 +447,7 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
 
 
                         String ssd = uriPathHelper.getPathFromURI(getActivity(), viseoUri).toString();
-                        Intent intent = new Intent(VideoRecordingActivity.this, ShowStructureActivity.class);
+                        Intent intent = new Intent(VideoRecordingActivity.this, ShowVideoStructureActivity.class);
                         Bundle objbundle = new Bundle();
                         objbundle.putString("uriimagestr", ssd);
                         intent.putExtras(objbundle);
