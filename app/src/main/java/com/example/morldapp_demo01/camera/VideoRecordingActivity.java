@@ -282,8 +282,8 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
         else if((view.getId())==(R.id.Layout_ImgBtnAlbumChoose))
         {
 
-            //pickimagegallery();
-            pickvideogallery();
+            pickimagegallery();
+            //pickvideogallery();
         }
         else
         {
@@ -415,8 +415,10 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
 
     private void pickimagegallery()
     {
-         Intent intent =new Intent(Intent.ACTION_PICK); //極重要，用android 11以上，用ACTION_PICK必閃退
+
+        Intent intent =new Intent(Intent.ACTION_OPEN_DOCUMENT); //極重要，用android 11以上，用ACTION_PICK必閃退
         intent.setType("image/*");
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         galleryActivityResultLauncher.launch(intent);
     }
 
@@ -436,19 +438,19 @@ public class VideoRecordingActivity extends Base implements CompoundButton.OnChe
                 public void onActivityResult(ActivityResult result) {
                     if(result.getResultCode()== Activity.RESULT_OK)
                     {
-                        Uri imageUri =null;
+                        Uri viseoUri =null;
                         Intent data=result.getData();
-                        imageUri=data.getData();
+                        viseoUri=data.getData();
+                        int i=0;
 
-                        String imageuristr=null;
-                        imageuristr=imageUri.toString();
-                        Intent intent = new Intent();
-                        intent= new Intent(VideoRecordingActivity.this, ShowStructureActivity.class);
+                        URIPathHelper uriPathHelper = new URIPathHelper();
 
+
+                        String ssd = uriPathHelper.getPathFromURI(getActivity(), viseoUri).toString();
+                        Intent intent = new Intent(VideoRecordingActivity.this, ShowStructureActivity.class);
                         Bundle objbundle = new Bundle();
-                        objbundle.putString("uristr",imageuristr);
+                        objbundle.putString("uriimagestr", ssd);
                         intent.putExtras(objbundle);
-
                         startActivity(intent);
                         finish();
                     }

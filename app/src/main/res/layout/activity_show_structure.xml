@@ -7,44 +7,121 @@
     tools:context=".Edit.ShowStructureActivity">
 
     <ImageView
-        android:id="@+id/Layout_ImageView_ShowPhoto"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:scaleType="matrix"
+        android:id="@+id/Layout_ImageView_ShowImage"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:scaleType="fitStart"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
+
     <com.example.morldapp_demo01.GraphicOverlay
-        android:id="@+id/Layout_GraphicOverlay_ShowStructure"
+        android:id="@+id/Layout_GraphicOverlay_ShowImageStructure"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@id/Layout_ImageView_ShowPhoto"
-        app:layout_constraintLeft_toLeftOf="@id/Layout_ImageView_ShowPhoto"
-        app:layout_constraintRight_toRightOf="@id/Layout_ImageView_ShowPhoto"
-        app:layout_constraintTop_toTopOf="@id/Layout_ImageView_ShowPhoto" />
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="@+id/Layout_ImageView_ShowImage"
+        app:layout_constraintLeft_toLeftOf="@+id/Layout_ImageView_ShowImage"
+        app:layout_constraintRight_toRightOf="@+id/Layout_ImageView_ShowImage"
+        app:layout_constraintTop_toTopOf="@+id/Layout_ImageView_ShowImage" />
 
-    <Button
-        android:id="@+id/Layout_Button_StructureEdit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="edit"
+
+
+    <ImageButton
+        android:id="@+id/layout_ImgButton_Image_StructureEdit"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:scaleType="centerInside"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.95"
+        app:layout_constraintHorizontal_bias="0.043"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.036" />
+        app:layout_constraintVertical_bias="0.499"
+        app:srcCompat="@drawable/adjust"
+        tools:ignore="MissingConstraints,SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
     <Button
-        android:id="@+id/Layout_Button_StructureShow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="SHOW"
+        android:id="@+id/Layout_Button_ImageStructureShow"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:text="V   "
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.979"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.019"
+        tools:ignore="MissingConstraints" />
+
+
+    <ImageButton
+        android:id="@+id/layout_ImgButton_Image_StructureEditUp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.945" />
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/up"
+        tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
+    <ImageButton
+        android:id="@+id/layout_ImgButton_Image_StructureEditLeft"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.043"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.354"
+        app:srcCompat="@drawable/left"
+        tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
+    <ImageButton
+        android:id="@+id/layout_ImgButton_Image_StructureEditRight"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.325"
+        app:srcCompat="@drawable/right"
+        tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+
+    <ImageButton
+        android:id="@+id/layout_ImgButton_Image_StructureEditDown"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.727"
+        app:srcCompat="@drawable/down"
+        tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+
+    <Button
+        android:id="@+id/layout_Button_ReproducePose_Image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="重跑骨骼"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

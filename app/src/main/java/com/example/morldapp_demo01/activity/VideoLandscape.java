@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
-import android.util.Size;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -20,7 +19,6 @@ import com.example.morldapp_demo01.Config;
 import com.example.morldapp_demo01.Edit.AnalyzePoseGraphic;
 import com.example.morldapp_demo01.Edit.FileMangement;
 import com.example.morldapp_demo01.Edit.structurepoint;
-import com.example.morldapp_demo01.PreferenceUtils;
 import com.example.morldapp_demo01.R;
 import com.example.morldapp_demo01.Tools;
 import com.example.morldapp_demo01.databinding.VideoLandscapeBinding;
@@ -51,7 +49,6 @@ import java.util.concurrent.Executors;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -67,13 +64,6 @@ public class VideoLandscape extends Base
 	private HashMap<String,  structurepoint[]> posestructurepoint=new HashMap<>();
 	private ExecutorService executorService= Executors.newSingleThreadExecutor();
 	float height,width;
-	private FrameExtractor frameExtractor;
-
-	@Nullable
-	private Preview previewUseCase;
-
-	@Nullable
-	private ProcessCameraProvider cameraProvider;
 
 	void initializeFile播放器(String url)
 	{
@@ -294,6 +284,7 @@ public class VideoLandscape extends Base
 					player.prepare();
 				}
 			});
+
 		}
 	}
 
