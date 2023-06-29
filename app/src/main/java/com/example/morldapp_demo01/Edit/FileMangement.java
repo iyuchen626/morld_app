@@ -291,6 +291,29 @@ public class FileMangement extends Base
         return res;
     }
 
+    public static structurepoint[] ReadFronOneLine(String s)
+    {
+        try
+        {
+                String[] data = s.split("#");
+                structurepoint[] structurepoints = new structurepoint[12];
+                for (int i = 0; i < 12; i++)
+                {
+                    String[] data2 = data[i].split("Data");
+                    structurepoint posestructurepoint = new structurepoint();
+                    posestructurepoint.setStructpoint_x(Float.valueOf(data2[1]));
+                    posestructurepoint.setStructpoint_y(Float.valueOf(data2[2]));
+                    posestructurepoint.setStructpoint_weight(Float.valueOf(data2[3]));
+                    structurepoints[i] = posestructurepoint;
+                }
+                return  structurepoints;
+        }
+        catch (Exception e) {
+            Log.e(Config.TAG, e.getMessage());
+        }
+        return null;
+    }
+
     public static String ReadFile(Context context, String filename)
     {
         File path = context.getExternalFilesDir(null);

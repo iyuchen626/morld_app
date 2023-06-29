@@ -6,16 +6,25 @@ import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.Matrix
+import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.params.StreamConfigurationMap
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.DisplayMetrics
+import android.util.Log
+import android.util.Size
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.camera.camera2.interop.Camera2CameraInfo
+import androidx.camera.core.Camera
 import androidx.core.widget.doOnTextChanged
+import com.example.morldapp_demo01.Config
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
+import com.google.android.odml.image.MlImage
+import com.google.ar.core.ImageFormat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -138,5 +147,37 @@ object Utils {
         }
     }
 
+    @JvmStatic fun saveBitmap(context: Context, bitmap: Bitmap, format: Bitmap.CompressFormat, mimeType: String, displayName: String
+    ): Uri {
 
+        val values = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, displayName)
+            put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
+            put(MediaStore.MediaColumns.RELATIVE_PATH, "Pictures/Morld")
+        }
+
+        val resolver = context.contentResolver
+        var uri: Uri? = null
+
+        try {
+            uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+                ?: throw IOException("Failed to create new MediaStore record.")
+
+            resolver.openOutputStream(uri)?.use {
+                if (!bitmap.compress(format, 95, it))
+                    throw IOException("Failed to save bitmap.")
+            } ?: throw IOException("Failed to open output stream.")
+
+            return uri
+
+        } catch (e: IOException) {
+
+            uri?.let { orphanUri ->
+                // Don't leave an orphan entry in the MediaStore
+                resolver.delete(orphanUri, null, null)
+            }
+
+            throw e
+        }
+    }
 }

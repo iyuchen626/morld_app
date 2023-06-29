@@ -213,4 +213,11 @@ public class PoseGraphic extends Graphic {
 
     return Result;
   }
+  public float translateX(float x) {
+    return overlay.scaleFactor * x;
+  }
+  public float translateY(float y) {
+    return overlay.scaleFactor * y;
+  }
+
 }

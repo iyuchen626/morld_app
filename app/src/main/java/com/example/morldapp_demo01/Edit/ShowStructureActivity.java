@@ -88,11 +88,12 @@ public class ShowStructureActivity extends Base implements View.OnClickListener
             {
                 is設定旋轉與鏡像 = false;
                 mm產生骨骼();
-                try {
-                    Bitmap_ShowPhoto= BitmapFactory.decodeStream(getContentResolver().openInputStream(Uri.parse(StructureUriStr)));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    Bitmap_ShowPhoto= BitmapFactory.decodeStream(getContentResolver().openInputStream(Uri.parse(StructureUriStr)));
+//                    Act_ImageView_Pose.setImageBitmap(Bitmap_ShowPhoto);
+//                } catch (FileNotFoundException e) {
+//                    e.printStackTrace();
+//                }
 
 
             }
@@ -122,7 +123,9 @@ public class ShowStructureActivity extends Base implements View.OnClickListener
         Bundle bundle=intent.getExtras();
         StructureUriStr = bundle.getString("uriimagestr");
         filename = Tools.md5(StructureUriStr);
-        Act_ImageView_Pose.setImageURI(Uri.parse(StructureUriStr));
+//        Act_ImageView_Pose.setImageURI(Uri.parse(StructureUriStr));
+//        Act_ImageView_Pose.setImageURI(Uri.fromFile(new File(StructureUriStr)));
+//        Act_ImageView_Pose.setima
 
     }
 
@@ -158,24 +161,19 @@ public class ShowStructureActivity extends Base implements View.OnClickListener
 
     void mm產生骨骼()
     {
+        float a;
         try {
-            Bitmap_ShowPhoto= BitmapFactory.decodeStream(getContentResolver().openInputStream(Uri.fromFile(new File(StructureUriStr))));
-            Tools.toast(getActivity(), "AA");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-//        float a;
-//        try {
-       // Bitmap bitmap= BitmapFactory.decodeStream(getContentResolver().openInputStream(Uri.parse(StructureUriStr)));
-//        File file =new File(StructureUriStr);
-//         a=file.length();
+            Bitmap bitmap= BitmapFactory.decodeStream(getContentResolver().openInputStream(Uri.fromFile(new File(StructureUriStr))));
+            Act_ImageView_Pose.setImageBitmap(bitmap);
+        File file =new File(StructureUriStr);
+         a=file.length();
+         a+=1;
 //        Toast.makeText("AAA").show();
 
 
-//;       } catch (IOException e) {
-//
-//        }
+;       } catch (Exception e) {
+            Log.e(Config.TAG, e.getMessage());
+        }
 //        try {
 //           // Bitmap_ShowPhoto= BitmapFactory.decodeStream(getContentResolver().openInputStream(Uri_photo));
 //            //Tools.toast(getActivity(), "AA");
@@ -183,8 +181,8 @@ public class ShowStructureActivity extends Base implements View.OnClickListener
 //        } catch (FileNotFoundException e) {
 //            e.printStackTrace();
 //        }
-        // Tools.showProgress(getActivity(), "生成骨骼中");
-       // mm校正流程();
+//         Tools.showProgress(getActivity(), "生成骨骼中");
+//        mm校正流程();
 //        try
 //        {
 //            Bitmap_ShowPhoto= BitmapFactory.decodeStream(getContentResolver().openInputStream(Uri.parse(StructureUriStr)));
@@ -213,8 +211,8 @@ public class ShowStructureActivity extends Base implements View.OnClickListener
 //
 //                }
 //            });
-
-
+//
+//
 //        }
 //        catch (Exception exception)
 //        {

@@ -77,7 +77,7 @@ public class GraphicOverlay extends View {
    * instances to the overlay using {@link GraphicOverlay#add(Graphic)}.
    */
   public abstract static class Graphic {
-    private GraphicOverlay overlay;
+    public GraphicOverlay overlay;
 
     public Graphic(GraphicOverlay overlay) {
       this.overlay = overlay;

@@ -18,6 +18,7 @@ package com.example.morldapp_demo01;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 
 import com.example.morldapp_demo01.GraphicOverlay.Graphic;
 
@@ -25,6 +26,7 @@ import com.example.morldapp_demo01.GraphicOverlay.Graphic;
 public class CameraImageGraphic extends Graphic {
 
   private final Bitmap bitmap;
+  Matrix matrix = new Matrix();
 
   public CameraImageGraphic(GraphicOverlay overlay, Bitmap bitmap) {
     super(overlay);
@@ -33,6 +35,7 @@ public class CameraImageGraphic extends Graphic {
 
   @Override
   public void draw(Canvas canvas) {
-    canvas.drawBitmap(bitmap, getTransformationMatrix(), null);
+    matrix.setScale(overlay.scaleFactor, overlay.scaleFactor);
+    canvas.drawBitmap(bitmap, matrix, null);
   }
 }

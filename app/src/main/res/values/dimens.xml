@@ -1,3 +1,5 @@
 <resources>
       <dimen name="fab_margin">16dp</dimen>
+      <dimen name="pageMargin">100dp</dimen>
+      <dimen name="offset">20dp</dimen>
    </resources>

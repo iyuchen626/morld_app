@@ -128,8 +128,8 @@ public class VideoDetectActivity extends Base implements CompoundButton.OnChecke
         if (cameraProvider != null) {
             cameraProvider.unbindAll();
             bindPreviewUseCase();
-            bindVideoCaptcureUseCase();
-            bindAnalysisUseCase();
+//            bindVideoCaptcureUseCase();
+//            bindAnalysisUseCase();
         }
     }
 

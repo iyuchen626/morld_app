@@ -7,39 +7,57 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.ImageFormat;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraManager;
+import android.hardware.camera2.params.StreamConfigurationMap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.SystemClock;
 import android.provider.MediaStore;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.Size;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import com.example.morldapp_demo01.CameraXViewModel;
-import com.example.morldapp_demo01.Edit.ShowStructureActivity;
+import com.example.morldapp_demo01.Config;
+import com.example.morldapp_demo01.Edit.AnalyzePoseGraphic;
+import com.example.morldapp_demo01.Edit.FileMangement;
 import com.example.morldapp_demo01.Edit.ShowVideoStructureActivity;
+import com.example.morldapp_demo01.Edit.StructureAnalyze;
+import com.example.morldapp_demo01.Edit.structurepoint;
 import com.example.morldapp_demo01.PreferenceUtils;
 import com.example.morldapp_demo01.R;
 import com.example.morldapp_demo01.Tools;
 import com.example.morldapp_demo01.VisionImageProcessor;
 import com.example.morldapp_demo01.activity.Base;
+import com.example.morldapp_demo01.adapter.ControlMenuAdapter;
+import com.example.morldapp_demo01.adapter.SnapPagerScrollListener;
 import com.example.morldapp_demo01.classification.posedetector.PoseDetectorProcessor;
 import com.example.morldapp_demo01.fastextraction.URIPathHelper;
-import com.google.mlkit.common.MlKitException;
+import com.example.morldapp_demo01.fastextraction.Utils;
+import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.pose.PoseDetectorOptionsBase;
+import com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Locale;
 import java.util.concurrent.Executor;
 
 import androidx.activity.result.ActivityResult;
@@ -48,480 +66,537 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.camera.core.CameraInfoUnavailableException;
+import androidx.camera.camera2.interop.Camera2CameraInfo;
+import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
+import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.Preview;
 import androidx.camera.core.VideoCapture;
 import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.video.Recorder;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.PagerSnapHelper;
+import androidx.recyclerview.widget.RecyclerView;
 
-public class VideoRecordingActivity extends Base implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
+import static androidx.camera.core.ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST;
 
-    private PreviewView PreView;
-    private com.example.morldapp_demo01.GraphicOverlay GraphicOverlay;
-    private Boolean A;
-    private Boolean RecordingVideo=false;
+public class VideoRecordingActivity extends Base
+{
 
-    private ImageButton ImgBtnPhoneVideoGallery;
-    private Uri videoUri =null;
-    long starttime=0,currenttime=0,diff=0,minutes,second;
+	private PreviewView PreView;
+	private com.example.morldapp_demo01.GraphicOverlay GraphicOverlay;
+	private Boolean A;
+	private Boolean RecordingVideo = false;
 
-    @Nullable
-    private ProcessCameraProvider cameraProvider;
-    @Nullable
-    private Preview previewUseCase;
-    @Nullable
-    private ImageAnalysis analysisUseCase;
-    @Nullable
-    private VisionImageProcessor imageProcessor;
-    @Nullable
-    private VideoCapture videoCaptureUseCase;
-    private boolean needUpdateGraphicOverlayImageSourceInfo;
+	private ImageButton ImgBtnPhoneVideoGallery;
+	private Uri videoUri = null;
+	long starttime = 0, currenttime = 0, diff = 0, minutes, second;
+	@Nullable
+	private Preview previewUseCase;
+	ProcessCameraProvider cameraProvider;
+	@Nullable
+	private ImageAnalysis analysisUseCase;
+	@Nullable
+	private VisionImageProcessor imageProcessor;
+	@Nullable
+	private VideoCapture videoCaptureUseCase;
+	private boolean needUpdateGraphicOverlayImageSourceInfo;
+	Recorder recorder;
+	private int lensFacing = CameraSelector.LENS_FACING_BACK;
+	private static final String POSE_DETECTION = "Pose Detection";
 
-    private int lensFacing = CameraSelector.LENS_FACING_BACK;
-    private static final String POSE_DETECTION = "Pose Detection";
+	private String selectedModel = POSE_DETECTION;
+	private CameraSelector cameraSelector;
 
-    private String selectedModel = POSE_DETECTION;
-    private CameraSelector cameraSelector;
+	private ImageView Act_TogBtnCameraFacing;
+	private ImageView Act_ImgBtnCameraRecording;
+	private ImageView Act_ImgBtnAlbumChoose;
+	private ProgressBar Act_ProgressBarCameraRecording;
+	private TextView Act_TextView_RecordingTime;
+	private ImageCapture imageCapture;
+	private ImageView imageCoach;
+	private com.example.morldapp_demo01.GraphicOverlay GraphicOverlay_coach;
+	private VerticalSeekBar seekBar1;
 
-    private ToggleButton Act_TogBtnCameraFacing;
-    private ImageButton Act_ImgBtnCameraRecording;
-    private ImageButton Act_ImgBtnAlbumChoose;
-    private ProgressBar Act_ProgressBarCameraRecording;
-    private TextView Act_TextView_RecordingTime;
+	// private TextView TextViewPKTime;
 
-   // private TextView TextViewPKTime;
+	@Override
+	protected void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		cameraSelector = new CameraSelector.Builder().requireLensFacing(lensFacing).build();
+		setContentView(R.layout.activity_video_recording);
+		seekBar1 = findViewById(R.id.seekBar1);
+		PreView = findViewById(R.id.PreView_Editor);
+		GraphicOverlay = findViewById(R.id.GraphicOverlay_Record);
+		GraphicOverlay_coach = findViewById(R.id.GraphicOverlay_coach);
+		Act_TogBtnCameraFacing = findViewById(R.id.Layout_TogBtnCameraFacing);
+		imageCoach = findViewById(R.id.imageCoach);
+		Act_ImgBtnCameraRecording = findViewById(R.id.Layout_ImgBtnCameraRecording);
+		Act_ImgBtnAlbumChoose = findViewById(R.id.Layout_ImgBtnAlbumChoose);
+		Act_TextView_RecordingTime = findViewById(R.id.Layout_TextView_RecordingTime);
+		Act_ProgressBarCameraRecording = findViewById(R.id.Layout_ProgressBarCameraRecording);
+		Act_ProgressBarCameraRecording.setVisibility(View.INVISIBLE);
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        cameraSelector = new CameraSelector.Builder().requireLensFacing(lensFacing).build();
+		new ViewModelProvider(this, (ViewModelProvider.Factory) ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
+				.get(CameraXViewModel.class)
+				.getProcessCameraProvider()
+				.observe(
+						this,
+						provider ->
+						{
+							cameraProvider = provider;
+							bindAllCameraUseCases(provider);
+						});
 
-        setContentView(R.layout.activity_video_recording);
-        PreView = findViewById(R.id.PreView_Editor);
-        GraphicOverlay = findViewById(R.id.GraphicOverlay_Record);
-       // TextViewPKTime=findViewById(R.id.TextView_PKTime);
+		RecyclerView controlMenu = findViewById(R.id.recycle_view);
+		LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+		PagerSnapHelper snapHelper = new PagerSnapHelper();
+		controlMenu.setLayoutManager(layoutManager);
+		snapHelper.attachToRecyclerView(controlMenu);
+		ControlMenuAdapter adapter = new ControlMenuAdapter(getActivity(), Arrays.asList(new String[]{"Photo", "Video", "Model"}));
+		controlMenu.setAdapter(adapter);
+		controlMenu.addOnScrollListener(new SnapPagerScrollListener(snapHelper, SnapPagerScrollListener.ON_SCROLL, false, new SnapPagerScrollListener.OnChangeListener()
+		{
+			@Override
+			public void onSnapped(int position)
+			{
+				Log.i(Config.TAG, "選到" + position);
+				mm初始化按鈕事件(position);
+			}
+		}));
+		mm拍照();
+		int step = 1;
+		int max = 100;
+		int min = 0;
+		seekBar1.setMax((max - min) / step);
+		seekBar1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+		{
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
+			{
+				double value = min + (progress * step);
+				Log.i(Config.TAG, "onProgressChanged=" + value);
+				imageCoach.setAlpha((float) value * 0.01f);
+			}
 
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar)
+			{
 
-        Act_TogBtnCameraFacing = findViewById(R.id.Layout_TogBtnCameraFacing);
-        Act_TogBtnCameraFacing.setOnCheckedChangeListener(this);
+			}
 
-        Act_ImgBtnCameraRecording = findViewById(R.id.Layout_ImgBtnCameraRecording);
-        Act_ImgBtnCameraRecording.setOnClickListener(this);
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar)
+			{
 
-        Act_ImgBtnAlbumChoose = findViewById(R.id.Layout_ImgBtnAlbumChoose);
-        Act_ImgBtnAlbumChoose.setOnClickListener(this);
+			}
+		});
+		mm初始化按鈕事件(0);
+	}
 
-        Act_TextView_RecordingTime = findViewById(R.id.Layout_TextView_RecordingTime);
+	private void bindAllCameraUseCases(ProcessCameraProvider cameraProvider)
+	{
+		cameraProvider.unbindAll();
+		Size highSize = new Size(3000, 4000);
+		Preview.Builder builder = new Preview.Builder();
+		builder.setTargetResolution(highSize);
+		builder.setDefaultResolution(highSize);
+		builder.setMaxResolution(highSize);
+		previewUseCase = builder.build();
+		previewUseCase.setSurfaceProvider(PreView.getSurfaceProvider());
+		Camera camera = cameraProvider.bindToLifecycle(/* lifecycleOwner= */ this, cameraSelector, previewUseCase);
+		try
+		{
+			Size size = mm取得相機支援最小的4_3解析度(camera);
+			cameraProvider.unbind(previewUseCase);
+			imageCapture = new ImageCapture.Builder().setTargetResolution(highSize).setDefaultResolution(highSize).setMaxResolution(highSize).build();
+			videoCaptureUseCase = new VideoCapture.Builder().setVideoFrameRate(60).build();
+			if (imageProcessor != null)
+			{
+				imageProcessor.stop();
+			}
+			PoseDetectorOptionsBase poseDetectorOptions = PreferenceUtils.getPoseDetectorOptionsForLivePreview(this);
+			boolean shouldShowInFrameLikelihood = PreferenceUtils.shouldShowPoseDetectionInFrameLikelihoodLivePreview(this);
+			boolean visualizeZ = PreferenceUtils.shouldPoseDetectionVisualizeZ(this);
+			boolean rescaleZ = PreferenceUtils.shouldPoseDetectionRescaleZForVisualization(this);
+			boolean runClassification = PreferenceUtils.shouldPoseDetectionRunClassification(this);
+			imageProcessor = new PoseDetectorProcessor(this, poseDetectorOptions, shouldShowInFrameLikelihood, visualizeZ, rescaleZ, runClassification, true);
+			ImageAnalysis.Builder imageAnalyBuilder = new ImageAnalysis.Builder();
+			imageAnalyBuilder.setTargetResolution(size);
+			imageAnalyBuilder.setDefaultResolution(size);
+			imageAnalyBuilder.setMaxResolution(size);
+			imageAnalyBuilder.setOutputImageRotationEnabled(true);
+			imageAnalyBuilder.setBackpressureStrategy(STRATEGY_KEEP_ONLY_LATEST);
+			analysisUseCase = imageAnalyBuilder.build();
+			analysisUseCase.setAnalyzer(
+					ContextCompat.getMainExecutor(this),
+					imageProxy ->
+					{
+						try
+						{
+							GraphicOverlay.setImageSourceInfo(imageProxy.getWidth(), imageProxy.getHeight(), false);
+							imageProcessor.processImageProxy(imageProxy, GraphicOverlay);
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+							Tools.toast(getActivity(), e.getMessage());
+						}
+					});
+			cameraProvider.bindToLifecycle(this, cameraSelector, analysisUseCase, imageCapture, videoCaptureUseCase);
+		}
+		catch (Exception e)
+		{
+			Tools.showError(getActivity(), e.getMessage());
+		}
+	}
 
+	void mm初始化按鈕事件(int pos)
+	{
+		if (pos == 0)
+		{
+			imageCoach.setVisibility(View.INVISIBLE);
+			seekBar1.setVisibility(View.INVISIBLE);
+			Act_ImgBtnAlbumChoose.setVisibility(View.INVISIBLE);
+			Act_ImgBtnCameraRecording.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					mm拍照();
+				}
+			});
+		}
+		if (pos == 1)
+		{
+			imageCoach.setVisibility(View.INVISIBLE);
+			seekBar1.setVisibility(View.INVISIBLE);
+			Act_ImgBtnAlbumChoose.setVisibility(View.INVISIBLE);
+			Act_ImgBtnCameraRecording.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					if (RecordingVideo)
+					{
+						RecordingVideo = false;
+						videoCaptureUseCase.stopRecording();
+					}
+					else
+					{
+						RecordingVideo = true;
+						RecordVideo();
+					}
+				}
+			});
+		}
+		if (pos == 2)
+		{
+			imageCoach.setImageResource(0);
+			imageCoach.setVisibility(View.VISIBLE);
+			seekBar1.setVisibility(View.VISIBLE);
+			Act_ImgBtnAlbumChoose.setVisibility(View.VISIBLE);
+			Act_ImgBtnCameraRecording.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v)
+				{
+					findViewById(R.id.root).buildDrawingCache();
+					Bitmap b = findViewById(R.id.root).getDrawingCache();
+					Uri res = Utils.saveBitmap(getActivity(), b, Bitmap.CompressFormat.JPEG, "image/jpeg", String.valueOf(System.currentTimeMillis()));
+					res.getPath();
+					Tools.toastSuccess(getActivity(), "已儲存照片");
+				}
+			});
+			Act_ImgBtnAlbumChoose.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v)
+				{
+					pickimagegallery();
+				}
+			});
+		}
+		Act_TogBtnCameraFacing.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v)
+			{
+				lensFacing = lensFacing == CameraSelector.LENS_FACING_FRONT ? CameraSelector.LENS_FACING_BACK : CameraSelector.LENS_FACING_FRONT;
+				cameraSelector = new CameraSelector.Builder().requireLensFacing(lensFacing).build();
+				try
+				{
+					if (cameraProvider.hasCamera(cameraSelector))
+					{
+						bindAllCameraUseCases(cameraProvider);
+					}
+				}
+				catch (Exception e)
+				{
+					Tools.showError(getActivity(), e.getMessage());
+				}
+			}
+		});
+	}
 
-        Act_ProgressBarCameraRecording = findViewById(R.id.Layout_ProgressBarCameraRecording);
-        Act_ProgressBarCameraRecording.setVisibility(View.INVISIBLE);
+	Size mm取得相機支援最小的4_3解析度(Camera camera) throws Exception
+	{
+		DisplayMetrics displayMetrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+		int screen_h = displayMetrics.heightPixels;
+		int screen_w = displayMetrics.widthPixels;
+		Log.i(Config.TAG, "screen w=" + screen_w + " screen h=" + screen_h);
+		String cameraId = Camera2CameraInfo.from(camera.getCameraInfo()).getCameraId();
+		CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+		CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraId);
+		StreamConfigurationMap streamConfigurationMap = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+		Size[] sizes = streamConfigurationMap.getOutputSizes(ImageFormat.JPEG);
+		int pixel = Integer.MAX_VALUE;
+		Size size = sizes[0];
+		for (Size ss : sizes)
+		{
+			float df = (float) ss.getWidth() / (float) ss.getHeight();
+			df = (float) (Math.floor(df * 100.0) / 100.0);
+			if (ss.getWidth() * ss.getHeight() < pixel && ss.getWidth() * ss.getHeight() > 600 * 800 && df == 1.33f)
+			{
+				pixel = ss.getWidth() * ss.getHeight();
+				size = ss;
+			}
+		}
+		GraphicOverlay.scaleFactor = (float) screen_w / (float) size.getHeight();
+		Log.i(Config.TAG, "最後使用size=" + size.getWidth() + " " + size.getHeight() + " scale=" + GraphicOverlay.scaleFactor);
+		return size;
+	}
 
-        new ViewModelProvider(this, (ViewModelProvider.Factory) ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
-                .get(CameraXViewModel.class)
-                .getProcessCameraProvider()
-                .observe(
-                        this,
-                        provider -> {
-                            cameraProvider = provider;
-                            bindAllCameraUseCases();
-                        });
-    }
+	private void mm拍照()
+	{
+		// 确保imageCapture 已经被实例化, 否则程序将可能崩溃
+		if (imageCapture != null)
+		{
+			Act_ImgBtnCameraRecording.setVisibility(View.INVISIBLE);
+			Act_ProgressBarCameraRecording.setVisibility(View.VISIBLE);
+			String name = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.TRADITIONAL_CHINESE).format(System.currentTimeMillis());
+			ContentValues contentValues = new ContentValues();
+			contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, name);
+			contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
+			if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P)
+			{
+				contentValues.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Morld");
+			}
 
-    private void bindAllCameraUseCases() {
-        if (cameraProvider != null) {
-            cameraProvider.unbindAll();
-            bindPreviewUseCase();
-            bindVideoCaptcureUseCase();
-            bindAnalysisUseCase();
-        }
-    }
+			ImageCapture.OutputFileOptions outputFileOptions = new ImageCapture.OutputFileOptions.Builder(getContentResolver(), MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues).build();
 
-    private void bindAnalysisUseCase() {
-        if (cameraProvider == null) {
-            return;
-        }
-        if (analysisUseCase != null) {
-            cameraProvider.unbind(analysisUseCase);
-        }
-        if (imageProcessor != null) {
-            imageProcessor.stop();
-        }
-        try {
-            PoseDetectorOptionsBase poseDetectorOptions =
-                    PreferenceUtils.getPoseDetectorOptionsForLivePreview(this);
-            boolean shouldShowInFrameLikelihood =
-                    PreferenceUtils.shouldShowPoseDetectionInFrameLikelihoodLivePreview(this);
-            boolean visualizeZ = PreferenceUtils.shouldPoseDetectionVisualizeZ(this);
-            boolean rescaleZ = PreferenceUtils.shouldPoseDetectionRescaleZForVisualization(this);
-            boolean runClassification = PreferenceUtils.shouldPoseDetectionRunClassification(this);
-            imageProcessor =
-                    new PoseDetectorProcessor(
-                            this,
-                            poseDetectorOptions,
-                            shouldShowInFrameLikelihood,
-                            visualizeZ,
-                            rescaleZ,
-                            runClassification,
-                            /* isStreamMode = */ true);
-        } catch (Exception e) {
-        }
+			imageCapture.takePicture(outputFileOptions, ContextCompat.getMainExecutor(this), new ImageCapture.OnImageSavedCallback()
+			{
+				@Override
+				public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults)
+				{
+                    Tools.toastSuccess(getActivity(), "已儲存照片");
+					Act_ImgBtnCameraRecording.setVisibility(View.VISIBLE);
+					Act_ProgressBarCameraRecording.setVisibility(View.INVISIBLE);
+				}
 
+				@Override
+				public void onError(@NonNull ImageCaptureException exception)
+				{
+					Log.e(Config.TAG, "Photo capture failed: " + exception.getMessage());
+					Act_ImgBtnCameraRecording.setVisibility(View.VISIBLE);
+					Act_ProgressBarCameraRecording.setVisibility(View.INVISIBLE);
+					Tools.showError(getActivity(), "拍照失敗:" + exception.getMessage());
+				}
+			});
+		}
+	}
 
-        ImageAnalysis.Builder builder = new ImageAnalysis.Builder();
-        Size targetResolution = PreferenceUtils.getCameraXTargetResolution(this, lensFacing);
-        if (targetResolution != null) {
-            builder.setTargetResolution(targetResolution);
-        }
-        analysisUseCase = builder.build();
+	@SuppressLint("RestrictedApi")
+	private void RecordVideo()
+	{
+		if (videoCaptureUseCase == null) return;
+		long timestamp = System.currentTimeMillis();
+		ContentValues contentValues = new ContentValues();
+		contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, timestamp);
+		contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4");
+		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P)
+		{
+			contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/Morld");
+		}
+		starttime = SystemClock.elapsedRealtime();
+		try
+		{
+			if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
+			{
+				return;
+			}
+			videoCaptureUseCase.startRecording(
+					new VideoCapture.OutputFileOptions.Builder(
+							getContentResolver(),
+							MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+							contentValues
+					).build(),
+					getExecutor(),
+					new VideoCapture.OnVideoSavedCallback()
+					{
+						@Override
+						public void onVideoSaved(@NonNull VideoCapture.OutputFileResults outputFileResults)
+						{
+							Act_ImgBtnCameraRecording.setImageResource(R.drawable.take_pic);
+							Act_ProgressBarCameraRecording.setVisibility(View.INVISIBLE);
+							Log.i(Config.TAG, "影片儲存成功:" + outputFileResults.getSavedUri().getPath());
+                            Tools.toastSuccess(getActivity(), "已儲存影片");
+						}
 
-        needUpdateGraphicOverlayImageSourceInfo = true;
-        analysisUseCase.setAnalyzer(
-                // imageProcessor.processImageProxy will use another thread to run the detection underneath,
-                // thus we can just runs the analyzer itself on main thread.
-                ContextCompat.getMainExecutor(this),
-                imageProxy -> {
-                    if (needUpdateGraphicOverlayImageSourceInfo) {
-                        boolean isImageFlipped = lensFacing == CameraSelector.LENS_FACING_FRONT;
-                        int rotationDegrees = imageProxy.getImageInfo().getRotationDegrees();
-                        if (rotationDegrees == 0 || rotationDegrees == 180) {
-                            GraphicOverlay.setImageSourceInfo(
-                                    imageProxy.getWidth(), imageProxy.getHeight(), isImageFlipped);
-                        } else {
-                            GraphicOverlay.setImageSourceInfo(
-                                    imageProxy.getHeight(), imageProxy.getWidth(), isImageFlipped);
-                        }
-                        needUpdateGraphicOverlayImageSourceInfo = false;
-                    }
-                    try {
-                        imageProcessor.processImageProxy(imageProxy, GraphicOverlay);
-                        if(RecordingVideo==true) {
-                            currenttime= SystemClock.elapsedRealtime();
-                            diff=(currenttime-starttime)/1000;
-
-                            minutes=(diff%(60*60))/60;
-                            second=diff % 60;
-
-                            Act_TextView_RecordingTime.setText(minutes+":"+second);
-
-                        }
-                    } catch (MlKitException e) {
-                        e.printStackTrace();
-                    }
-                });
-
-        cameraProvider.bindToLifecycle(/* lifecycleOwner= */ this, cameraSelector, analysisUseCase);
-    }
-
-    @SuppressLint("RestrictedApi")
-    private void bindVideoCaptcureUseCase() {
-        if (cameraProvider == null) {
-            return;
-        }
-        if (videoCaptureUseCase != null) {
-            cameraProvider.unbind(videoCaptureUseCase);
-        }
-        if (imageProcessor != null) {
-            imageProcessor.stop();
-        }
-        try {
-
-        } catch (Exception e) {
-            return;
-        }
-
-        videoCaptureUseCase = new VideoCapture.Builder()
-                .setVideoFrameRate(60)
-                .build();
-        cameraProvider.bindToLifecycle(/* lifecycleOwner= */ this, cameraSelector, videoCaptureUseCase);
-    }
-
-    private void bindPreviewUseCase() {
-        if (!PreferenceUtils.isCameraLiveViewportEnabled(this)) {
-            return;
-        }
-        if (cameraProvider == null) {
-            return;
-        }
-        if (previewUseCase != null) {
-            cameraProvider.unbind(previewUseCase);
-        }
-
-        Preview.Builder builder = new Preview.Builder();
-        Size targetResolution = PreferenceUtils.getCameraXTargetResolution(this, lensFacing);
-        if (targetResolution != null) {
-            builder.setTargetResolution(targetResolution);
-        }
-        previewUseCase = builder.build();
-        previewUseCase.setSurfaceProvider(PreView.getSurfaceProvider());
-        cameraProvider.bindToLifecycle(/* lifecycleOwner= */ this, cameraSelector, previewUseCase);
-    }
-
-    @SuppressLint("RestrictedApi")
-    @Override
-    public void onClick(View view) {
-        if ((view.getId())==(R.id.Layout_ImgBtnCameraRecording)) {
-            if (RecordingVideo == false) {
-                RecordingVideo = true;
-                Act_ProgressBarCameraRecording.setVisibility(View.VISIBLE);
-                RecordVideo();
-                Act_TextView_RecordingTime.setVisibility(View.VISIBLE);
-                //ADD LOCK
-            } else {
-                RecordingVideo = false;
-                Act_ProgressBarCameraRecording.setVisibility(View.INVISIBLE);
-                Act_TextView_RecordingTime.setVisibility(View.INVISIBLE);
-                videoCaptureUseCase.stopRecording();
-            }
-        }
-        else if((view.getId())==(R.id.Layout_ImgBtnAlbumChoose))
-        {
-
-            //pickimagegallery();
-            pickvideogallery();
-        }
-        else
-        {
-
-        }
-    }
-
-
-
-
-
-    @SuppressLint("RestrictedApi")
-    private void RecordVideo() {
-        if (videoCaptureUseCase != null) {
-            long timestamp = System.currentTimeMillis();
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, timestamp);
-            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4");
+						@Override
+						public void onError(int videoCaptureError, @NonNull String message, @Nullable Throwable cause)
+						{
+							Toast.makeText(getApplicationContext(), "Error saving video: " + message, Toast.LENGTH_SHORT).show();
+						}
+					}
+			);
+            Act_ImgBtnCameraRecording.setImageResource(R.drawable.take_video);
             Act_ProgressBarCameraRecording.setVisibility(View.VISIBLE);
-            starttime= SystemClock.elapsedRealtime();
+			RecordingVideo = true;
+		}
+		catch (Exception e)
+		{
+			Tools.showError(getActivity(), e.getMessage());
+		}
+	}
 
-            try {
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return;
-                }
-                videoCaptureUseCase.startRecording(
-                        new VideoCapture.OutputFileOptions.Builder(
-                                getContentResolver(),
-                                MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                                contentValues
-                        ).build(),
-                        getExecutor(),
-                        new VideoCapture.OnVideoSavedCallback() {
-                            @Override
-                            public void onVideoSaved(@NonNull VideoCapture.OutputFileResults outputFileResults) {
-                                Uri viseoUri =null;
-                                //String videopath= Environment.getExternalStorageDirectory().getPath()+"/Movies/"+timestamp+".mp4";
-                                String videopath= Environment.getExternalStorageDirectory().getPath()+"/Movies/"+timestamp+".mp4";
+	Executor getExecutor()
+	{
+		return ContextCompat.getMainExecutor(this);
+	}
 
-                                viseoUri= Uri.parse(videopath);
+	@Override
+	protected void onPause()
+	{
+		super.onPause();
+		if (imageProcessor != null)
+		{
+			imageProcessor.stop();
+		}
+	}
 
-                                Intent intent = new Intent();
-                                intent= new Intent(VideoRecordingActivity.this, ShowVideoStructureActivity.class);
-                                Bundle objbundle = new Bundle();
-                                objbundle.putString("urivideostr", viseoUri.toString());
-                                intent.putExtras(objbundle);
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+		if (imageProcessor != null && cameraProvider != null)
+		{
+			bindAllCameraUseCases(cameraProvider);
+		}
+	}
 
-                                startActivity(intent);
-                                finish();
-                            }
+	private void pickimagegallery()
+	{
+		Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT); //極重要，用android 11以上，用ACTION_PICK必閃退
+		intent.setType("image/*");
+		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+		galleryActivityResultLauncher.launch(intent);
+	}
 
-                            @Override
-                            public void onError(int videoCaptureError, @NonNull String message, @Nullable Throwable cause) {
-                                Toast.makeText(getApplicationContext(), "Error saving video: " + message, Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                );
+	private void pickvideogallery()
+	{
+		Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT); //極重要，用android 11以上，用ACTION_PICK必閃退
+		intent.setType("video/*");
+		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+		videoActivityResultLauncher.launch(intent);
+	}
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-    Executor getExecutor() {
-        return  ContextCompat.getMainExecutor(this);
-    }
+	private ActivityResultLauncher<Intent> galleryActivityResultLauncher = registerForActivityResult(
+			new ActivityResultContracts.StartActivityForResult(),
+			new ActivityResultCallback<ActivityResult>()
+			{
+				@SuppressLint("WrongConstant")
+				@Override
+				public void onActivityResult(ActivityResult result)
+				{
+					if (result.getResultCode() == Activity.RESULT_OK)
+					{
+						try
+						{
+							Uri viseoUri = result.getData().getData();
+							Log.i(Config.TAG, "選擇路徑="+viseoUri.getPath());
+							imageCoach.setImageURI(viseoUri);
 
-    @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        switch (buttonView.getId()) {
-            case R.id.Layout_TogBtnCameraFacing:
-                if (cameraProvider == null) {
-                    return;
-                }
-                int newLensFacing =
-                        lensFacing == CameraSelector.LENS_FACING_FRONT
-                                ? CameraSelector.LENS_FACING_BACK
-                                : CameraSelector.LENS_FACING_FRONT;
-                CameraSelector newCameraSelector =
-                        new CameraSelector.Builder().requireLensFacing(newLensFacing).build();
-                try {
-                    if (cameraProvider.hasCamera(newCameraSelector)) {
-                        lensFacing = newLensFacing;
-                        cameraSelector = newCameraSelector;
-                        bindAllCameraUseCases();
-                        return;
-                    }
-                } catch (CameraInfoUnavailableException e) {
-                    // Falls through
-                }
-                Toast.makeText(
-                                getApplicationContext(),
-                                "This device does not have lens with facing: " + newLensFacing,
-                                Toast.LENGTH_SHORT)
-                        .show();
-                break;
-            default:
-                break;
-        }
-    }
-    @Override
-    public void onResume() {
-        super.onResume();
-        bindAllCameraUseCases();
-    }
+							InputImage inputImage = InputImage.fromFilePath(getActivity(), viseoUri);
+							StructureAnalyze.Analyze_Structure(inputImage, new StructureAnalyze.OnAnalyzeStructureListener()
+							{
+								@Override
+								public void onDone(String result)
+								{
+									if(result.equals(""))
+									{
+										Tools.showError(getActivity(), "未偵測到骨骼資訊");
+										return;
+									}
+									structurepoint[] structurepoints = FileMangement.ReadFronOneLine(result);
+									GraphicOverlay_coach.clear();
+									GraphicOverlay_coach.add(new AnalyzePoseGraphic(GraphicOverlay_coach, structurepoints, inputImage.getHeight(), inputImage.getWidth()));
+								}
+							});
+						}
+						catch (Exception e)
+						{
+							Tools.showError(getActivity(), e.getMessage());
+						}
+					}
+				}
+			}
+	);
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (imageProcessor != null) {
-            imageProcessor.stop();
-        }
-    }
+	private ActivityResultLauncher<Intent> videoActivityResultLauncher = registerForActivityResult(
+			new ActivityResultContracts.StartActivityForResult(),
+			new ActivityResultCallback<ActivityResult>()
+			{
+				@SuppressLint("WrongConstant")
+				@Override
+				public void onActivityResult(ActivityResult result)
+				{
+					if (result.getResultCode() == Activity.RESULT_OK)
+					{
+						Uri viseoUri = null;
+						Intent data = result.getData();
+						viseoUri = data.getData();
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (imageProcessor != null) {
-            imageProcessor.stop();
-        }
-    }
+						try
+						{
+							URIPathHelper uriPathHelper = new URIPathHelper();
+							String videoInputPath = uriPathHelper.getPath(getActivity(), viseoUri).toString();
+							File src = new File(videoInputPath);
+							FileInputStream inStream = new FileInputStream(videoInputPath);
+							File path = getExternalFilesDir(null);
+							File file = new File(path, src.getName());
+							FileOutputStream outStream = new FileOutputStream(file.getAbsolutePath());
+							FileChannel inChannel = inStream.getChannel();
+							FileChannel outChannel = outStream.getChannel();
+							inChannel.transferTo(0, inChannel.size(), outChannel);
+							inStream.close();
+							outStream.close();
 
-    private void pickimagegallery()
-    {
+							Intent intent = new Intent(VideoRecordingActivity.this, ShowVideoStructureActivity.class);
+							Bundle objbundle = new Bundle();
+							objbundle.putString("urivideostr", file.getAbsolutePath());
+							intent.putExtras(objbundle);
+							startActivity(intent);
+							finish();
+						}
+						catch (IOException e)
+						{
+							Tools.showError(getActivity(), e.getMessage());
+						}
 
-        Intent intent =new Intent(Intent.ACTION_OPEN_DOCUMENT); //極重要，用android 11以上，用ACTION_PICK必閃退
-        intent.setType("image/*");
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        galleryActivityResultLauncher.launch(intent);
-    }
+					}
+					else
+					{
 
-    private void pickvideogallery()
-    {
-        Intent intent =new Intent(Intent.ACTION_OPEN_DOCUMENT); //極重要，用android 11以上，用ACTION_PICK必閃退
-        intent.setType("video/*");
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        videoActivityResultLauncher.launch(intent);
-    }
+					}
+				}
+			}
+	);
 
-    private ActivityResultLauncher<Intent> galleryActivityResultLauncher =registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @SuppressLint("WrongConstant")
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if(result.getResultCode()== Activity.RESULT_OK)
-                    {
-                        Uri viseoUri =null;
-                        Intent data=result.getData();
-                        viseoUri=data.getData();
-                        int i=0;
-
-                        URIPathHelper uriPathHelper = new URIPathHelper();
-
-
-                        String ssd = uriPathHelper.getPathFromURI(getActivity(), viseoUri).toString();
-                        Intent intent = new Intent(VideoRecordingActivity.this, ShowVideoStructureActivity.class);
-                        Bundle objbundle = new Bundle();
-                        objbundle.putString("uriimagestr", ssd);
-                        intent.putExtras(objbundle);
-                        startActivity(intent);
-                        finish();
-                    }
-                    else
-                    {
-
-                    }
-                }
-            }
-    );
-
-    private ActivityResultLauncher<Intent> videoActivityResultLauncher =registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @SuppressLint("WrongConstant")
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if(result.getResultCode()== Activity.RESULT_OK)
-                    {
-                        Uri viseoUri =null;
-                        Intent data=result.getData();
-                        viseoUri=data.getData();
-
-                        try
-                        {
-                            URIPathHelper uriPathHelper = new URIPathHelper();
-                            String videoInputPath = uriPathHelper.getPath(getActivity(), viseoUri).toString();
-                            File src = new File(videoInputPath);
-                            FileInputStream inStream = new FileInputStream(videoInputPath);
-                            File path = getExternalFilesDir(null);
-                            File file = new File(path, src.getName());
-                            FileOutputStream outStream = new FileOutputStream(file.getAbsolutePath());
-                            FileChannel inChannel = inStream.getChannel();
-                            FileChannel outChannel = outStream.getChannel();
-                            inChannel.transferTo(0, inChannel.size(), outChannel);
-                            inStream.close();
-                            outStream.close();
-
-                            Intent intent = new Intent(VideoRecordingActivity.this, ShowVideoStructureActivity.class);
-                            Bundle objbundle = new Bundle();
-                            objbundle.putString("urivideostr", file.getAbsolutePath());
-                            intent.putExtras(objbundle);
-                            startActivity(intent);
-                            finish();
-                        }
-                        catch (IOException e)
-                        {
-                            Tools.showError(getActivity(), e.getMessage());
-                        }
-
-                    }
-                    else
-                    {
-
-                    }
-                }
-            }
-    );
-
-    public static String getRealPathFromURI(Context context, Uri contentUri) {
-        Cursor cursor = null;
-        try {
-            String[] proj = { MediaStore.Images.Media.DATA };
-            cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);
-            cursor.moveToFirst();
-            return cursor.getString(column_index);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-    }
 }

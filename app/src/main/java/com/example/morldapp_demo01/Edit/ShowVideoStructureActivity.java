@@ -71,8 +71,9 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
     MediaController mediaController;
     ImageView Act_ImageView_ShowVideo;
     GraphicOverlay Act_GraphicOverlay_ShowVideoStructure;
-    ImageButton Act_ImgButton_VideoStructureEdit,Act_ImgButton_video_StructureSave;
+    ImageButton Act_ImgButton_VideoStructureEdit;
     ImageButton Act_ImgImgButton_video_StructureEditUp,Act_ImgImgButton_video_StructureEditDown,Act_ImgImgButton_video_StructureEditLeft,Act_ImgImgButton_video_StructureEditRight;
+    Button Act_Button_VideoStructureShow;
     private HashMap<String,  structurepoint[]> posestructurepoint=new HashMap<>();
     int count=0;
     private String StructureUriStr;
@@ -112,7 +113,7 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
         Act_ImageView_ShowVideo=findViewById(R.id.Layout_ImageView_ShowVideo);
         Act_GraphicOverlay_ShowVideoStructure=findViewById(R.id.Layout_GraphicOverlay_ShowVideoStructure);
         Act_ImgButton_VideoStructureEdit=findViewById(R.id.layout_ImgButton_video_StructureEdit);
-        Act_ImgButton_video_StructureSave=findViewById(R.id.layout_ImgButton_video_StructureSave);
+        Act_Button_VideoStructureShow=findViewById(R.id.Layout_Button_VideoStructureShow);
 
 
         Act_ImgImgButton_video_StructureEditUp=findViewById(R.id.layout_ImgButton_video_StructureEditUp);
@@ -121,7 +122,7 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
         Act_ImgImgButton_video_StructureEditDown=findViewById(R.id.layout_ImgButton_video_StructureEditDown);
 
         Act_ImgButton_VideoStructureEdit.setOnClickListener(this);
-        Act_ImgButton_video_StructureSave.setOnClickListener(this);
+        Act_Button_VideoStructureShow.setOnClickListener(this);
 
         Act_ImgImgButton_video_StructureEditUp.setOnClickListener(this);
         Act_ImgImgButton_video_StructureEditLeft.setOnClickListener(this);
@@ -323,7 +324,7 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
     public void onClick(View v) {
         Act_GraphicOverlay_ShowVideoStructure.clear();
         switch (v.getId()) {
-            case R.id.layout_ImgButton_video_StructureSave:
+            case R.id.Layout_Button_VideoStructureShow:
                 if(EditStructureFlag==false) {
                     HomeEditor_Dialog();
                 }
@@ -341,10 +342,6 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
 
             case R.id.layout_ImgButton_video_StructureEdit:
                 Structure_Dialog();
-                Act_ImgImgButton_video_StructureEditUp.setVisibility(View.INVISIBLE);
-                Act_ImgImgButton_video_StructureEditLeft.setVisibility(View.INVISIBLE);
-                Act_ImgImgButton_video_StructureEditRight.setVisibility(View.INVISIBLE);
-                Act_ImgImgButton_video_StructureEditDown.setVisibility(View.INVISIBLE);
                 break;
 
             case R.id.layout_ImgButton_video_StructureEditUp:
@@ -545,8 +542,8 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
 
         Window window = Editor_dialog.getWindow();
         WindowManager.LayoutParams params = window.getAttributes();
-        params.x = 3;
-        params.y = 250;
+        params.x =(int)Act_ImgButton_VideoStructureEdit.getScaleX();
+        params.y = (int)Act_ImgButton_VideoStructureEdit.getScaleY();
         window.setAttributes(params);
 
         ImageButton Act_Button_Structure_Show=Editor_dialog.findViewById(R.id.Layout_ImgBtn_Structure_Show);
@@ -557,7 +554,6 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
         Act_Button_Structure_Show.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                posestructershow();
                 Act_GraphicOverlay_ShowVideoStructure.setVisibility(View.VISIBLE);
                 Editor_dialog.dismiss();
             }
@@ -618,7 +614,6 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
             @Override
             public void onClick(View view) {
                 PointIdx=0;
-                poistioneditshow();
                 Editor_dialog.dismiss();
             }
         });
@@ -730,19 +725,6 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
             structurepoints = posestructurepoint.get(wantId);
             Act_GraphicOverlay_ShowVideoStructure.clear();
             Act_GraphicOverlay_ShowVideoStructure.add(new EditPoseGraphic(Act_GraphicOverlay_ShowVideoStructure, structurepoints,PointIdx, height, width));
-        }
-    }
-
-    void posestructershow()
-    {
-
-        long currentTimeMicrosecond=(Act_VideoView_Pose.getCurrentPosition() * 1000);
-        String wantId =  Tools.mm取得對應時間軸之key(posestructurepoint, currentTimeMicrosecond);
-        if(!wantId.equals(""))
-        {
-            structurepoints = posestructurepoint.get(wantId);
-            Act_GraphicOverlay_ShowVideoStructure.clear();
-            Act_GraphicOverlay_ShowVideoStructure.add(new AnalyzePoseGraphic(Act_GraphicOverlay_ShowVideoStructure, structurepoints, height, width));
         }
     }
 }

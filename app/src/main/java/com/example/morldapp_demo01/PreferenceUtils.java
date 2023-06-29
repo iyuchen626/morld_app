@@ -20,15 +20,15 @@ import android.content.SharedPreferences;
 import android.os.Build.VERSION_CODES;
 import android.preference.PreferenceManager;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.annotation.StringRes;
-import androidx.camera.core.CameraSelector;
-
 import com.google.common.base.Preconditions;
 import com.google.mlkit.vision.pose.PoseDetectorOptionsBase;
 import com.google.mlkit.vision.pose.accurate.AccuratePoseDetectorOptions;
 import com.google.mlkit.vision.pose.defaults.PoseDetectorOptions;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.annotation.StringRes;
+import androidx.camera.core.CameraSelector;
 
 /** Utility class to retrieve shared preferences. */
 public class PreferenceUtils {
@@ -99,6 +99,7 @@ public class PreferenceUtils {
                     R.string.pref_key_live_preview_pose_detection_performance_mode,
                     POSE_DETECTOR_PERFORMANCE_MODE_FAST);
     boolean preferGPU = preferGPUForPoseDetection(context);
+    performanceMode = POSE_DETECTOR_PERFORMANCE_MODE_FAST;
     if (performanceMode == POSE_DETECTOR_PERFORMANCE_MODE_FAST) {
       PoseDetectorOptions.Builder builder =
               new PoseDetectorOptions.Builder().setDetectorMode(PoseDetectorOptions.STREAM_MODE);
