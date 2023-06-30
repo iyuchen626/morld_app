@@ -3,13 +3,12 @@ package com.example.morldapp_demo01.activity;
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;
 import android.content.Context;
-import android.graphics.SurfaceTexture;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Size;
-import android.view.TextureView;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -64,7 +63,7 @@ import androidx.lifecycle.ViewModelProvider;
 import static androidx.camera.core.ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST;
 import static com.example.morldapp_demo01.Edit.CalculateScore.getScoreResult;
 
-public class VideoLandscape extends Base implements TextureView.SurfaceTextureListener
+public class VideoLandscape extends Base
 {
 	VideoLandscapeBinding binding;
 	FilmPOJO data;
@@ -292,6 +291,14 @@ public class VideoLandscape extends Base implements TextureView.SurfaceTextureLi
 					width = txt.width;
 					height = txt.height;
 					Tools.toast(getActivity(), "width:"+width+"height"+height);
+					if(height>width)
+					{
+						//setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+					}
+					else
+					{
+						setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+					}
 					binding.editOffsetLayout.setVisibility(View.VISIBLE);
 					posestructurepoint = s;
 					player.prepare();
@@ -613,30 +620,6 @@ public class VideoLandscape extends Base implements TextureView.SurfaceTextureLi
 		{
 			Tools.showError(getActivity(), e.getMessage());
 		}
-	}
-
-	@Override
-	public void onSurfaceTextureAvailable(@NonNull SurfaceTexture surface, int width, int height)
-	{
-
-	}
-
-	@Override
-	public void onSurfaceTextureSizeChanged(@NonNull SurfaceTexture surface, int width, int height)
-	{
-
-	}
-
-	@Override
-	public boolean onSurfaceTextureDestroyed(@NonNull SurfaceTexture surface)
-	{
-		return false;
-	}
-
-	@Override
-	public void onSurfaceTextureUpdated(@NonNull SurfaceTexture surface)
-	{
-
 	}
 }
 
