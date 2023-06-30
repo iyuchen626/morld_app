@@ -3,6 +3,7 @@ package com.example.morldapp_demo01.activity;
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -279,6 +280,14 @@ public class VideoLandscape extends Base
 					width = txt.width;
 					height = txt.height;
 					Tools.toast(getActivity(), "width:"+width+"height"+height);
+					if(height>width)
+					{
+						//setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+					}
+					else
+					{
+						setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+					}
 					binding.editOffsetLayout.setVisibility(View.VISIBLE);
 					posestructurepoint = s;
 					player.prepare();

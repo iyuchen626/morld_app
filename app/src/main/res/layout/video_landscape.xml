@@ -4,13 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1B1B1B"
-   >
+    android:layout_gravity="center"
+    android:background="#1B1B1B">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout4"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/video_view"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
         android:scaleType="fitStart"
         tools:ignore="ExtraText,MissingConstraints">
 
@@ -21,13 +28,11 @@
         android:id="@+id/PreView_Detect_Editor"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="#E91E63"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/video_view"
         app:layout_constraintEnd_toEndOf="@+id/video_view"
         app:layout_constraintStart_toStartOf="@+id/video_view"
         app:layout_constraintTop_toTopOf="@+id/video_view" />
-
 
 
     <ImageView
@@ -112,16 +117,8 @@
         android:layout_height="wrap_content"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/des"
-            style="@style/Widget.MaterialComponents.Chip.Action"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="－"
-            android:textAlignment="center" />
+        app:layout_constraintStart_toStartOf="parent"
+        >
 
         <com.google.android.material.chip.Chip
             android:id="@+id/add"
@@ -131,6 +128,14 @@
             android:text="＋"
             android:textAlignment="center" />
 
+        <com.google.android.material.chip.Chip
+            android:id="@+id/des"
+            style="@style/Widget.MaterialComponents.Chip.Action"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="－"
+            android:textAlignment="center" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
