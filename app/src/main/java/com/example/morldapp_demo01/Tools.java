@@ -11,11 +11,16 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraManager;
+import android.hardware.camera2.params.StreamConfigurationMap;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.Size;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -58,6 +63,8 @@ import java.util.Set;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.camera2.interop.Camera2CameraInfo;
+import androidx.camera.core.Camera;
 import taimoor.sultani.sweetalert2.Sweetalert;
 
 /**
@@ -730,6 +737,30 @@ public class Tools
 			e.printStackTrace();
 		}
 		return versionName;
+	}
+
+	public static Size mm取得相機支援最小的4_3解析度(Context context, Camera camera) throws Exception
+	{
+		String cameraId = Camera2CameraInfo.from(camera.getCameraInfo()).getCameraId();
+		CameraManager cameraManager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
+		CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraId);
+		StreamConfigurationMap streamConfigurationMap = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+		Size[] sizes = streamConfigurationMap.getOutputSizes(ImageFormat.JPEG);
+		int pixel = Integer.MAX_VALUE;
+		Size size = sizes[0];
+		for (Size ss : sizes)
+		{
+			float df = (float) ss.getWidth() / (float) ss.getHeight();
+			df = (float) (Math.floor(df * 100.0) / 100.0);
+			if (ss.getWidth() * ss.getHeight() < pixel && ss.getWidth() * ss.getHeight() >= 480 * 640 && df == 1.33f)
+			{
+				pixel = ss.getWidth() * ss.getHeight();
+				size = ss;
+			}
+		}
+		size = new Size(size.getHeight(), size.getWidth());
+		Log.i(Config.TAG, "最後使用size=" + size.getWidth() + " " + size.getHeight());
+		return size;
 	}
 
 	public static boolean isNetworkConnected(Context context)

@@ -214,7 +214,13 @@ public class VideoRecordingActivity extends Base
 		Camera camera = cameraProvider.bindToLifecycle(/* lifecycleOwner= */ this, cameraSelector, previewUseCase);
 		try
 		{
-			Size size = mm取得相機支援最小的4_3解析度(camera);
+			Size size = Tools.mm取得相機支援最小的4_3解析度(getActivity(), camera);
+			DisplayMetrics displayMetrics = new DisplayMetrics();
+			getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+			int screen_h = displayMetrics.heightPixels;
+			int screen_w = displayMetrics.widthPixels;
+			GraphicOverlay.scaleFactor = (float) screen_w / (float) size.getWidth();
+			Log.i(Config.TAG, "screen w=" + screen_w + " screen h=" + screen_h);
 			cameraProvider.unbind(previewUseCase);
 			imageCapture = new ImageCapture.Builder().setTargetResolution(highSize).setDefaultResolution(highSize).setMaxResolution(highSize).build();
 			videoCaptureUseCase = new VideoCapture.Builder().setVideoFrameRate(60).build();
@@ -227,7 +233,7 @@ public class VideoRecordingActivity extends Base
 			boolean visualizeZ = PreferenceUtils.shouldPoseDetectionVisualizeZ(this);
 			boolean rescaleZ = PreferenceUtils.shouldPoseDetectionRescaleZForVisualization(this);
 			boolean runClassification = PreferenceUtils.shouldPoseDetectionRunClassification(this);
-			imageProcessor = new PoseDetectorProcessor(this, poseDetectorOptions, shouldShowInFrameLikelihood, visualizeZ, rescaleZ, runClassification, true);
+			imageProcessor = new PoseDetectorProcessor(this, poseDetectorOptions, false, visualizeZ, rescaleZ, runClassification, true);
 			ImageAnalysis.Builder imageAnalyBuilder = new ImageAnalysis.Builder();
 			imageAnalyBuilder.setTargetResolution(size);
 			imageAnalyBuilder.setDefaultResolution(size);
@@ -262,9 +268,9 @@ public class VideoRecordingActivity extends Base
 	{
 		if (pos == 0)
 		{
+			GraphicOverlay_coach.clear();
 			imageCoach.setVisibility(View.INVISIBLE);
 			seekBar1.setVisibility(View.INVISIBLE);
-			Act_ImgBtnAlbumChoose.setVisibility(View.INVISIBLE);
 			Act_ImgBtnCameraRecording.setOnClickListener(new View.OnClickListener()
 			{
 				@Override
@@ -273,12 +279,19 @@ public class VideoRecordingActivity extends Base
 					mm拍照();
 				}
 			});
+			Act_ImgBtnAlbumChoose.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v)
+				{
+					pickvideogallery();
+				}
+			});
 		}
 		if (pos == 1)
 		{
+			GraphicOverlay_coach.clear();
 			imageCoach.setVisibility(View.INVISIBLE);
 			seekBar1.setVisibility(View.INVISIBLE);
-			Act_ImgBtnAlbumChoose.setVisibility(View.INVISIBLE);
 			Act_ImgBtnCameraRecording.setOnClickListener(new View.OnClickListener()
 			{
 				@Override
@@ -294,6 +307,13 @@ public class VideoRecordingActivity extends Base
 						RecordingVideo = true;
 						RecordVideo();
 					}
+				}
+			});
+			Act_ImgBtnAlbumChoose.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v)
+				{
+					pickvideogallery();
 				}
 			});
 		}
@@ -341,35 +361,6 @@ public class VideoRecordingActivity extends Base
 				}
 			}
 		});
-	}
-
-	Size mm取得相機支援最小的4_3解析度(Camera camera) throws Exception
-	{
-		DisplayMetrics displayMetrics = new DisplayMetrics();
-		getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-		int screen_h = displayMetrics.heightPixels;
-		int screen_w = displayMetrics.widthPixels;
-		Log.i(Config.TAG, "screen w=" + screen_w + " screen h=" + screen_h);
-		String cameraId = Camera2CameraInfo.from(camera.getCameraInfo()).getCameraId();
-		CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-		CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraId);
-		StreamConfigurationMap streamConfigurationMap = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-		Size[] sizes = streamConfigurationMap.getOutputSizes(ImageFormat.JPEG);
-		int pixel = Integer.MAX_VALUE;
-		Size size = sizes[0];
-		for (Size ss : sizes)
-		{
-			float df = (float) ss.getWidth() / (float) ss.getHeight();
-			df = (float) (Math.floor(df * 100.0) / 100.0);
-			if (ss.getWidth() * ss.getHeight() < pixel && ss.getWidth() * ss.getHeight() > 600 * 800 && df == 1.33f)
-			{
-				pixel = ss.getWidth() * ss.getHeight();
-				size = ss;
-			}
-		}
-		GraphicOverlay.scaleFactor = (float) screen_w / (float) size.getHeight();
-		Log.i(Config.TAG, "最後使用size=" + size.getWidth() + " " + size.getHeight() + " scale=" + GraphicOverlay.scaleFactor);
-		return size;
 	}
 
 	private void mm拍照()
@@ -580,12 +571,11 @@ public class VideoRecordingActivity extends Base
 
 							Intent intent = new Intent(VideoRecordingActivity.this, ShowVideoStructureActivity.class);
 							Bundle objbundle = new Bundle();
-							objbundle.putString("urivideostr", file.getAbsolutePath());
+							objbundle.putString("urivideostr", videoInputPath);
 							intent.putExtras(objbundle);
 							startActivity(intent);
-							finish();
 						}
-						catch (IOException e)
+						catch (Exception e)
 						{
 							Tools.showError(getActivity(), e.getMessage());
 						}

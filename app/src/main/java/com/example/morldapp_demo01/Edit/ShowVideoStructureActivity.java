@@ -484,6 +484,7 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
 
     void HomeEditor_Dialog()
     {
+        mm讀取骨骼資料();
         Dialog Editor_dialog=new Dialog(this.getActivity());
         View view=getLayoutInflater().inflate(R.layout.dialog_editor_save,null);
         EditText editTextTextTitle = view.findViewById(R.id.editTextTextTitle);

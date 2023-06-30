@@ -3,40 +3,45 @@ package com.example.morldapp_demo01.activity;
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.graphics.SurfaceTexture;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.Size;
+import android.view.TextureView;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.ducky.fastvideoframeextraction.fastextraction.Frame;
-import com.ducky.fastvideoframeextraction.fastextraction.FrameExtractor;
-import com.ducky.fastvideoframeextraction.fastextraction.IVideoFrameExtractor;
 import com.example.morldapp_demo01.CameraXViewModel;
 import com.example.morldapp_demo01.Config;
 import com.example.morldapp_demo01.Edit.AnalyzePoseGraphic;
+import com.example.morldapp_demo01.Edit.CalculateScore;
 import com.example.morldapp_demo01.Edit.FileMangement;
+import com.example.morldapp_demo01.Edit.StructureAnalyze;
 import com.example.morldapp_demo01.Edit.structurepoint;
+import com.example.morldapp_demo01.PreferenceUtils;
 import com.example.morldapp_demo01.R;
 import com.example.morldapp_demo01.Tools;
+import com.example.morldapp_demo01.classification.posedetector.PoseDetectorProcessor;
 import com.example.morldapp_demo01.databinding.VideoLandscapeBinding;
-import com.example.morldapp_demo01.fastextraction.URIPathHelper;
-import com.example.morldapp_demo01.fastextraction.Utils;
 import com.example.morldapp_demo01.pojo.FilmPOJO;
 import com.example.morldapp_demo01.pojo.TxtConfigPOJO;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
+import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultAllocator;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.util.Util;
+import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.pose.PoseDetectorOptionsBase;
 import com.p2pengine.core.p2p.P2pStatisticsListener;
 import com.p2pengine.core.p2p.PlayerInteractor;
 import com.p2pengine.sdk.P2pEngine;
@@ -48,11 +53,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.camera.core.Camera;
+import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ImageAnalysis;
+import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
-public class VideoLandscape extends Base
+import static androidx.camera.core.ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST;
+import static com.example.morldapp_demo01.Edit.CalculateScore.getScoreResult;
+
+public class VideoLandscape extends Base implements TextureView.SurfaceTextureListener
 {
 	VideoLandscapeBinding binding;
 	FilmPOJO data;
@@ -64,11 +76,34 @@ public class VideoLandscape extends Base
 	private HashMap<String,  structurepoint[]> posestructurepoint=new HashMap<>();
 	private ExecutorService executorService= Executors.newSingleThreadExecutor();
 	float height,width;
+	private PoseDetectorProcessor imageProcessor;
+	private ImageAnalysis analysisUseCase;
+	private ProcessCameraProvider cameraProvider;
+	boolean isRunCalcScore = false;
 
 	void initializeFile播放器(String url)
 	{
 		PlayerView playerView = binding.videoView;
 		player = new SimpleExoPlayer.Builder(getActivity()).build();
+		player.addListener(new Player.Listener() {
+			@Override
+			public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+				if (playWhenReady && playbackState == Player.STATE_ENDED) {
+					binding.imageRetry.setVisibility(View.VISIBLE);
+					if(isRunCalcScore) imageProcessor.stop();
+				}
+			}
+		});
+		playerView.setControllerVisibilityListener(new PlayerControlView.VisibilityListener() {
+			@Override
+			public void onVisibilityChange(int visibility) {
+				if(isRunCalcScore) return;
+				if(visibility == View.VISIBLE) {
+					mm顯示控制項(true);
+				}
+				else mm顯示控制項(false);
+			}
+		});
 		playerView.setPlayer(player);
 		File ff  = getExternalFilesDir("videos");
 		ff = new File(ff, data.uuid);
@@ -194,60 +229,13 @@ public class VideoLandscape extends Base
 			@Override
 			public void onClick(View v)
 			{
+				if(isRunCalcScore)
+				{
+					bindAllCameraUseCases(cameraProvider);
+				}
 				playbackPosition = 0;
 				player.seekTo(currentWindow, playbackPosition);
 				player.play();
-			}
-		});
-		binding.imageDownload.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				Tools.showQuestion(getActivity(), "訊息", "確認下載影片? (下載後才可提供骨骼播放功能)", "是", "否", new View.OnClickListener()
-				{
-					@Override
-					public void onClick(View v)
-					{
-						File ff  = getExternalFilesDir("videos");
-						ff = new File(ff, data.uuid);
-						if(ff.exists())
-						{
-
-						}
-						else
-						{
-							Tools.mmSave(getApplicationContext(), "videos/"+data.uuid, Tools.getGson().toJson(data, FilmPOJO.class));
-							DownloadManager downloadmanager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-							Uri uri = Uri.parse(data.video_slug);
-							DownloadManager.Request request = new DownloadManager.Request(uri);
-							request.setTitle("下載影片");
-							request.setDescription(data.title);
-							request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-							request.setVisibleInDownloadsUi(false);
-							request.setDestinationInExternalFilesDir(getApplicationContext(), "videos", data.uuid);
-							downloadmanager.enqueue(request);
-							binding.imageDownload.setVisibility(View.GONE);
-						}
-					}
-				}, new View.OnClickListener() {
-					@Override
-					public void onClick(View v)
-					{
-
-					}
-				});
-			}
-		});
-
-		binding.imageRetry.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				binding.videoView.setVisibility(View.INVISIBLE);
-				binding.PreViewDetectEditor.setVisibility(View.VISIBLE);
-
 			}
 		});
 		setContentView(binding.getRoot());
@@ -263,6 +251,31 @@ public class VideoLandscape extends Base
 			public void onClick(View v)
 			{
 				mm遞增骨骼();
+			}
+		});
+		binding.imageClock.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v)
+			{
+				if(cameraProvider == null) {
+					Tools.showError(getActivity(), "你無法運算骨骼");
+					return;
+				}
+				if(isRunCalcScore)
+				{
+					isRunCalcScore = false;
+					imageProcessor.stop();
+					cameraProvider.unbindAll();
+					binding.recordStructure.clear();
+					binding.textScore.setVisibility(View.INVISIBLE);
+				}
+				else
+				{
+					isRunCalcScore = true;
+					bindAllCameraUseCases(cameraProvider);
+					mm顯示控制項(true);
+					binding.textScore.setVisibility(View.VISIBLE);
+				}
 			}
 		});
 		data = (FilmPOJO) getIntent().getExtras().getSerializable("data");
@@ -284,11 +297,104 @@ public class VideoLandscape extends Base
 					player.prepare();
 				}
 			});
-
 		}
+		new ViewModelProvider(this, (ViewModelProvider.Factory) ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
+				.get(CameraXViewModel.class)
+				.getProcessCameraProvider()
+				.observe(
+						this,
+						provider ->
+						{
+							cameraProvider = provider;
+						});
 	}
 
+	void mm下載影片()
+	{
+		Tools.showQuestion(getActivity(), "訊息", "確認下載影片? (下載後才可提供骨骼播放功能)", "是", "否", new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				File ff  = getExternalFilesDir("videos");
+				ff = new File(ff, data.uuid);
+				if(ff.exists())
+				{
 
+				}
+				else
+				{
+					Tools.mmSave(getApplicationContext(), "videos/"+data.uuid, Tools.getGson().toJson(data, FilmPOJO.class));
+					DownloadManager downloadmanager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+					Uri uri = Uri.parse(data.video_slug);
+					DownloadManager.Request request = new DownloadManager.Request(uri);
+					request.setTitle("下載影片");
+					request.setDescription(data.title);
+					request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+					request.setVisibleInDownloadsUi(false);
+					request.setDestinationInExternalFilesDir(getApplicationContext(), "videos", data.uuid);
+					downloadmanager.enqueue(request);
+					binding.imageDownload.setVisibility(View.GONE);
+				}
+			}
+		}, new View.OnClickListener() {
+			@Override
+			public void onClick(View v)
+			{
+
+			}
+		});
+	}
+
+	void mm顯示控制項(boolean isShow)
+	{
+		if(isShow)
+		{
+			binding.imageClock.setVisibility(View.VISIBLE);
+			binding.imageUser.setVisibility(View.VISIBLE);
+			binding.imageRetry.setVisibility(View.VISIBLE);
+			binding.imageDownload.setVisibility(View.VISIBLE);
+			binding.title.setVisibility(View.VISIBLE);
+			binding.editOffsetLayout.setVisibility(View.VISIBLE);
+			File ff  = getExternalFilesDir("videos");
+			ff = new File(ff, data.uuid);
+			if(ff.exists())
+			{
+				binding.imageDownload.setImageResource(R.drawable.icon_setting);
+				binding.imageDownload.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v)
+					{
+						binding.editOffsetLayout.setVisibility(View.VISIBLE);
+					}
+				});
+			}
+			else
+			{
+				binding.imageDownload.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v)
+					{
+						mm下載影片();
+					}
+				});
+			}
+			if(player.getCurrentPosition() < player.getDuration())
+			{
+				binding.imageRetry.setVisibility(View.GONE);
+			}
+		}
+		else
+		{
+			binding.imageClock.setVisibility(View.GONE);
+			binding.imageUser.setVisibility(View.GONE);
+			binding.imageRetry.setVisibility(View.GONE);
+			binding.imageDownload.setVisibility(View.GONE);
+			binding.title.setVisibility(View.GONE);
+			binding.editOffsetLayout.setVisibility(View.GONE);
+			binding.editOffsetLayout.setVisibility(View.GONE);
+		}
+	}
 
 	void mm遞減骨骼()
 	{
@@ -367,6 +473,10 @@ public class VideoLandscape extends Base
 		{
 			initializePlayer();
 		}
+		if (imageProcessor != null && cameraProvider != null)
+		{
+			bindAllCameraUseCases(cameraProvider);
+		}
 	}
 
 	@Override
@@ -376,6 +486,10 @@ public class VideoLandscape extends Base
 		if (Util.SDK_INT < 24)
 		{
 			releasePlayer();
+		}
+		if (imageProcessor != null)
+		{
+			imageProcessor.stop();
 		}
 	}
 
@@ -423,6 +537,106 @@ public class VideoLandscape extends Base
 		}
 		String s = String.format("P2P Ratio: %.0f%%", ratio * 100);
 		binding.debugRatio.setText(s);
+	}
+
+	private void bindAllCameraUseCases(ProcessCameraProvider cameraProvider)
+	{
+		cameraProvider.unbindAll();
+		Size highSize = new Size(3000, 4000);
+		Preview.Builder builder = new Preview.Builder();
+		builder.setTargetResolution(highSize);
+		builder.setDefaultResolution(highSize);
+		builder.setMaxResolution(highSize);
+		Preview previewUseCase = builder.build();
+		previewUseCase.setSurfaceProvider(binding.PreViewEditor.getSurfaceProvider());
+		CameraSelector cameraSelector = new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
+		Camera camera = cameraProvider.bindToLifecycle(/* lifecycleOwner= */ this, cameraSelector, previewUseCase);
+		try
+		{
+			Size size = Tools.mm取得相機支援最小的4_3解析度(getActivity(), camera);
+			DisplayMetrics displayMetrics = new DisplayMetrics();
+			getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+			int screen_h = displayMetrics.heightPixels;
+			int screen_w = displayMetrics.widthPixels;
+			binding.recordStructure.scaleFactor = (float) screen_w / (float) size.getWidth();
+			Log.i(Config.TAG, "screen w=" + screen_w + " screen h=" + screen_h);
+			cameraProvider.unbind(previewUseCase);
+			if (imageProcessor != null)
+			{
+				imageProcessor.stop();
+			}
+			PoseDetectorOptionsBase poseDetectorOptions = PreferenceUtils.getPoseDetectorOptionsForLivePreview(this);
+			boolean shouldShowInFrameLikelihood = PreferenceUtils.shouldShowPoseDetectionInFrameLikelihoodLivePreview(this);
+			boolean visualizeZ = PreferenceUtils.shouldPoseDetectionVisualizeZ(this);
+			boolean rescaleZ = PreferenceUtils.shouldPoseDetectionRescaleZForVisualization(this);
+			boolean runClassification = PreferenceUtils.shouldPoseDetectionRunClassification(this);
+			imageProcessor = new PoseDetectorProcessor(this, poseDetectorOptions, shouldShowInFrameLikelihood, visualizeZ, rescaleZ, runClassification, true);
+			ImageAnalysis.Builder imageAnalyBuilder = new ImageAnalysis.Builder();
+			imageAnalyBuilder.setTargetResolution(size);
+			imageAnalyBuilder.setDefaultResolution(size);
+			imageAnalyBuilder.setMaxResolution(size);
+			imageAnalyBuilder.setOutputImageRotationEnabled(true);
+			imageAnalyBuilder.setBackpressureStrategy(STRATEGY_KEEP_ONLY_LATEST);
+			analysisUseCase = imageAnalyBuilder.build();
+			analysisUseCase.setAnalyzer(
+					ContextCompat.getMainExecutor(this),
+					imageProxy ->
+					{
+						try
+						{
+							Log.i(Config.TAG, "imageProxy w="+imageProxy.getWidth()+" h="+imageProxy.getHeight());
+							binding.recordStructure.setImageSourceInfo(imageProxy.getWidth(), imageProxy.getHeight(), false);
+							imageProcessor.processImageProxy(imageProxy, binding.recordStructure);
+
+							InputImage inputImage = InputImage.fromMediaImage(imageProxy.getImage(), 0);
+							StructureAnalyze.Analyze_Structure(inputImage, new StructureAnalyze.OnAnalyzeStructureListener()
+							{
+								@Override
+								public void onDone(String result)
+								{
+									if(result.equals("")) return;
+									structurepoint[] structurepoints = FileMangement.ReadFronOneLine(result);
+									new CalculateScore(true, structurepoints);
+									binding.textScore.setText(""+getScoreResult());
+								}
+							});
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+							Tools.toast(getActivity(), e.getMessage());
+						}
+					});
+			cameraProvider.bindToLifecycle(this, cameraSelector, analysisUseCase);
+		}
+		catch (Exception e)
+		{
+			Tools.showError(getActivity(), e.getMessage());
+		}
+	}
+
+	@Override
+	public void onSurfaceTextureAvailable(@NonNull SurfaceTexture surface, int width, int height)
+	{
+
+	}
+
+	@Override
+	public void onSurfaceTextureSizeChanged(@NonNull SurfaceTexture surface, int width, int height)
+	{
+
+	}
+
+	@Override
+	public boolean onSurfaceTextureDestroyed(@NonNull SurfaceTexture surface)
+	{
+		return false;
+	}
+
+	@Override
+	public void onSurfaceTextureUpdated(@NonNull SurfaceTexture surface)
+	{
+
 	}
 }
 
