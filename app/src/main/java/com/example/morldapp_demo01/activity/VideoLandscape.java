@@ -100,11 +100,13 @@ public class VideoLandscape extends Base
 				if(visibility == View.VISIBLE) {
 					mm顯示控制項(true);
 					binding.videoStructure.setVisibility(View.INVISIBLE);
+					//player.setPlayWhenReady(playWhenReady);
 
 				}
 				else {
 					mm顯示控制項(false);
 					binding.videoStructure.setVisibility(View.VISIBLE);
+					player.setPlayWhenReady(playWhenReady);
 				}
 			}
 		});
@@ -121,8 +123,8 @@ public class VideoLandscape extends Base
 			player.prepare();
 		}
 		player.setMediaItem(mediaItem);
-		playerView.hideController();
 		player.setPlayWhenReady(playWhenReady);
+		playerView.hideController();
 		player.seekTo(currentWindow, playbackPosition);
 		View controlView = playerView.findViewById(R.id.exo_controller);
 		ImageView fullscreenIcon = controlView.findViewById(R.id.exo_fullscreen_icon);
@@ -310,7 +312,7 @@ public class VideoLandscape extends Base
 					TxtConfigPOJO txt = Tools.getGson().fromJson(Tools.mmRead(getActivity(), Config.KEY_TXT_CONFIG), TxtConfigPOJO.class);
 					width = txt.width;
 					height = txt.height;
-					Tools.toast(getActivity(), "width:"+width+"height"+height);
+					//Tools.toast(getActivity(), "width:"+width+"height"+height);
 					if(height>width)
 					{
 						//setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
