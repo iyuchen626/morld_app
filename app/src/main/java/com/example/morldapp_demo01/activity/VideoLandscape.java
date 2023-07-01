@@ -99,8 +99,13 @@ public class VideoLandscape extends Base
 				if(isRunCalcScore) return;
 				if(visibility == View.VISIBLE) {
 					mm顯示控制項(true);
+					binding.videoStructure.setVisibility(View.INVISIBLE);
+
 				}
-				else mm顯示控制項(false);
+				else {
+					mm顯示控制項(false);
+					binding.videoStructure.setVisibility(View.VISIBLE);
+				}
 			}
 		});
 		playerView.setPlayer(player);
