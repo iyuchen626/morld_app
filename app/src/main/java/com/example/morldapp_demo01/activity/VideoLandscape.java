@@ -121,16 +121,30 @@ public class VideoLandscape extends Base
 			player.prepare();
 		}
 		player.setMediaItem(mediaItem);
+		playerView.hideController();
 		player.setPlayWhenReady(playWhenReady);
 		player.seekTo(currentWindow, playbackPosition);
 		View controlView = playerView.findViewById(R.id.exo_controller);
 		ImageView fullscreenIcon = controlView.findViewById(R.id.exo_fullscreen_icon);
+		ImageView pausetostart = controlView.findViewById(R.id.exo_play);
 		fullscreenIcon.setOnClickListener(new View.OnClickListener()
 		{
 			@Override
 			public void onClick(View v)
 			{
 				finish();
+			}
+		});
+		pausetostart.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				player.setPlayWhenReady(playWhenReady);
+				//Tools.toast(getActivity(), "HIDE");
+				//playerView.setVisibility(View.INVISIBLE);
+				binding.videoStructure.setVisibility(View.VISIBLE);
+				playerView.hideController();
 			}
 		});
 	}
@@ -278,6 +292,7 @@ public class VideoLandscape extends Base
 					isRunCalcScore = true;
 					bindAllCameraUseCases(cameraProvider);
 					mm顯示控制項(true);
+					//binding.videoView.setVisibility(View.INVISIBLE);
 					binding.textScore.setVisibility(View.VISIBLE);
 				}
 			}
@@ -362,6 +377,7 @@ public class VideoLandscape extends Base
 	{
 		if(isShow)
 		{
+			player.setPlayWhenReady(false);
 			binding.imageClock.setVisibility(View.VISIBLE);
 			binding.imageUser.setVisibility(View.VISIBLE);
 			binding.imageRetry.setVisibility(View.VISIBLE);

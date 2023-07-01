@@ -8,12 +8,12 @@
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/materialCardView"
-        android:layout_width="74dp"
+        android:layout_width="70dp"
         android:layout_height="0dp"
         android:background="#000"
         android:orientation="vertical"
         app:cardCornerRadius="8dp"
-        app:layout_constraintDimensionRatio="74:130"
+        app:layout_constraintDimensionRatio="70:130"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -41,7 +41,9 @@
         android:id="@+id/title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:fontFamily="@font/font1"
+        android:letterSpacing="0.05"
         android:maxLines="1"
         android:text="Name"
         android:textAlignment="center"

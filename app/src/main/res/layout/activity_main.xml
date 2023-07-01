@@ -88,6 +88,7 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/BtnNavView_Main"
+        app:labelVisibilityMode="labeled"
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:background="#0D0D0D"
