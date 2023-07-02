@@ -79,10 +79,11 @@ public class VideoLandscape extends Base
 	private ImageAnalysis analysisUseCase;
 	private ProcessCameraProvider cameraProvider;
 	boolean isRunCalcScore = false;
+	PlayerView playerView;
 
 	void initializeFile播放器(String url)
 	{
-		PlayerView playerView = binding.videoView;
+		playerView = binding.videoView;
 		player = new SimpleExoPlayer.Builder(getActivity()).build();
 		player.addListener(new Player.Listener() {
 			@Override
@@ -295,7 +296,11 @@ public class VideoLandscape extends Base
 					bindAllCameraUseCases(cameraProvider);
 					mm顯示控制項(true);
 					//binding.videoView.setVisibility(View.INVISIBLE);
+					player.seekToPrevious();
+					playerView.hideController();
+					binding.videoStructure.setVisibility(View.VISIBLE);
 					binding.textScore.setVisibility(View.VISIBLE);
+					player.setPlayWhenReady(playWhenReady);
 				}
 			}
 		});
