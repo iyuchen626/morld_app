@@ -5,7 +5,7 @@ import com.google.mlkit.vision.pose.Pose;
 public class CalculateScore {
 
     static boolean ShowScoreResultFlag ;
-    static int ScoreResult=0;
+    static int ScoreResult=120;
     private static structurepoint[] posestructuresamplepoint=new structurepoint[12];
 
 
@@ -41,24 +41,43 @@ public class CalculateScore {
 
 
         if (ShowScoreResultFlag) {
-            ScoreResult = 80;
+            ScoreResult=120;
+            for(int idx=0;idx<12;idx++)
+            {
+                ScoreResult -= PointScore(posestructuresamplepoint[idx],posestructureuserpoint[idx])/12;
+            }
 
-        } else {
+        }
+        if (ScoreResult < 0)
+        {
             ScoreResult = 0;
-
+        }
+        if (ScoreResult > 100)
+        {
+            ScoreResult = 100;
         }
     }
 
     private static float PointScore(structurepoint structuresamplepoint, structurepoint structureuserpoint) {
 
-        float scorebypoint=0;
+        double scorebypoint=0;
         structuresamplepoint.getStructpoint_x();
         structuresamplepoint.getStructpoint_y();
         structuresamplepoint.getStructpoint_weight();
         structureuserpoint.getStructpoint_x();
         structureuserpoint.getStructpoint_y();
 
-        return scorebypoint;
+        //scorebypoint = Math.abs(((Math.abs((double)((structureuserpoint.getStructpoint_y()-structuresamplepoint.getStructpoint_y()))))-300));
+        //scorebypoint =(Math.abs(((double)((structureuserpoint.getStructpoint_y()-structuresamplepoint.getStructpoint_y())))+15));
+        scorebypoint =(Math.abs(((double)((structureuserpoint.getStructpoint_y()-structuresamplepoint.getStructpoint_y())))+15))+(Math.abs(((double)((structureuserpoint.getStructpoint_x()-structuresamplepoint.getStructpoint_x())))+0));
+        if (scorebypoint >120)
+        {
+            scorebypoint =120;
+        }
+
+        //scorebypoint=Math.pow((double)((structureuserpoint.getStructpoint_x()-structuresamplepoint.getStructpoint_x())*(structureuserpoint.getStructpoint_x()-structuresamplepoint.getStructpoint_x())/200000)+(double)((structureuserpoint.getStructpoint_y()-structuresamplepoint.getStructpoint_y())*(structureuserpoint.getStructpoint_y()-structuresamplepoint.getStructpoint_y())/200000),1);
+
+        return (float) scorebypoint;
 
     }
 
@@ -67,8 +86,4 @@ public class CalculateScore {
     {
         return ScoreResult;
     }
-
-
-
-
 }

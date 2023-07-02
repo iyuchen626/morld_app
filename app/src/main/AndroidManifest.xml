@@ -49,8 +49,7 @@
         <activity android:name=".activity.MyDownloadVideo" />
         <activity
             android:name=".activity.VideoLandscape"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait" />
+            />
         <activity
             android:name=".Edit.ShowVideoStructureActivity"
             android:exported="false"

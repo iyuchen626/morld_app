@@ -80,6 +80,8 @@ public class VideoLandscape extends Base
 	private ProcessCameraProvider cameraProvider;
 	boolean isRunCalcScore = false;
 	PlayerView playerView;
+	CameraSelector cameraSelector;
+	private int lensFacing = CameraSelector.LENS_FACING_FRONT;
 
 	void initializeFile播放器(String url)
 	{
@@ -154,6 +156,7 @@ public class VideoLandscape extends Base
 				playerView.hideController();
 			}
 		});
+
 	}
 
 	void initP2P播放器(String url)
@@ -278,6 +281,25 @@ public class VideoLandscape extends Base
 				mm遞增骨骼();
 			}
 		});
+		binding.layoutTogBtnCameraFacing.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v)
+			{
+				lensFacing = lensFacing == CameraSelector.LENS_FACING_FRONT ? CameraSelector.LENS_FACING_BACK : CameraSelector.LENS_FACING_FRONT;
+				cameraSelector = new CameraSelector.Builder().requireLensFacing(lensFacing).build();
+				try
+				{
+					if (cameraProvider.hasCamera(cameraSelector))
+					{
+						bindAllCameraUseCases(cameraProvider);
+					}
+				}
+				catch (Exception e)
+				{
+					Tools.showError(getActivity(), e.getMessage());
+				}
+			}
+		});
 		binding.imageClock.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v)
@@ -293,6 +315,7 @@ public class VideoLandscape extends Base
 					cameraProvider.unbindAll();
 					binding.recordStructure.clear();
 					binding.textScore.setVisibility(View.INVISIBLE);
+					binding.layoutTogBtnCameraFacing.setVisibility(View.INVISIBLE);
 				}
 				else
 				{
@@ -305,7 +328,16 @@ public class VideoLandscape extends Base
 					binding.videoStructure.setVisibility(View.VISIBLE);
 					binding.textScore.setVisibility(View.VISIBLE);
 					player.setPlayWhenReady(playWhenReady);
+					binding.layoutTogBtnCameraFacing.setVisibility(View.VISIBLE);
 				}
+			}
+		});
+
+		binding.home.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v)
+			{
+				finish();
 			}
 		});
 		data = (FilmPOJO) getIntent().getExtras().getSerializable("data");
@@ -324,7 +356,7 @@ public class VideoLandscape extends Base
 					//Tools.toast(getActivity(), "width:"+width+"height"+height);
 					if(height>width)
 					{
-						//setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+						setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 					}
 					else
 					{
@@ -588,7 +620,8 @@ public class VideoLandscape extends Base
 		builder.setMaxResolution(highSize);
 		Preview previewUseCase = builder.build();
 		previewUseCase.setSurfaceProvider(binding.PreViewEditor.getSurfaceProvider());
-		CameraSelector cameraSelector = new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
+		cameraSelector = new CameraSelector.Builder().requireLensFacing(lensFacing).build();
+
 		Camera camera = cameraProvider.bindToLifecycle(/* lifecycleOwner= */ this, cameraSelector, previewUseCase);
 		try
 		{
@@ -599,7 +632,15 @@ public class VideoLandscape extends Base
 //			int screen_w = displayMetrics.widthPixels;
 			int screen_h = displayMetrics.heightPixels;
 			int screen_w = displayMetrics.widthPixels;
-			binding.recordStructure.scaleFactor = (float) screen_h / (float) size.getHeight();
+			if(height>width)
+			{
+				binding.recordStructure.scaleFactor = (float) screen_h / (float) size.getHeight();
+			}
+			else
+			{
+				binding.recordStructure.scaleFactor = (float) screen_w / (float) size.getWidth();
+			}
+
 			Log.i(Config.TAG, "screen w=" + screen_w + " screen h=" + screen_h);
 			cameraProvider.unbind(previewUseCase);
 			if (imageProcessor != null)
@@ -656,6 +697,7 @@ public class VideoLandscape extends Base
 			Tools.showError(getActivity(), e.getMessage());
 		}
 	}
+
 }
 
 
