@@ -97,7 +97,11 @@ public class VideoLandscape extends Base
 		playerView.setControllerVisibilityListener(new PlayerControlView.VisibilityListener() {
 			@Override
 			public void onVisibilityChange(int visibility) {
-				if(isRunCalcScore) return;
+				if(isRunCalcScore)
+				{
+					playerView.hideController();
+					return;
+				}
 				if(visibility == View.VISIBLE) {
 					mm顯示控制項(true);
 					binding.videoStructure.setVisibility(View.INVISIBLE);
@@ -640,6 +644,7 @@ public class VideoLandscape extends Base
 						{
 							e.printStackTrace();
 							Tools.toast(getActivity(), e.getMessage());
+
 						}
 					});
 			cameraProvider.bindToLifecycle(this, cameraSelector, analysisUseCase);
