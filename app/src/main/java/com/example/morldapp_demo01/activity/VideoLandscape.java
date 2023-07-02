@@ -581,7 +581,7 @@ public class VideoLandscape extends Base
 	private void bindAllCameraUseCases(ProcessCameraProvider cameraProvider)
 	{
 		cameraProvider.unbindAll();
-		Size highSize = new Size(3000, 4000);
+		Size highSize = new Size(900, 1600);
 		Preview.Builder builder = new Preview.Builder();
 		builder.setTargetResolution(highSize);
 		builder.setDefaultResolution(highSize);
@@ -595,9 +595,11 @@ public class VideoLandscape extends Base
 			Size size = Tools.mm取得相機支援最小的4_3解析度(getActivity(), camera);
 			DisplayMetrics displayMetrics = new DisplayMetrics();
 			getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+//			int screen_h = displayMetrics.heightPixels;
+//			int screen_w = displayMetrics.widthPixels;
 			int screen_h = displayMetrics.heightPixels;
 			int screen_w = displayMetrics.widthPixels;
-			binding.recordStructure.scaleFactor = (float) screen_w / (float) size.getWidth();
+			binding.recordStructure.scaleFactor = (float) screen_h / (float) size.getHeight();
 			Log.i(Config.TAG, "screen w=" + screen_w + " screen h=" + screen_h);
 			cameraProvider.unbind(previewUseCase);
 			if (imageProcessor != null)

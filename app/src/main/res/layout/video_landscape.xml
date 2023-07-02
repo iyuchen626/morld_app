@@ -23,7 +23,7 @@
         android:layout_height="0dp"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="3:4"
+        app:layout_constraintDimensionRatio="9:16"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -34,8 +34,9 @@
 
     <androidx.camera.view.PreviewView
         android:id="@+id/PreView_Detect_Editor"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="0dp"
+        android:scaleType="centerCrop"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/video_view"
         app:layout_constraintEnd_toEndOf="@+id/video_view"
@@ -48,7 +49,7 @@
         android:layout_height="0dp"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="3:4"
+        app:layout_constraintDimensionRatio="9:16"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
