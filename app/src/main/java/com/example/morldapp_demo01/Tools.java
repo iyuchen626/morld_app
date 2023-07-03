@@ -750,7 +750,7 @@ public class Tools
 		Size size = sizes[0];
 		for (Size ss : sizes)
 		{
-			float df = (float) ss.getWidth() / (float) ss.getHeight();
+			float df = (float) Math.max(ss.getWidth(),ss.getHeight()) / (float) Math.min(ss.getWidth(),ss.getHeight());
 			df = (float) (Math.floor(df * 100.0) / 100.0);
 			if (ss.getWidth() * ss.getHeight() < pixel && ss.getWidth() * ss.getHeight() >= 480 * 640 && df == 1.33f)
 			{

@@ -123,6 +123,7 @@ public class VideoRecordingActivity extends Base
 	private ImageView imageCoach;
 	private com.example.morldapp_demo01.GraphicOverlay GraphicOverlay_coach;
 	private VerticalSeekBar seekBar1;
+	int currentIndex = 0;
 
 	// private TextView TextViewPKTime;
 
@@ -167,6 +168,7 @@ public class VideoRecordingActivity extends Base
 			@Override
 			public void onSnapped(int position)
 			{
+				currentIndex = position;
 				Log.i(Config.TAG, "選到" + position);
 				mm初始化按鈕事件(position);
 			}
@@ -223,7 +225,7 @@ public class VideoRecordingActivity extends Base
 			Log.i(Config.TAG, "screen w=" + screen_w + " screen h=" + screen_h);
 			cameraProvider.unbind(previewUseCase);
 			imageCapture = new ImageCapture.Builder().setTargetResolution(highSize).setDefaultResolution(highSize).setMaxResolution(highSize).build();
-			videoCaptureUseCase = new VideoCapture.Builder().setVideoFrameRate(60).build();
+			videoCaptureUseCase = new VideoCapture.Builder().setTargetResolution(highSize).setDefaultResolution(highSize).setMaxResolution(highSize).setVideoFrameRate(60).build();
 			if (imageProcessor != null)
 			{
 				imageProcessor.stop();
@@ -241,22 +243,28 @@ public class VideoRecordingActivity extends Base
 			imageAnalyBuilder.setOutputImageRotationEnabled(true);
 			imageAnalyBuilder.setBackpressureStrategy(STRATEGY_KEEP_ONLY_LATEST);
 			analysisUseCase = imageAnalyBuilder.build();
+			if(currentIndex != 2)
 			analysisUseCase.setAnalyzer(
 					ContextCompat.getMainExecutor(this),
 					imageProxy ->
 					{
 						try
 						{
+							float df = (float) Math.max(imageProxy.getWidth(),imageProxy.getHeight()) / (float) Math.min(imageProxy.getWidth(),imageProxy.getHeight());
+							df = (float) (Math.floor(df * 100.0) / 100.0);
+							if(df != 1.33f) throw new Exception("骨骼運算，無法鎖定在4:3");
 							GraphicOverlay.setImageSourceInfo(imageProxy.getWidth(), imageProxy.getHeight(), false);
 							imageProcessor.processImageProxy(imageProxy, GraphicOverlay);
 						}
 						catch (Exception e)
 						{
+							imageProcessor.stop();
 							e.printStackTrace();
 							Tools.toast(getActivity(), e.getMessage());
 						}
 					});
-			cameraProvider.bindToLifecycle(this, cameraSelector, analysisUseCase, imageCapture, videoCaptureUseCase);
+			if(currentIndex == 2) cameraProvider.bindToLifecycle(this, cameraSelector, previewUseCase, imageCapture, videoCaptureUseCase);
+			else cameraProvider.bindToLifecycle(this, cameraSelector, analysisUseCase, imageCapture, videoCaptureUseCase);
 		}
 		catch (Exception e)
 		{
@@ -316,6 +324,8 @@ public class VideoRecordingActivity extends Base
 					pickvideogallery();
 				}
 			});
+			GraphicOverlay.setVisibility(View.VISIBLE);
+			bindAllCameraUseCases(cameraProvider);
 		}
 		if (pos == 2)
 		{
@@ -327,11 +337,7 @@ public class VideoRecordingActivity extends Base
 				@Override
 				public void onClick(View v)
 				{
-					findViewById(R.id.root).buildDrawingCache();
-					Bitmap b = findViewById(R.id.root).getDrawingCache();
-					Uri res = Utils.saveBitmap(getActivity(), b, Bitmap.CompressFormat.JPEG, "image/jpeg", String.valueOf(System.currentTimeMillis()));
-					res.getPath();
-					Tools.toastSuccess(getActivity(), "已儲存照片");
+					mm拍照();
 				}
 			});
 			Act_ImgBtnAlbumChoose.setOnClickListener(new View.OnClickListener() {
@@ -341,6 +347,9 @@ public class VideoRecordingActivity extends Base
 					pickimagegallery();
 				}
 			});
+			GraphicOverlay.setVisibility(View.GONE);
+			GraphicOverlay.clear();
+			bindAllCameraUseCases(cameraProvider);
 		}
 		Act_TogBtnCameraFacing.setOnClickListener(new View.OnClickListener() {
 			@Override
