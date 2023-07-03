@@ -1,16 +1,24 @@
 package com.example.morldapp_demo01.activity;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Size;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.example.morldapp_demo01.CameraXViewModel;
 import com.example.morldapp_demo01.Config;
@@ -22,6 +30,7 @@ import com.example.morldapp_demo01.Edit.structurepoint;
 import com.example.morldapp_demo01.PreferenceUtils;
 import com.example.morldapp_demo01.R;
 import com.example.morldapp_demo01.Tools;
+import com.example.morldapp_demo01.camera.VideoRecordingActivity;
 import com.example.morldapp_demo01.classification.posedetector.PoseDetectorProcessor;
 import com.example.morldapp_demo01.databinding.VideoLandscapeBinding;
 import com.example.morldapp_demo01.pojo.FilmPOJO;
@@ -82,6 +91,7 @@ public class VideoLandscape extends Base
 	PlayerView playerView;
 	CameraSelector cameraSelector;
 	private int lensFacing = CameraSelector.LENS_FACING_FRONT;
+	Boolean adjusttime=false;
 
 	void initializeFile播放器(String url)
 	{
@@ -134,16 +144,16 @@ public class VideoLandscape extends Base
 		playerView.hideController();
 		player.seekTo(currentWindow, playbackPosition);
 		View controlView = playerView.findViewById(R.id.exo_controller);
-		ImageView fullscreenIcon = controlView.findViewById(R.id.exo_fullscreen_icon);
+//		ImageView fullscreenIcon = controlView.findViewById(R.id.exo_fullscreen_icon);
 		ImageView pausetostart = controlView.findViewById(R.id.exo_play);
-		fullscreenIcon.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				finish();
-			}
-		});
+//		fullscreenIcon.setOnClickListener(new View.OnClickListener()
+//		{
+//			@Override
+//			public void onClick(View v)
+//			{
+//				finish();
+//			}
+//		});
 		pausetostart.setOnClickListener(new View.OnClickListener()
 		{
 			@Override
@@ -234,15 +244,15 @@ public class VideoLandscape extends Base
 		player.seekTo(currentWindow, playbackPosition);
 		player.prepare();
 		View controlView = playerView.findViewById(R.id.exo_controller);
-		ImageView fullscreenIcon = controlView.findViewById(R.id.exo_fullscreen_icon);
-		fullscreenIcon.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				finish();
-			}
-		});
+//		ImageView fullscreenIcon = controlView.findViewById(R.id.exo_fullscreen_icon);
+//		fullscreenIcon.setOnClickListener(new View.OnClickListener()
+//		{
+//			@Override
+//			public void onClick(View v)
+//			{
+//				finish();
+//			}
+//		});
 	}
 
 	@Override
@@ -304,32 +314,32 @@ public class VideoLandscape extends Base
 			@Override
 			public void onClick(View v)
 			{
-				if(cameraProvider == null) {
-					Tools.showError(getActivity(), "你無法運算骨骼");
-					return;
-				}
-				if(isRunCalcScore)
-				{
-					isRunCalcScore = false;
-					imageProcessor.stop();
-					cameraProvider.unbindAll();
-					binding.recordStructure.clear();
-					binding.textScore.setVisibility(View.INVISIBLE);
-					binding.layoutTogBtnCameraFacing.setVisibility(View.INVISIBLE);
-				}
-				else
-				{
-					isRunCalcScore = true;
-					bindAllCameraUseCases(cameraProvider);
-					mm顯示控制項(true);
-					//binding.videoView.setVisibility(View.INVISIBLE);
-					player.seekToPrevious();
-					playerView.hideController();
-					binding.videoStructure.setVisibility(View.VISIBLE);
-					binding.textScore.setVisibility(View.VISIBLE);
-					player.setPlayWhenReady(playWhenReady);
-					binding.layoutTogBtnCameraFacing.setVisibility(View.VISIBLE);
-				}
+//				if(cameraProvider == null) {
+//					Tools.showError(getActivity(), "你無法運算骨骼");
+//					return;
+//				}
+//				if(isRunCalcScore)
+//				{
+//					isRunCalcScore = false;
+//					imageProcessor.stop();
+//					cameraProvider.unbindAll();
+//					binding.recordStructure.clear();
+//					binding.textScore.setVisibility(View.INVISIBLE);
+//					binding.layoutTogBtnCameraFacing.setVisibility(View.INVISIBLE);
+//				}
+//				else
+//				{
+//					isRunCalcScore = true;
+//					bindAllCameraUseCases(cameraProvider);
+//					mm顯示控制項(true);
+//					//binding.videoView.setVisibility(View.INVISIBLE);
+//					player.seekToPrevious();
+//					playerView.hideController();
+//					binding.videoStructure.setVisibility(View.VISIBLE);
+////					binding.textScore.setVisibility(View.VISIBLE);
+//					player.setPlayWhenReady(playWhenReady);
+//					binding.layoutTogBtnCameraFacing.setVisibility(View.VISIBLE);
+//				}
 			}
 		});
 
@@ -363,7 +373,7 @@ public class VideoLandscape extends Base
 					{
 						setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 					}
-					binding.editOffsetLayout.setVisibility(View.VISIBLE);
+//					binding.editOffsetLayout.setVisibility(View.VISIBLE);
 					posestructurepoint = s;
 					player.prepare();
 				}
@@ -419,53 +429,58 @@ public class VideoLandscape extends Base
 
 	void mm顯示控制項(boolean isShow)
 	{
-		if(isShow)
-		{
+		if(isShow) {
 			player.setPlayWhenReady(false);
-			binding.imageClock.setVisibility(View.VISIBLE);
+//			binding.imageClock.setVisibility(View.VISIBLE);
 			binding.imageUser.setVisibility(View.VISIBLE);
 			binding.imageRetry.setVisibility(View.VISIBLE);
 			binding.imageDownload.setVisibility(View.VISIBLE);
 			binding.title.setVisibility(View.VISIBLE);
-			binding.editOffsetLayout.setVisibility(View.VISIBLE);
-			File ff  = getExternalFilesDir("videos");
-			ff = new File(ff, data.uuid);
-			if(ff.exists())
-			{
-				binding.imageDownload.setImageResource(R.drawable.icon_setting);
-				binding.imageDownload.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v)
-					{
-						binding.editOffsetLayout.setVisibility(View.VISIBLE);
-					}
-				});
+//			binding.editOffsetLayout.setVisibility(View.VISIBLE);
+
+				File ff = getExternalFilesDir("videos");
+				ff = new File(ff, data.uuid);
+				if (ff.exists()) {
+					binding.imageDownload.setImageResource(R.drawable.icon_setting);
+					binding.imageDownload.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+
+							if (adjusttime == true)
+							{
+								binding.imageDownload.setImageResource(R.drawable.icon_setting);
+								binding.imageDownload.setEnabled(true);
+								binding.des.setVisibility(View.GONE);
+								binding.add.setVisibility(View.GONE);
+							}
+							else {
+								VideoOption_Dialog();
+							}
+
+						}
+					});
+				} else {
+					binding.imageDownload.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							mm下載影片();
+						}
+					});
+				}
+				if (player.getCurrentPosition() < player.getDuration()) {
+					binding.imageRetry.setVisibility(View.GONE);
+				} else {
+					binding.imageClock.setVisibility(View.GONE);
+					binding.imageUser.setVisibility(View.GONE);
+					binding.imageRetry.setVisibility(View.GONE);
+					binding.imageDownload.setVisibility(View.GONE);
+					binding.title.setVisibility(View.GONE);
+//					binding.editOffsetLayout.setVisibility(View.GONE);
+					binding.add.setVisibility(View.GONE);
+					binding.des.setVisibility(View.GONE);
+				}
 			}
-			else
-			{
-				binding.imageDownload.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v)
-					{
-						mm下載影片();
-					}
-				});
-			}
-			if(player.getCurrentPosition() < player.getDuration())
-			{
-				binding.imageRetry.setVisibility(View.GONE);
-			}
-		}
-		else
-		{
-			binding.imageClock.setVisibility(View.GONE);
-			binding.imageUser.setVisibility(View.GONE);
-			binding.imageRetry.setVisibility(View.GONE);
-			binding.imageDownload.setVisibility(View.GONE);
-			binding.title.setVisibility(View.GONE);
-			binding.editOffsetLayout.setVisibility(View.GONE);
-			binding.editOffsetLayout.setVisibility(View.GONE);
-		}
+
 	}
 
 	void mm遞減骨骼()
@@ -476,7 +491,9 @@ public class VideoLandscape extends Base
 			@Override
 			public void onTxt(HashMap<String, structurepoint[]> s)
 			{
-				binding.editOffsetLayout.setVisibility(View.VISIBLE);
+				//binding.editOffsetLayout.setVisibility(View.VISIBLE);
+				binding.add.setVisibility(View.VISIBLE);
+				binding.des.setVisibility(View.VISIBLE);
 				posestructurepoint = s;
 			}
 		});
@@ -490,7 +507,9 @@ public class VideoLandscape extends Base
 			@Override
 			public void onTxt(HashMap<String, structurepoint[]> s)
 			{
-				binding.editOffsetLayout.setVisibility(View.VISIBLE);
+//				binding.editOffsetLayout.setVisibility(View.VISIBLE);
+				binding.add.setVisibility(View.VISIBLE);
+				binding.des.setVisibility(View.VISIBLE);
 				posestructurepoint = s;
 			}
 		});
@@ -665,6 +684,101 @@ public class VideoLandscape extends Base
 		{
 			Tools.showError(getActivity(), e.getMessage());
 		}
+	}
+
+	void VideoOption_Dialog()
+	{
+
+		Dialog videooption_Dialog=new Dialog(this.getActivity());
+		View view=getLayoutInflater().inflate(R.layout.dialog_video_option,null);
+		videooption_Dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+			@Override
+			public void onDismiss(DialogInterface dialogInterface) {
+
+
+			}
+		});
+		videooption_Dialog.setContentView(view);
+
+		Window window = videooption_Dialog.getWindow();
+		WindowManager.LayoutParams params = window.getAttributes();
+
+		window.setGravity(Gravity.TOP);
+
+		params.x =(int)binding.imageDownload.getLeft();
+		params.y = (int)binding.imageDownload.getHeight()+5;
+		window.setAttributes(params);
+
+
+		LinearLayout Act_Layout_time_stemp=videooption_Dialog.findViewById(R.id.Layout_Layout_Time_stemp);
+		LinearLayout Act_Layout_Challenge=videooption_Dialog.findViewById(R.id.Layout_Layout_Challenge);
+
+		Act_Layout_time_stemp.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View view) {
+
+				//binding.editOffsetLayout.setVisibility(View.VISIBLE);
+				binding.add.setVisibility(View.VISIBLE);
+				binding.des.setVisibility(View.VISIBLE);
+				adjusttime=true;
+				binding.imageDownload.setImageResource(R.drawable.icon_save);
+				videooption_Dialog.dismiss();
+
+			}
+		});
+
+		Act_Layout_Challenge.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View view) {
+				//挑戰
+				if(cameraProvider == null) {
+					Tools.showError(getActivity(), "你無法運算骨骼");
+					return;
+				}
+				if(isRunCalcScore)
+				{
+					isRunCalcScore = false;
+					imageProcessor.stop();
+					cameraProvider.unbindAll();
+					binding.recordStructure.clear();
+					binding.textScore.setVisibility(View.INVISIBLE);
+					binding.imageClock.setVisibility(View.INVISIBLE);
+					binding.layoutTogBtnCameraFacing.setVisibility(View.INVISIBLE);
+				}
+				else
+				{
+					isRunCalcScore = true;
+					bindAllCameraUseCases(cameraProvider);
+					mm顯示控制項(true);
+					//binding.videoView.setVisibility(View.INVISIBLE);
+					player.seekToPrevious();
+					playerView.hideController();
+					binding.videoStructure.setVisibility(View.VISIBLE);
+//					binding.textScore.setVisibility(View.VISIBLE);
+					player.setPlayWhenReady(playWhenReady);
+					binding.layoutTogBtnCameraFacing.setVisibility(View.VISIBLE);
+					binding.textScore.setVisibility(View.VISIBLE);
+					binding.imageClock.setVisibility(View.VISIBLE);
+					//binding.imageDownload.setEnabled(false);
+				}
+				videooption_Dialog.dismiss();
+			}
+		});
+
+		videooption_Dialog.show();
+	}
+
+	@Override
+	public void onConfigurationChanged(@NonNull Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		if(newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE)
+		{}
+		else if(newConfig.orientation==Configuration.ORIENTATION_PORTRAIT)
+		{
+		}
+
 	}
 
 }

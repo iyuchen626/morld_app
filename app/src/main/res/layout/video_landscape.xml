@@ -118,8 +118,8 @@
 
     <ImageView
         android:id="@+id/image_download"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toStartOf="@+id/image_retry"
@@ -145,56 +145,50 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/edit_offset_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/layout_TogBtnCameraFacing"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_weight="1"
+        android:src="@drawable/change_camera"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/home"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginRight="4dp"
+        android:layout_weight="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:srcCompat="@drawable/icon_exit_fullscreen"
+        tools:visibility="invisible" />
+
+    <ImageButton
+        android:id="@+id/des"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_weight="1"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        >
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/left"
+        tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/add"
-            style="@style/Widget.MaterialComponents.Chip.Action"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
-            android:text="＋"
-            android:textAlignment="center" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/des"
-            style="@style/Widget.MaterialComponents.Chip.Action"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="－"
-            android:textAlignment="center" />
-
-        <ImageView
-            android:id="@+id/layout_TogBtnCameraFacing"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginRight="16dp"
-            android:layout_weight="1"
-            android:src="@drawable/change_camera"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="invisible" />
-
-        <ImageView
-            android:id="@+id/home"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginRight="16dp"
-            android:layout_weight="1"
-            android:src="@drawable/icon_home"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="invisible" />
-
-    </LinearLayout>
+    <ImageButton
+        android:id="@+id/add"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_weight="1"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/right"
+        tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom"
@@ -25,7 +26,8 @@
 
         <ImageButton
             android:id="@id/exo_repeat_toggle"
-            style="@style/ExoMediaButton" />
+            style="@style/ExoMediaButton"
+            tools:ignore="SpeakableTextPresentCheck" />
 
         <ImageButton
             android:id="@id/exo_play"
@@ -59,7 +61,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
-            android:paddingLeft="4dp"
+            android:paddingLeft="36dp"
             android:paddingRight="4dp"
             android:textColor="#FFBEBEBE"
             android:textSize="14sp"
@@ -67,9 +69,10 @@
 
         <com.google.android.exoplayer2.ui.DefaultTimeBar
             android:id="@id/exo_progress"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="26dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            tools:ignore="SpeakableTextPresentCheck" />
 
         <TextView
             android:id="@id/exo_duration"
@@ -77,7 +80,7 @@
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
             android:paddingLeft="4dp"
-            android:paddingRight="4dp"
+            android:paddingRight="36dp"
             android:textColor="#FFBEBEBE"
             android:textSize="14sp"
             android:textStyle="bold" />
