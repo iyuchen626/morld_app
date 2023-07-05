@@ -184,7 +184,8 @@ public class VideoDetectActivity extends Base implements CompoundButton.OnChecke
 //                            new AnalyzePoseGraphic(
 //                                    Act_GraphicOverlay_Structure_Sample,
 //                                    posestructurepoint));
-                    new CalculateScore(true,posestructurepoint);
+                    //WAIT
+                    new CalculateScore(true,posestructurepoint,1,1);
 
                     if (needUpdateGraphicOverlayImageSourceInfo) {
                         boolean isImageFlipped = lensFacing == CameraSelector.LENS_FACING_FRONT;
