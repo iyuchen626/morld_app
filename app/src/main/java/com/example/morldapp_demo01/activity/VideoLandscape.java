@@ -666,7 +666,19 @@ public class VideoLandscape extends Base
 								{
 									if(result.equals("")) return;
 									structurepoint[] structurepoints = FileMangement.ReadFronOneLine(result);
-									new CalculateScore(true, structurepoints);
+									structurepoint[] structurepoint_calculate = new structurepoint[12];
+									float scaley=binding.videoStructure.getHeight()/height;
+									float scalex=binding.videoStructure.getWidth()/width;
+
+									for(int i=0;i<12;i++)
+									{
+										structurepoint_calculate[i].getAdjustStructpoint_x(scalex);
+										structurepoint_calculate[i].getAdjustStructpoint_y(scaley);
+										structurepoint_calculate[i].getStructpoint_weight();
+
+									}
+									new CalculateScore(true, structurepoint_calculate);
+//									new CalculateScore(true, structurepoints);
 									binding.textScore.setText(""+getScoreResult());
 								}
 							});

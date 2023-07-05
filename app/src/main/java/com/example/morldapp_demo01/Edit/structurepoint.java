@@ -29,4 +29,11 @@ public class structurepoint {
     public float getStructpoint_weight() {
         return structpoint_weight;
     }
+
+    public float getAdjustStructpoint_x(float scalex) {
+        return scalex*structpoint_x;
+    }
+    public float getAdjustStructpoint_y(float scaley) {
+        return scaley*structpoint_y;
+    }
 }
