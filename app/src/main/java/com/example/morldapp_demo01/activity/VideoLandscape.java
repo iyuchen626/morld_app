@@ -112,6 +112,9 @@ public class VideoLandscape extends Base
 				if(isRunCalcScore)
 				{
 					playerView.hideController();
+					binding.imageUser.setVisibility(View.INVISIBLE);
+					binding.title.setVisibility(View.INVISIBLE);
+					binding.tiltebackground.setVisibility(View.INVISIBLE);
 					return;
 				}
 				if(visibility == View.VISIBLE) {
@@ -122,6 +125,9 @@ public class VideoLandscape extends Base
 				}
 				else {
 					mm顯示控制項(false);
+					binding.imageUser.setVisibility(View.INVISIBLE);
+					binding.title.setVisibility(View.INVISIBLE);
+					binding.tiltebackground.setVisibility(View.INVISIBLE);
 					binding.videoStructure.setVisibility(View.VISIBLE);
 					player.setPlayWhenReady(playWhenReady);
 				}
@@ -164,6 +170,10 @@ public class VideoLandscape extends Base
 				//playerView.setVisibility(View.INVISIBLE);
 				binding.videoStructure.setVisibility(View.VISIBLE);
 				playerView.hideController();
+				binding.imageUser.setVisibility(View.INVISIBLE);
+				binding.title.setVisibility(View.INVISIBLE);
+				binding.tiltebackground.setVisibility(View.INVISIBLE);
+
 			}
 		});
 
@@ -356,7 +366,7 @@ public class VideoLandscape extends Base
 		ff = new File(ff, data.uuid);
 		if(ff.exists())
 		{
-			binding.imageDownload.setVisibility(View.GONE);
+			//binding.imageDownload.setVisibility(View.GONE);
 			FileMangement.ReadFileFromTxt(getActivity(), data.txt_slug, (long) (data.video_offset * 1000 * 1000), new FileMangement.OnReadFileFromTxtListener() {
 				@Override
 				public void onTxt(HashMap<String, structurepoint[]> s)
@@ -436,12 +446,20 @@ public class VideoLandscape extends Base
 			binding.imageRetry.setVisibility(View.VISIBLE);
 			binding.imageDownload.setVisibility(View.VISIBLE);
 			binding.title.setVisibility(View.VISIBLE);
+			binding.tiltebackground.setVisibility(View.VISIBLE);
 //			binding.editOffsetLayout.setVisibility(View.VISIBLE);
 
 				File ff = getExternalFilesDir("videos");
 				ff = new File(ff, data.uuid);
 				if (ff.exists()) {
-					binding.imageDownload.setImageResource(R.drawable.icon_setting);
+					if(adjusttime==false)
+					{
+						binding.imageDownload.setImageResource(R.drawable.icon_setting);
+					}
+					else
+					{
+						binding.imageDownload.setImageResource(R.drawable.icon_save);
+					}
 					binding.imageDownload.setOnClickListener(new View.OnClickListener() {
 						@Override
 						public void onClick(View v) {
@@ -452,6 +470,7 @@ public class VideoLandscape extends Base
 								binding.imageDownload.setEnabled(true);
 								binding.des.setVisibility(View.GONE);
 								binding.add.setVisibility(View.GONE);
+								adjusttime=false;
 							}
 							else {
 								VideoOption_Dialog();
@@ -464,6 +483,7 @@ public class VideoLandscape extends Base
 						@Override
 						public void onClick(View v) {
 							mm下載影片();
+							binding.imageDownload.setImageResource(R.drawable.icon_setting);
 						}
 					});
 				}
@@ -670,18 +690,7 @@ public class VideoLandscape extends Base
 									float scaley=binding.videoStructure.getHeight()/height;
 									float scalex=binding.videoStructure.getWidth()/width;
 
-									for(int i=0;i<12;i++)
-									{
-//										structurepoint_calculate[i].setStructpoint_x(structurepoints[i].getStructpoint_x());
-//										structurepoint_calculate[i].setStructpoint_y(structurepoints[i].getStructpoint_y());
-//										structurepoint_calculate[i].setStructpoint_weight(structurepoints[i].getStructpoint_weight());
-//										structurepoint_calculate[i].getAdjustStructpoint_x(scalex);
-//										structurepoint_calculate[i].getAdjustStructpoint_y(scaley);
-//										structurepoint_calculate[i].getStructpoint_weight();
-
-									}
 									new CalculateScore(true, structurepoints,scalex,scaley);
-//									new CalculateScore(true, structurepoints);
 									binding.textScore.setText(""+getScoreResult());
 								}
 							});
@@ -771,6 +780,11 @@ public class VideoLandscape extends Base
 					player.seekToPrevious();
 					playerView.hideController();
 					binding.videoStructure.setVisibility(View.VISIBLE);
+
+					binding.imageUser.setVisibility(View.INVISIBLE);
+					binding.title.setVisibility(View.INVISIBLE);
+					binding.tiltebackground.setVisibility(View.INVISIBLE);
+
 //					binding.textScore.setVisibility(View.VISIBLE);
 					player.setPlayWhenReady(playWhenReady);
 					binding.layoutTogBtnCameraFacing.setVisibility(View.VISIBLE);

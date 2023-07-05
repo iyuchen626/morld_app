@@ -129,6 +129,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/icon_retry" />
 
+    <LinearLayout
+        android:id="@+id/tiltebackground"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="#33000000"
+        android:orientation="vertical"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"></LinearLayout>
+
     <ImageView
         android:id="@+id/layout_TogBtnCameraFacing"
         android:layout_width="40dp"
