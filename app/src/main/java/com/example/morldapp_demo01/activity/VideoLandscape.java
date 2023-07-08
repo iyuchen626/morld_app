@@ -92,6 +92,7 @@ public class VideoLandscape extends Base
 	CameraSelector cameraSelector;
 	private int lensFacing = CameraSelector.LENS_FACING_FRONT;
 	Boolean adjusttime=false;
+	structurepoint[] structurepoints;
 
 	void initializeFile播放器(String url)
 	{
@@ -552,7 +553,7 @@ public class VideoLandscape extends Base
 			{
 				Log.i(Config.TAG, "wantID="+wantId +" currentTimeMicrosecond="+currentTimeMicrosecond);
 				binding.videoStructure.clear();
-				structurepoint[] structurepoints = posestructurepoint.get(wantId);
+				structurepoints = posestructurepoint.get(wantId);
 				binding.videoStructure.add(new AnalyzePoseGraphic(binding.videoStructure, structurepoints,height,width));
 			}
 			handler.postDelayed(myrunnable, delay / 2);
@@ -685,13 +686,16 @@ public class VideoLandscape extends Base
 								public void onDone(String result)
 								{
 									if(result.equals("")) return;
-									structurepoint[] structurepoints = FileMangement.ReadFronOneLine(result);
+									//structurepoint[] structurepoints = FileMangement.ReadFronOneLine(result);
 									//structurepoint[] structurepoint_calculate = new structurepoint[12];
 									float scaley=binding.videoStructure.getHeight()/height;
 									float scalex=binding.videoStructure.getWidth()/width;
-
-									new CalculateScore(true, structurepoints,scalex,scaley);
-									binding.textScore.setText(""+getScoreResult());
+									if(structurepoints==null) {
+									}
+									else {
+										new CalculateScore(true, structurepoints, scalex, scaley);
+										binding.textScore.setText("" + getScoreResult());
+									}
 								}
 							});
 						}
