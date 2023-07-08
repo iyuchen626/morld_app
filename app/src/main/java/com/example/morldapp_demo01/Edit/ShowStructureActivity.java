@@ -74,13 +74,11 @@ public class ShowStructureActivity extends Base implements View.OnClickListener
     boolean isFlip = false;
     Uri Uri_photo;
 
-
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_structure);
-
 
         findViewById(R.id.layout_Button_ReproducePose_Image).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,13 +86,13 @@ public class ShowStructureActivity extends Base implements View.OnClickListener
             {
                 is設定旋轉與鏡像 = false;
                 mm產生骨骼();
-//                try {
-//                    Bitmap_ShowPhoto= BitmapFactory.decodeStream(getContentResolver().openInputStream(Uri.parse(StructureUriStr)));
-//                    Act_ImageView_Pose.setImageBitmap(Bitmap_ShowPhoto);
-//                } catch (FileNotFoundException e) {
-//                    e.printStackTrace();
-//                }
 
+//              try {
+//                  Bitmap_ShowPhoto= BitmapFactory.decodeStream(getContentResolver().openInputStream(Uri.parse(StructureUriStr)));
+//                  Act_ImageView_Pose.setImageBitmap(Bitmap_ShowPhoto);
+//              } catch (FileNotFoundException e) {
+//                  e.printStackTrace();
+//              }
 
             }
         });
@@ -103,7 +101,6 @@ public class ShowStructureActivity extends Base implements View.OnClickListener
         Act_GraphicOverlay_ShowImageStructure=findViewById(R.id.Layout_GraphicOverlay_ShowImageStructure);
         Act_ImgButton_ImageStructureEdit=findViewById(R.id.layout_ImgButton_Image_StructureEdit);
         Act_Button_ImageStructureShow=findViewById(R.id.Layout_Button_ImageStructureShow);
-
 
         Act_ImgImgButton_Image_StructureEditUp=findViewById(R.id.layout_ImgButton_Image_StructureEditUp);
         Act_ImgImgButton_Image_StructureEditLeft=findViewById(R.id.layout_ImgButton_Image_StructureEditLeft);
@@ -118,14 +115,13 @@ public class ShowStructureActivity extends Base implements View.OnClickListener
         Act_ImgImgButton_Image_StructureEditRight.setOnClickListener(this);
         Act_ImgImgButton_Image_StructureEditDown.setOnClickListener(this);
 
-
         Intent intent=getIntent();
         Bundle bundle=intent.getExtras();
         StructureUriStr = bundle.getString("uriimagestr");
         filename = Tools.md5(StructureUriStr);
-//        Act_ImageView_Pose.setImageURI(Uri.parse(StructureUriStr));
-//        Act_ImageView_Pose.setImageURI(Uri.fromFile(new File(StructureUriStr)));
-//        Act_ImageView_Pose.setima
+//      Act_ImageView_Pose.setImageURI(Uri.parse(StructureUriStr));
+//      Act_ImageView_Pose.setImageURI(Uri.fromFile(new File(StructureUriStr)));
+//      Act_ImageView_Pose.setima
 
     }
 
@@ -141,14 +137,13 @@ public class ShowStructureActivity extends Base implements View.OnClickListener
             Log.e(Config.TAG, e.getMessage());
         }
 
-
         posestructurepoint = FileMangement.ReadFile(getActivity(), filename, (long) (offset*1000*1000));
 
         TxtConfigPOJO txt = Tools.getGson().fromJson(Tools.mmRead(getActivity(), Config.KEY_TXT_CONFIG), TxtConfigPOJO.class);
+
         if(txt!=null) {
             width = txt.width;
             height = txt.height;
-
         }
 
         if((posestructurepoint.size()==0)||(width==0)||(height==0))
@@ -165,15 +160,14 @@ public class ShowStructureActivity extends Base implements View.OnClickListener
         try {
             Bitmap bitmap= BitmapFactory.decodeStream(getContentResolver().openInputStream(Uri.fromFile(new File(StructureUriStr))));
             Act_ImageView_Pose.setImageBitmap(bitmap);
-        File file =new File(StructureUriStr);
-         a=file.length();
-         a+=1;
-//        Toast.makeText("AAA").show();
 
+            File file =new File(StructureUriStr);
+            a=file.length();
+            a+=1;
 
-;       } catch (Exception e) {
+       } catch (Exception e) {
             Log.e(Config.TAG, e.getMessage());
-        }
+       }
 //        try {
 //           // Bitmap_ShowPhoto= BitmapFactory.decodeStream(getContentResolver().openInputStream(Uri_photo));
 //            //Tools.toast(getActivity(), "AA");

@@ -32,23 +32,25 @@
 
     <ImageView
         android:id="@+id/imageCoach"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
+
     <com.example.morldapp_demo01.GraphicOverlay
         android:id="@+id/GraphicOverlay_coach"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="3:4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="@+id/imageCoach"
+        app:layout_constraintEnd_toEndOf="@+id/imageCoach"
+        app:layout_constraintStart_toStartOf="@+id/imageCoach"
+        app:layout_constraintTop_toTopOf="@+id/imageCoach" />
 
 
     <TextView

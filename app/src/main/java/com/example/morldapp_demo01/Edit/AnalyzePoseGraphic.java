@@ -58,7 +58,7 @@ public class AnalyzePoseGraphic extends GraphicOverlay.Graphic{
         }
 
 //        canvas.translate(0, hDes);
-         canvas.scale((float) scale1, (float)scale2);
+        canvas.scale((float) scale1, (float)scale2);
         drawLine(canvas, structurepoint[6],structurepoint[0], BluePaint);
         drawLine(canvas, structurepoint[8],structurepoint[2], BluePaint);
         drawLine(canvas, structurepoint[6],structurepoint[7], BluePaint);

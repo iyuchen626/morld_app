@@ -537,6 +537,7 @@ public class VideoRecordingActivity extends Base
 									structurepoint[] structurepoints = FileMangement.ReadFronOneLine(result);
 									GraphicOverlay_coach.clear();
 									GraphicOverlay_coach.add(new AnalyzePoseGraphic(GraphicOverlay_coach, structurepoints, inputImage.getHeight(), inputImage.getWidth()));
+
 								}
 							});
 						}
