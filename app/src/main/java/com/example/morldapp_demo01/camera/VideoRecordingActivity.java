@@ -145,6 +145,14 @@ public class VideoRecordingActivity extends Base
 		Act_ProgressBarCameraRecording = findViewById(R.id.Layout_ProgressBarCameraRecording);
 		Act_ProgressBarCameraRecording.setVisibility(View.INVISIBLE);
 
+		findViewById(R.id.layout_ImgButton_cmaera_Back).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v)
+			{
+				finish();
+			}
+		});
+
 		new ViewModelProvider(this, (ViewModelProvider.Factory) ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
 				.get(CameraXViewModel.class)
 				.getProcessCameraProvider()

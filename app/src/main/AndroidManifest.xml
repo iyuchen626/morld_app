@@ -67,13 +67,6 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".Edit.ShowStructureActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
             android:name=".camera.VideoDetectActivity"
             android:exported="false">
             <meta-data
