@@ -10,7 +10,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        tools:ignore="MissingConstraints">
 
         <LinearLayout
             android:id="@+id/Layout_Layout_Edit"
@@ -18,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:padding="8dp">
+            android:padding="3dp">
 
             <Button
                 android:id="@+id/layout_Button_Structure_video_Point_0"
@@ -26,19 +27,19 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#00000000"
-                android:text="0"
+                android:text="Left Shoulder"
                 android:textColor="@color/toast_warn_color"
-                android:textSize="24sp" />
+                android:textSize="14sp" />
 
             <Button
                 android:id="@+id/layout_Button_Structure_video_Point_1"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="#00000000"
-                android:text="1"
+                android:text="Left elbow"
                 android:textColor="@color/toast_warn_color"
-                android:textSize="24sp" />
+                android:textSize="14sp" />
 
             <Button
                 android:id="@+id/layout_Button_Structure_video_Point_2"
@@ -46,9 +47,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#00000000"
-                android:text="2"
+                android:text="Left waist"
                 android:textColor="@color/toast_warn_color"
-                android:textSize="24sp" />
+                android:textSize="14sp" />
 
             <Button
                 android:id="@+id/layout_Button_Structure_video_Point_3"
@@ -56,9 +57,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#00000000"
-                android:text="3"
+                android:text="Left Knee"
                 android:textColor="@color/toast_warn_color"
-                android:textSize="24sp" />
+                android:textSize="14sp" />
 
             <Button
                 android:id="@+id/layout_Button_Structure_video_Point_4"
@@ -66,9 +67,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#00000000"
-                android:text="4"
+                android:text="Left ankle"
                 android:textColor="@color/toast_warn_color"
-                android:textSize="24sp" />
+                android:textSize="14sp" />
 
             <Button
                 android:id="@+id/layout_Button_Structure_video_Point_5"
@@ -76,9 +77,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#00000000"
-                android:text="5"
+                android:text="Left hand"
                 android:textColor="@color/toast_warn_color"
-                android:textSize="24sp" />
+                android:textSize="14sp" />
 
         </LinearLayout>
 
@@ -88,7 +89,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:padding="8dp">
+            android:padding="3dp">
 
             <Button
                 android:id="@+id/layout_Button_Structure_video_Point_6"
@@ -96,9 +97,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#00000000"
-                android:text="6"
+                android:text="Right Shoulder"
                 android:textColor="@color/toast_warn_color"
-                android:textSize="24sp" />
+                android:textSize="14sp" />
 
             <Button
                 android:id="@+id/layout_Button_Structure_video_Point_7"
@@ -106,9 +107,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#00000000"
-                android:text="7"
+                android:text="Right elbow"
                 android:textColor="@color/toast_warn_color"
-                android:textSize="24sp" />
+                android:textSize="14sp" />
 
             <Button
                 android:id="@+id/layout_Button_Structure_video_Point_8"
@@ -116,9 +117,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#00000000"
-                android:text="8"
+                android:text="Right waist"
                 android:textColor="@color/toast_warn_color"
-                android:textSize="24sp" />
+                android:textSize="14sp" />
 
             <Button
                 android:id="@+id/layout_Button_Structure_video_Point_9"
@@ -126,9 +127,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#00000000"
-                android:text="9"
+                android:text="Right KNEE"
                 android:textColor="@color/toast_warn_color"
-                android:textSize="24sp" />
+                android:textSize="14sp" />
 
             <Button
                 android:id="@+id/layout_Button_Structure_video_Point_10"
@@ -136,9 +137,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#00000000"
-                android:text="10"
+                android:text="Right Ankle"
                 android:textColor="@color/toast_warn_color"
-                android:textSize="24sp" />
+                android:textSize="14sp" />
 
             <Button
                 android:id="@+id/layout_Button_Structure_video_Point_11"
@@ -146,9 +147,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#00000000"
-                android:text="11"
+                android:text="Right hand"
                 android:textColor="@color/toast_warn_color"
-                android:textSize="24sp" />
+                android:textSize="14sp" />
         </LinearLayout>
 
     </LinearLayout>
