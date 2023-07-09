@@ -177,17 +177,19 @@ public class Tools
 		}
 		return wantId;
 	}
-	public static void showInfo(AppCompatActivity a, String title, String s)
+	public static void showInfo(AppCompatActivity a, String title, String s,final View.OnClickListener OK)
 	{
 		if (a == null || a.isFinishing()) return;
 		Normal editNameDialog = new Normal();
 		editNameDialog.setTitle(title);
 		editNameDialog.setContent(s);
+
 		editNameDialog.setOK("關閉", new View.OnClickListener()
 		{
 			@Override
 			public void onClick(View view)
 			{
+				if (OK != null) OK.onClick(view);
 			}
 		});
 		editNameDialog.show(a.getSupportFragmentManager(), "EditNameDialog");

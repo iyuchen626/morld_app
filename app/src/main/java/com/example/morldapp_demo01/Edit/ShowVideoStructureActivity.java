@@ -27,6 +27,7 @@ import com.example.morldapp_demo01.R;
 import com.example.morldapp_demo01.Tools;
 import com.example.morldapp_demo01.activity.Base;
 import com.example.morldapp_demo01.activity.EditFinishActivity;
+import com.example.morldapp_demo01.activity.MainActivity;
 import com.example.morldapp_demo01.camera.VideoRecordingActivity;
 import com.example.morldapp_demo01.fastextraction.URIPathHelper;
 import com.example.morldapp_demo01.fastextraction.Utils;
@@ -46,6 +47,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -91,6 +93,9 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
     boolean is設定旋轉與鏡像 = false;
     int degress = 0;
     boolean isFlip = false;
+    long currentTime;
+    Boolean Timeout=false;
+
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -104,8 +109,16 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
             public void onClick(View v)
             {
                 is設定旋轉與鏡像 = false;
+                currentTime=System.currentTimeMillis();
                 mm產生骨骼();
                 Act_VideoView_Pose.pause();
+            }
+        });
+        findViewById(R.id.layout_ImgButton_video_StructureBack).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                finish();
             }
         });
         Act_VideoView_Pose=findViewById(R.id.Layout_VideoView_ShowVideo);
@@ -264,7 +277,20 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
                         if (data.getString("error").equals(""))
                         {
                             UploadVideoResponsePOJO uploadVideoResponsePOJO = Tools.getGson().fromJson(res, UploadVideoResponsePOJO.class);
-                            Tools.showInfo(getActivity(), "已上傳", uploadVideoResponsePOJO.data.uuid);
+
+                            Tools.showInfo(getActivity(), "已上傳", uploadVideoResponsePOJO.data.uuid,  new View.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(View v)
+                                {
+                                    Intent intent =new Intent(ShowVideoStructureActivity.this, MainActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
+                                }
+                            });
+
+
+
 
 
                             return;
@@ -456,15 +482,43 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
             {
                 synchronized (queue)
                 {
-                    queue.poll();
-                    Log.i(Config.TAG, "queue size=" + queue.size() + " currentFrame="+ currentFrame.getTimestamp());
-                    if (!result.equals("")) sb.append(currentFrame.getTimestamp() + "#" + result);
-                    if (queue.size() == 0)
+                    long now=System.currentTimeMillis()-currentTime;
+                    long second=now/1000;
+
+                    if(second>((Act_VideoView_Pose.getDuration())*3))
                     {
-                        FileMangement.SaveFile(getActivity(), filename, sb.toString());
-                        Tools.hideProgress(getActivity());
-                        Tools.toastSuccess(getActivity(), "骨骼已儲存txt");
-                        mm讀取骨骼資料();
+
+                        if(Timeout==false) {
+                            Timeout=true;
+                            Tools.showQuestion(getActivity(), "Timeout", "分析失敗可能為影片轉碼問題，請將影片轉碼再次上傳，感謝您的配合！", "回到首頁", "選擇其他影片", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent =new Intent(ShowVideoStructureActivity.this, MainActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
+                                }
+                            }, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    finish();
+                                }
+                            });
+                        }
+
+                    }
+                    else
+                    {
+                        queue.poll();
+                        Log.i(Config.TAG, "queue size=" + queue.size() + " currentFrame=" + currentFrame.getTimestamp());
+                        if (!result.equals(""))
+                            sb.append(currentFrame.getTimestamp() + "#" + result);
+                        if (queue.size() == 0) {
+                            FileMangement.SaveFile(getActivity(), filename, sb.toString());
+                            Tools.hideProgress(getActivity());
+                            //Tools.toastSuccess(getActivity(), "骨骼已儲存txt");
+                            Tools.toastSuccess(getActivity(), "骨骼已儲存");
+                            mm讀取骨骼資料();
+                        }
                     }
                 }
             }
