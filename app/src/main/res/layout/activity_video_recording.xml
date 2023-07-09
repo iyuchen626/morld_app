@@ -132,12 +132,14 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginLeft="16dp"
+            android:tint="#fff"
             android:contentDescription="@string/Choose"
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/perm_media" />
+            app:srcCompat="@drawable/perm_media"
+            tools:ignore="UseAppTint" />
 
         <ProgressBar
             android:id="@+id/Layout_ProgressBarCameraRecording"
