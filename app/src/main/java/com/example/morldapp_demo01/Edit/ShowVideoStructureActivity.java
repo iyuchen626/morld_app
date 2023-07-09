@@ -410,7 +410,7 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
             @Override
             public void onClick(View v)
             {
-              isFlip = true;
+                isFlip = true;
             }
         }, new View.OnClickListener()
         {
@@ -669,7 +669,7 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
             public void onClick(View view) {
                 PointIdx=6;
                 poistioneditshow();
-               Editor_dialog.dismiss();
+                Editor_dialog.dismiss();
             }
         });
         Act_Button_Structure_Point_7.setOnClickListener(new View.OnClickListener() {
