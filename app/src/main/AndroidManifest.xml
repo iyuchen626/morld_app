@@ -49,6 +49,8 @@
         <activity android:name=".activity.MyDownloadVideo" />
         <activity
             android:name=".activity.VideoLandscape"
+            android:exported="false"
+            android:screenOrientation="portrait"
             />
         <activity
             android:name=".Edit.ShowVideoStructureActivity"
@@ -76,14 +78,6 @@
         <activity
             android:name=".Edit.AdjustStructureActivity"
             android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".Edit.ShowStructureActivity"
-            android:exported="false"
-            tools:ignore="DuplicateActivity">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />

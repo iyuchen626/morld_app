@@ -452,42 +452,63 @@ public class VideoLandscape extends Base
 
 				File ff = getExternalFilesDir("videos");
 				ff = new File(ff, data.uuid);
-				if (ff.exists()) {
-					if(adjusttime==false)
+
+			binding.imageDownload.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+
+					if (adjusttime == true)
 					{
 						binding.imageDownload.setImageResource(R.drawable.icon_setting);
+						binding.imageDownload.setEnabled(true);
+						binding.des.setVisibility(View.GONE);
+						binding.add.setVisibility(View.GONE);
+						adjusttime=false;
 					}
-					else
-					{
-						binding.imageDownload.setImageResource(R.drawable.icon_save);
+					else {
+						VideoOption_Dialog();
 					}
-					binding.imageDownload.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
 
-							if (adjusttime == true)
-							{
-								binding.imageDownload.setImageResource(R.drawable.icon_setting);
-								binding.imageDownload.setEnabled(true);
-								binding.des.setVisibility(View.GONE);
-								binding.add.setVisibility(View.GONE);
-								adjusttime=false;
-							}
-							else {
-								VideoOption_Dialog();
-							}
-
-						}
-					});
-				} else {
-					binding.imageDownload.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							mm下載影片();
-							binding.imageDownload.setImageResource(R.drawable.icon_setting);
-						}
-					});
 				}
+			});
+
+
+//				if (ff.exists()) {
+//					if(adjusttime==false)
+//					{
+//						binding.imageDownload.setImageResource(R.drawable.icon_setting);
+//					}
+//					else
+//					{
+//						binding.imageDownload.setImageResource(R.drawable.icon_save);
+//					}
+//					binding.imageDownload.setOnClickListener(new View.OnClickListener() {
+//						@Override
+//						public void onClick(View v) {
+//
+//							if (adjusttime == true)
+//							{
+//								binding.imageDownload.setImageResource(R.drawable.icon_setting);
+//								binding.imageDownload.setEnabled(true);
+//								binding.des.setVisibility(View.GONE);
+//								binding.add.setVisibility(View.GONE);
+//								adjusttime=false;
+//							}
+//							else {
+//								VideoOption_Dialog();
+//							}
+//
+//						}
+//					});
+//				} else {
+//					binding.imageDownload.setOnClickListener(new View.OnClickListener() {
+//						@Override
+//						public void onClick(View v) {
+//							mm下載影片();
+//							binding.imageDownload.setImageResource(R.drawable.icon_setting);
+//						}
+//					});
+//				}
 				if (player.getCurrentPosition() < player.getDuration()) {
 					binding.imageRetry.setVisibility(View.GONE);
 				} else {
@@ -501,6 +522,34 @@ public class VideoLandscape extends Base
 					binding.des.setVisibility(View.GONE);
 				}
 			}
+
+	}
+
+	void mm顯示骨骼()
+	{
+		binding.videoStructure.setVisibility(View.VISIBLE);
+
+		File ff = getExternalFilesDir("videos");
+		ff = new File(ff, data.uuid);
+
+
+			FileMangement.ReadFileFromTxt(getActivity(), data.txt_slug, (long) (data.video_offset * 1000 * 1000), new FileMangement.OnReadFileFromTxtListener() {
+				@Override
+				public void onTxt(HashMap<String, structurepoint[]> s) {
+					TxtConfigPOJO txt = Tools.getGson().fromJson(Tools.mmRead(getActivity(), Config.KEY_TXT_CONFIG), TxtConfigPOJO.class);
+					width = txt.width;
+					height = txt.height;
+					//Tools.toast(getActivity(), "width:"+width+"height"+height);
+					if (height > width) {
+						setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+					} else {
+						setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+					}
+//					binding.editOffsetLayout.setVisibility(View.VISIBLE);
+					posestructurepoint = s;
+					player.prepare();
+				}
+			});
 
 	}
 
@@ -519,6 +568,7 @@ public class VideoLandscape extends Base
 			}
 		});
 	}
+
 
 	void mm遞增骨骼()
 	{
@@ -717,6 +767,8 @@ public class VideoLandscape extends Base
 	void VideoOption_Dialog()
 	{
 
+
+
 		Dialog videooption_Dialog=new Dialog(this.getActivity());
 		View view=getLayoutInflater().inflate(R.layout.dialog_video_option,null);
 		videooption_Dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
@@ -737,9 +789,32 @@ public class VideoLandscape extends Base
 		params.y = (int)binding.imageDownload.getHeight()+5;
 		window.setAttributes(params);
 
-
+		LinearLayout Act_Layout_time_download=videooption_Dialog.findViewById(R.id.Layout_Layout_Download);
 		LinearLayout Act_Layout_time_stemp=videooption_Dialog.findViewById(R.id.Layout_Layout_Time_stemp);
 		LinearLayout Act_Layout_Challenge=videooption_Dialog.findViewById(R.id.Layout_Layout_Challenge);
+
+		File ff  = getExternalFilesDir("videos");
+		ff = new File(ff, data.uuid);
+		if(ff.exists())
+		{
+			Act_Layout_time_download.setVisibility(View.GONE);
+		}
+		else
+		{
+			Act_Layout_time_stemp.setVisibility(View.GONE);
+			Act_Layout_Challenge.setVisibility(View.GONE);
+		}
+
+
+		Act_Layout_time_download.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View view) {
+				mm下載影片();
+
+				mm顯示骨骼();
+			}
+		});
 
 		Act_Layout_time_stemp.setOnClickListener(new View.OnClickListener() {
 
