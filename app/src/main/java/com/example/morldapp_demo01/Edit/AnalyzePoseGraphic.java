@@ -14,7 +14,7 @@ public class AnalyzePoseGraphic extends GraphicOverlay.Graphic{
     private static final float IN_FRAME_LIKELIHOOD_TEXT_SIZE = 30.0f;
     private static final float STROKE_WIDTH = 7.0f;
     private static final float POSE_CLASSIFICATION_TEXT_SIZE = 60.0f;
-    private final Paint BluePaint;
+    public final Paint BluePaint;
     structurepoint[] structurepoint= new structurepoint[12];
     GraphicOverlay graphicOverlay;
     float height=0, width=0;

@@ -61,8 +61,8 @@ public class ScreenService extends Service
 		builder.setContentIntent(PendingIntent.getActivity(this, 0, nfIntent, FLAG_MUTABLE))
 				.setLargeIcon(
 						BitmapFactory.decodeResource(
-								this.getResources(), R.mipmap.ic_launcher)) // 设置下拉列表中的图标(大图标)
-				.setSmallIcon(R.mipmap.ic_launcher) // 设置状态栏内的小图标
+								this.getResources(), R.mipmap.morld_app_icon)) // 设置下拉列表中的图标(大图标)
+				.setSmallIcon(R.mipmap.morld_app_icon) // 设置状态栏内的小图标
 				.setContentText("is running......") // 设置上下文内容
 				.setWhen(System.currentTimeMillis()); // 设置该通知发生的时间
 

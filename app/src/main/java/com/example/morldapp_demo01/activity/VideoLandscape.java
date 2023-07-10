@@ -1,6 +1,7 @@
 package com.example.morldapp_demo01.activity;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.DownloadManager;
 import android.content.Context;
@@ -8,6 +9,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -19,12 +22,17 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 
+import com.ducky.fastvideoframeextraction.fastextraction.Frame;
+import com.ducky.fastvideoframeextraction.fastextraction.FrameExtractor;
+import com.ducky.fastvideoframeextraction.fastextraction.IVideoFrameExtractor;
 import com.example.morldapp_demo01.CameraXViewModel;
 import com.example.morldapp_demo01.Config;
 import com.example.morldapp_demo01.Edit.AnalyzePoseGraphic;
 import com.example.morldapp_demo01.Edit.CalculateScore;
 import com.example.morldapp_demo01.Edit.FileMangement;
+import com.example.morldapp_demo01.Edit.ShowVideoStructureActivity;
 import com.example.morldapp_demo01.Edit.StructureAnalyze;
 import com.example.morldapp_demo01.Edit.structurepoint;
 import com.example.morldapp_demo01.PreferenceUtils;
@@ -33,6 +41,8 @@ import com.example.morldapp_demo01.Tools;
 import com.example.morldapp_demo01.camera.VideoRecordingActivity;
 import com.example.morldapp_demo01.classification.posedetector.PoseDetectorProcessor;
 import com.example.morldapp_demo01.databinding.VideoLandscapeBinding;
+import com.example.morldapp_demo01.fastextraction.URIPathHelper;
+import com.example.morldapp_demo01.fastextraction.Utils;
 import com.example.morldapp_demo01.pojo.FilmPOJO;
 import com.example.morldapp_demo01.pojo.TxtConfigPOJO;
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -50,16 +60,25 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.util.Util;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.pose.PoseDetectorOptionsBase;
+import com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar;
 import com.p2pengine.core.p2p.P2pStatisticsListener;
 import com.p2pengine.core.p2p.PlayerInteractor;
 import com.p2pengine.sdk.P2pEngine;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.channels.FileChannel;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
@@ -71,8 +90,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import static androidx.camera.core.ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST;
 import static com.example.morldapp_demo01.Edit.CalculateScore.getScoreResult;
+import static com.example.morldapp_demo01.Edit.FileMangement.ReadFronOneLine;
 
-public class VideoLandscape extends Base
+public class VideoLandscape extends Base implements IVideoFrameExtractor
 {
 	VideoLandscapeBinding binding;
 	FilmPOJO data;
@@ -82,6 +102,7 @@ public class VideoLandscape extends Base
 	private long playbackPosition = 0L;
 	String MEDIA_TYPE;
 	private HashMap<String,  structurepoint[]> posestructurepoint=new HashMap<>();
+	private HashMap<String,  structurepoint[]> posestructurepointB=new HashMap<>();
 	private ExecutorService executorService= Executors.newSingleThreadExecutor();
 	float height,width;
 	private PoseDetectorProcessor imageProcessor;
@@ -93,6 +114,12 @@ public class VideoLandscape extends Base
 	private int lensFacing = CameraSelector.LENS_FACING_FRONT;
 	Boolean adjusttime=false;
 	structurepoint[] structurepoints;
+	int degress = 0;
+	boolean isFlip = false;
+	private FrameExtractor frameExtractor;
+	boolean is設定旋轉與鏡像 = false;
+	long beginTime;
+	Boolean Timeout=false;
 
 	void initializeFile播放器(String url)
 	{
@@ -272,6 +299,7 @@ public class VideoLandscape extends Base
 		super.onCreate(savedInstanceState);
 		MEDIA_TYPE = getIntent().getExtras().getString("MEDIA_TYPE");
 		binding = VideoLandscapeBinding.inflate(getLayoutInflater());
+		binding.videoB.setVisibility(View.INVISIBLE);
 		handler.postDelayed(myrunnable, 50);
 		binding.imageRetry.setOnClickListener(new View.OnClickListener()
 		{
@@ -601,11 +629,22 @@ public class VideoLandscape extends Base
 			String wantId = Tools.mm取得對應時間軸之key(posestructurepoint, currentTimeMicrosecond);
 			if (!wantId.equals(""))
 			{
-				Log.i(Config.TAG, "wantID="+wantId +" currentTimeMicrosecond="+currentTimeMicrosecond);
+//				Log.i(Config.TAG, "wantID="+wantId +" currentTimeMicrosecond="+currentTimeMicrosecond);
 				binding.videoStructure.clear();
 				structurepoints = posestructurepoint.get(wantId);
 				binding.videoStructure.add(new AnalyzePoseGraphic(binding.videoStructure, structurepoints,height,width));
 			}
+
+			wantId = Tools.mm取得對應時間軸之key(posestructurepointB, currentTimeMicrosecond);
+			if (!wantId.equals(""))
+			{
+//				Log.i(Config.TAG, "wantID="+wantId +" currentTimeMicrosecond="+currentTimeMicrosecond);
+				binding.videoStructureB.clear();
+				AnalyzePoseGraphic analyzePoseGraphic = new AnalyzePoseGraphic(binding.videoStructureB,  posestructurepointB.get(wantId), height, width);
+				analyzePoseGraphic.BluePaint.setColor(Color.YELLOW);
+				binding.videoStructureB.add(analyzePoseGraphic);
+			}
+
 			handler.postDelayed(myrunnable, delay / 2);
 		}
 	};
@@ -792,6 +831,13 @@ public class VideoLandscape extends Base
 		LinearLayout Act_Layout_time_download=videooption_Dialog.findViewById(R.id.Layout_Layout_Download);
 		LinearLayout Act_Layout_time_stemp=videooption_Dialog.findViewById(R.id.Layout_Layout_Time_stemp);
 		LinearLayout Act_Layout_Challenge=videooption_Dialog.findViewById(R.id.Layout_Layout_Challenge);
+		videooption_Dialog.findViewById(R.id.Layout_Layout_VideoCompare).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v)
+			{
+				mmAB影片比對();
+			}
+		});
 
 		File ff  = getExternalFilesDir("videos");
 		ff = new File(ff, data.uuid);
@@ -889,4 +935,178 @@ public class VideoLandscape extends Base
 
 	}
 
+	void mmAB影片比對()
+	{
+		int step = 1;
+		int max = 100;
+		int min = 0;
+		VerticalSeekBar seekBar1 = binding.seekBar1;
+		seekBar1.setMax((max - min) / step);
+		seekBar1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+		{
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
+			{
+				double value = min + (progress * step);
+				Log.i(Config.TAG, "onProgressChanged=" + value);
+				binding.videoB.setAlpha((float) value * 0.01f);
+			}
+
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar)
+			{
+
+			}
+
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar)
+			{
+
+			}
+		});
+
+		player.pause();
+		Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+		intent.setType("video/*");
+		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+		videoActivityResultLauncher.launch(intent);
+	}
+
+	ActivityResultLauncher<Intent> videoActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>()
+			{
+				@SuppressLint("WrongConstant")
+				@Override
+				public void onActivityResult(ActivityResult result)
+				{
+					if (result.getResultCode() == Activity.RESULT_OK)
+					{
+						Uri viseoUri = null;
+						Intent data = result.getData();
+						viseoUri = data.getData();
+
+						try
+						{
+							URIPathHelper uriPathHelper = new URIPathHelper();
+							String videoInputPath = uriPathHelper.getPath(getActivity(), viseoUri).toString();
+							File src = new File(videoInputPath);
+							FileInputStream inStream = new FileInputStream(videoInputPath);
+							File path = getExternalFilesDir(null);
+							File file = new File(path, "bVideo"+src.getName());
+							FileOutputStream outStream = new FileOutputStream(file.getAbsolutePath());
+							FileChannel inChannel = inStream.getChannel();
+							FileChannel outChannel = outStream.getChannel();
+							inChannel.transferTo(0, inChannel.size(), outChannel);
+							inStream.close();
+							outStream.close();
+
+							PlayerView playerView = binding.videoB;
+							SimpleExoPlayer playerB = new SimpleExoPlayer.Builder(getActivity()).build();
+							playerView.setControllerVisibilityListener(new PlayerControlView.VisibilityListener() {
+								@Override
+								public void onVisibilityChange(int visibility) {
+										playerView.hideController();
+								}
+							});
+							playerView.setPlayer(playerB);
+							MediaItem mediaItem = MediaItem.fromUri(file.getAbsolutePath());
+							playerB.setMediaItem(mediaItem);
+							playerB.setPlayWhenReady(false);
+							playerView.hideController();
+							playerB.seekTo(currentWindow, player.getCurrentPosition());
+							playerB.prepare();
+
+							frameExtractor = new FrameExtractor(VideoLandscape.this);
+							frameExtractor.init(file.getAbsolutePath());
+							Tools.showProgress(getActivity(), "生成骨骼中");
+							executorService.execute(new Runnable()
+							{
+								@Override
+								public void run()
+								{
+									try
+									{
+										frameExtractor.extractFrames(file.getAbsolutePath());
+										beginTime = System.currentTimeMillis();
+									}
+									catch (Exception exception)
+									{
+										Tools.showError(getActivity(), "[1] " + exception.getMessage());
+									}
+								}
+							});
+						}
+						catch (Exception e)
+						{
+							Tools.showError(getActivity(), "[2] "+e.getMessage());
+						}
+
+					}
+					else
+					{
+
+					}
+				}
+			}
+	);
+
+	void mm校正流程(Frame currentFrame)
+	{
+		Tools.showQuestion(getActivity(), "校正", "請問畫面是否鏡像?", "是", "否", new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				isFlip = true;
+			}
+		}, new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				isFlip = false;
+			}
+		});
+	}
+
+	@Override
+	public void onCurrentFrameExtracted(@NonNull Frame currentFrame)
+	{
+		if(!is設定旋轉與鏡像)
+		{
+			sb.append(currentFrame.getWidth()+","+currentFrame.getHeight()+"\n");
+			is設定旋轉與鏡像 = true;
+		}
+		Bitmap imageBitmap = Utils.fromBufferToBitmap(currentFrame.getByteBuffer(), currentFrame.getWidth(), currentFrame.getHeight(), degress, isFlip);
+		InputImage inputImage = InputImage.fromBitmap(imageBitmap, 0);
+		queue.offer(String.valueOf(currentFrame.getTimestamp()));
+		StructureAnalyze.Analyze_Structure(inputImage, new StructureAnalyze.OnAnalyzeStructureListener()
+		{
+			@Override
+			public void onDone(String result)
+			{
+				synchronized (queue)
+				{
+					queue.poll();
+					Log.i(Config.TAG, "queue size=" + queue.size() + " currentFrame=" + currentFrame.getTimestamp());
+					if (!result.equals("")) sb.append(currentFrame.getTimestamp() + "#" + result);
+					Tools.showProgress(getActivity(), "生成骨骼中 size="+queue.size());
+					if (queue.size() == 0) {
+						FileMangement.SaveFile(getActivity(), "bVideo.txt", sb.toString());
+						Tools.hideProgress(getActivity());
+						Tools.toastSuccess(getActivity(), "骨骼已產生");
+						binding.videoView.getPlayer().seekTo(0);
+//						binding.videoB.getPlayer().play();
+//						binding.videoB.setVisibility(View.VISIBLE);
+							posestructurepointB = FileMangement.ReadFile(getActivity(), "bVideo.txt", (long) (0*1000*1000));
+							posestructurepointB.size();
+					}
+				}
+			}
+		});
+	}
+
+	@Override
+	public void onAllFrameExtracted(int processedFrameCount, long processedTimeMs)
+	{
+	}
 }

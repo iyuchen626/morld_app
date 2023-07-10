@@ -79,7 +79,6 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
     int count=0;
     private String StructureUriStr;
     private ExecutorService executorService= Executors.newSingleThreadExecutor();
-    private LinkedList<String> queue;
     private StringBuilder sb;
     String filename = "yuiop1.txt";
     private FrameExtractor frameExtractor;
@@ -150,8 +149,6 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
         mediaController=new MediaController(this);
         mediaController.setVisibility(View.VISIBLE);
         Act_VideoView_Pose.setMediaController(mediaController);
-        sb = new StringBuilder();
-        queue = new LinkedList<String>();
         frameExtractor.init(StructureUriStr);
         orientation = frameExtractor.getOrientation(StructureUriStr);
         findViewById(R.id.des).setOnClickListener(new View.OnClickListener() {
@@ -192,7 +189,6 @@ public class ShowVideoStructureActivity extends Base implements View.OnClickList
         if(txt!=null) {
             width = txt.width;
             height = txt.height;
-
         }
 
         if((posestructurepoint.size()==0)||(width==0)||(height==0))

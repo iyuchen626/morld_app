@@ -23,10 +23,11 @@
         android:largeHeap="true"
         android:networkSecurityConfig="@xml/network_security_config"
         android:icon="@mipmap/morld_app_icon"
-        android:roundIcon="@mipmap/morld_app_icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.MorldApp_Demo01"
         android:usesCleartextTraffic="true">
+
+        <meta-data android:name="com.google.ar.core" android:value="optional" />
 
         <activity
             android:name=".activity.EditFinishActivity"

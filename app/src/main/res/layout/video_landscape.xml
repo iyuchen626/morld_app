@@ -31,6 +31,21 @@
 
     </com.google.android.exoplayer2.ui.PlayerView>
 
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/video_b"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="9:16"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="invisible"
+        tools:ignore="ExtraText,MissingConstraints">
+
+    </com.google.android.exoplayer2.ui.PlayerView>
+
 
     <androidx.camera.view.PreviewView
         android:id="@+id/PreView_Detect_Editor"
@@ -68,6 +83,16 @@
 
     <com.example.morldapp_demo01.GraphicOverlay
         android:id="@+id/videoStructure"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="@+id/video_view"
+        app:layout_constraintEnd_toEndOf="@+id/video_view"
+        app:layout_constraintStart_toStartOf="@+id/video_view"
+        app:layout_constraintTop_toTopOf="@+id/video_view" />
+
+    <com.example.morldapp_demo01.GraphicOverlay
+        android:id="@+id/videoStructureB"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scaleType="fitCenter"
@@ -205,5 +230,22 @@
         app:srcCompat="@drawable/icon_right"
         android:background="#00000000"
         tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+
+    <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar
+            android:id="@+id/seekBar1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:splitTrack="false"
+            app:seekBarRotation="CW90" />
+
+    </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
