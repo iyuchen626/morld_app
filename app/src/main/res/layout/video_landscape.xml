@@ -72,10 +72,9 @@
 
     <com.example.morldapp_demo01.GraphicOverlay
         android:id="@+id/recordStructure"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:scaleType="fitCenter"
-        app:layout_constraintDimensionRatio="9:16"
+        android:layout_width="600dp"
+        android:layout_height="800dp"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

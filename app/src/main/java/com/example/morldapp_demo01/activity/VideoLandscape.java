@@ -711,7 +711,7 @@ public class VideoLandscape extends Base implements IVideoFrameExtractor
 	private void bindAllCameraUseCases(ProcessCameraProvider cameraProvider)
 	{
 		cameraProvider.unbindAll();
-		Size highSize = new Size(900, 1600);
+		Size highSize = new Size(3000, 4000);
 		Preview.Builder builder = new Preview.Builder();
 		builder.setTargetResolution(highSize);
 		builder.setDefaultResolution(highSize);
@@ -730,13 +730,17 @@ public class VideoLandscape extends Base implements IVideoFrameExtractor
 //			int screen_w = displayMetrics.widthPixels;
 			int screen_h = displayMetrics.heightPixels;
 			int screen_w = displayMetrics.widthPixels;
-			if(height>width)
+			float screen_h_scale = (float) screen_h/(float) size.getHeight();
+			float screen_w_scale = (float) screen_w/size.getWidth();
+			//binding.recordStructure.setScaleY(-1*((screen_h-800)/2));
+			//binding.recordStructure.setScaleX(-1*((screen_w-600)/2));
+			if(screen_h_scale>screen_w_scale)
 			{
-				binding.recordStructure.scaleFactor = (float) screen_h / (float) size.getHeight();
+				binding.recordStructure.scaleFactor = screen_h_scale;
 			}
 			else
 			{
-				binding.recordStructure.scaleFactor = (float) screen_w / (float) size.getWidth();
+				binding.recordStructure.scaleFactor = screen_w_scale;
 			}
 
 			Log.i(Config.TAG, "screen w=" + screen_w + " screen h=" + screen_h);
