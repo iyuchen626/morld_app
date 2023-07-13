@@ -11,7 +11,9 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -723,25 +725,70 @@ public class VideoLandscape extends Base implements IVideoFrameExtractor
 		Camera camera = cameraProvider.bindToLifecycle(/* lifecycleOwner= */ this, cameraSelector, previewUseCase);
 		try
 		{
+			Matrix mMatrix=new Matrix();
+			Matrix mchangeMatrix=new Matrix();
 			Size size = Tools.mm取得相機支援最小的4_3解析度(getActivity(), camera);
 			DisplayMetrics displayMetrics = new DisplayMetrics();
 			getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-//			int screen_h = displayMetrics.heightPixels;
-//			int screen_w = displayMetrics.widthPixels;
 			int screen_h = displayMetrics.heightPixels;
 			int screen_w = displayMetrics.widthPixels;
+
+			float mCenterX,mCenterY;
+
 			float screen_h_scale = (float) screen_h/(float) size.getHeight();
-			float screen_w_scale = (float) screen_w/size.getWidth();
+			float screen_w_scale = ((float) screen_w/(float)size.getWidth());
+			float dpi=displayMetrics.density;
+			float dp_w= screen_w/dpi;
+			float dp_h= screen_h/dpi;
+//			float scaletype= (screen_h_scale-(120*dpi));
+//			if(scaletype<1)
+//			{
+//				scaletype=1;
+//			}
+
+			// SCALE: 3
+
+//			mCenterX=((float)((screen_w/2)-((size.getWidth()*3)/2)))/2;
+//			//mCenterX=mCenterX/dpi;
+//			//mCenterX=(float)((dp_w/2)-(size.getWidth()/2));
+//
+//			//mCenterX=(float)((dp_w/2)-(dp_w*3/2))/2;
+//
+//			mMatrix.preScale(3,3);
+//			//mMatrix.postTranslate(mCenterX,-60);
+//			mMatrix.postTranslate(mCenterX,0);
+
+			//mMatrix.postScale(600,800);
+
+			int scaletype= (int)((screen_h-(120*dpi))/(float) size.getHeight()+0.5f);
+			// SCALE: TEST
+
+			mCenterX=((float)(screen_w)-((size.getWidth()*scaletype)))/dpi/4;
+			Tools.toast(getActivity(), size.getHeight()+"    "+size.getWidth()+"    "+mCenterX+"    "+screen_w+"    "+scaletype+" "+dpi);
+			//mCenterX=(float)((dp_w/2)-(dp_w*3/2))/2;
+			//(screen_w/dpi)-(screen_w/dpi*3)/4
+			mCenterX=(float)((screen_w)-(screen_w*scaletype))/(dpi*4);
+			mMatrix.preScale(scaletype,scaletype);
+			mMatrix.postTranslate(mCenterX,0);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+				binding.recordStructure.setAnimationMatrix(mMatrix);
+			}
+
+
+
+			//binding.recordStructure.scaleFactor = screen_w_scale;
+
+
 			//binding.recordStructure.setScaleY(-1*((screen_h-800)/2));
 			//binding.recordStructure.setScaleX(-1*((screen_w-600)/2));
-			if(screen_h_scale>screen_w_scale)
-			{
-				binding.recordStructure.scaleFactor = screen_h_scale;
-			}
-			else
-			{
-				binding.recordStructure.scaleFactor = screen_w_scale;
-			}
+//			if(screen_h_scale>screen_w_scale)
+//			{
+//				binding.recordStructure.scaleFactor = screen_h_scale;
+//			}
+//			else
+//			{
+//				binding.recordStructure.scaleFactor = screen_w_scale;
+//			}
 
 			Log.i(Config.TAG, "screen w=" + screen_w + " screen h=" + screen_h);
 			cameraProvider.unbind(previewUseCase);

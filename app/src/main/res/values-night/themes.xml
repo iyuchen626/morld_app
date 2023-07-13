@@ -5,4 +5,9 @@
         <item name="colorPrimary">@android:color/holo_orange_light</item>
         <item name="android:statusBarColor">@color/black</item>`
     </style>
+    <style name="Theme.MorldApp_Demo01.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
 </resources>

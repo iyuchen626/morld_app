@@ -13,6 +13,7 @@
     <style name="Theme.MorldApp_Demo01.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
     </style>
     <style name="Theme.MorldApp_Demo01.AppBarOverlay"
         parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
